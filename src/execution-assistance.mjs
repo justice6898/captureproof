@@ -1,3 +1,4 @@
+import { withRetainedResponse } from './external-diagnosis-review.mjs';
 import { DiagnosisService } from './diagnosis-service.mjs';
 import { executionDiagnosisBundle } from './execution-diagnosis.mjs';
 import { disabledExternalProvider, EXTERNAL_CONFIG } from './external-diagnosis-service.mjs';
@@ -94,7 +95,7 @@ export class ExecutionAssistance {
   }
 
   presentAttempt(core, record, preview) {
-    const result = core.present(record, record.input);
+    const result = withRetainedResponse(core.present(record, record.input), this.records.retainedResponse?.(record.id) ?? null);
     const interrupted = result.status === 'running' && this.now() - result.createdAt > this.provider.config.timeoutMs + 5000;
     const notSent = record.dispatchPhase === 'NOT_SENT';
     const receipt = diagnosisCostReceipt(record);
@@ -103,7 +104,7 @@ export class ExecutionAssistance {
       requestIdentity: record.requestContext?.requestIdentity ?? preview.requestIdentity, attemptConsumed: true,
       ...(notSent ? { providerOutcome: 'NOT_SENT', transportAttempts: 0 } : {}),
       unresolvedMaximumEstimateUsd: receipt.costUnresolved ? receipt.unresolvedMaximumEstimateUsd ?? preview.cost.maximumUsd ?? null : null,
-      retainedResponse: this.records.retainedResponse?.(record.id) ?? null,
+      retainedResponse: result.retainedResponse,
       billingConfirmed: false
     };
   }

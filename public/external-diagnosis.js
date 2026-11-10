@@ -45,6 +45,11 @@
     if(!data.records.length)section.append(node('p','No matching stored AI response. This read does not generate one.'));
     for(const r of data.records){section.append(node('h4',r.mode==='authored-offline'?'Authored review fixture — not model output':'Stored model response'),node('p',`Response ${r.id} · provider completion: ${r.responseStatus??'unknown'} · structural/factual validation: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus}`));
       semanticReview(section,r,citations);
+      for(const review of r.offlineRevalidations??[])if(review.type==='retained-output-review-1'){
+        section.append(node('h4','Limited review of retained output — not an accepted diagnosis'),node('p',review.summary),node('p',review.scope),node('p',review.method));
+        for(const c of review.claims){const d=node('details');d.append(node('summary',`${c.disposition} · ${c.label}`),node('blockquote',c.excerpt),node('p',c.reason),citations(c));section.append(d);}
+        section.append(detail('Retained-output review bindings and limitations',review));
+      }
       if (r.cost !== undefined || r.preflightCost !== undefined) {
         const money = value => Number.isFinite(value) ? '$' + value.toFixed(6) : 'Unknown';
         const count = value => Number.isSafeInteger(value) && value >= 0 ? String(value) : 'Unknown';
@@ -60,7 +65,7 @@
         for(const [label,v]of [['Proposed correction — not applied',d.fixDirection],['Proposed regression test — not executed',d.regressionTest]])if(v)section.append(node('h4',label),node('p',v.text),citations(v));
         for(const text of d.monetaryMetadata??[])section.append(node('p',text));
         for(const text of d.uncertainties)section.append(node('p',text));
-      }else {section.append(node('p',`Saved attempt was not accepted: ${r.error??r.validationError??r.currentValidation}. No retry.`));if(retention)section.append(detail('Unvalidated sanitized response — not an accepted diagnosis',retention.messages));}
+      }else {section.append(node('p',`Saved attempt was not accepted: ${r.error??r.validationError??r.currentValidation}. No retry.`));if(retention?.messages)section.append(detail('Unvalidated sanitized response — not an accepted diagnosis',retention.messages));else if(retention)section.append(node('p','Rejected text is retained privately and is not embedded in this export. The preservation receipt and any limited review do not establish an accepted diagnosis.'));}
       section.append(detail('Complete stored structured response and metadata',r));
     }
     const evidence=node('details');evidence.append(node('summary',authored?'Evidence used by the authored fixture':'Exact observations supplied to the model'));

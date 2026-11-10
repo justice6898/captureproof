@@ -66,3 +66,11 @@ test('old approval cannot authorize a changed contract identity',()=>{
  const preview={jobId:'job',executionId:'run',requestIdentity:'v5',requestHash:'new',fingerprint:'new',cost:{maximumUsd:.2},pricingReview:{}};
  assert.throws(()=>executionApproval(preview,{authorized:true,requestIdentity:'v4'}));
 });
+
+test('failed or rejected current-contract output has unavailable guidance, never a predates-contract explanation',()=>{
+ const selectedInput=structuredClone(input);
+ for(const status of ['running','failed']){
+  const r={id:'incomplete-authored',status,schemaVersion:EXTERNAL_VERSION,promptVersion:EXTERNAL_VERSION,validatorVersion:EXTERNAL_VERSION,input:selectedInput,result:null,mode:'mock-transport',fingerprint:'none'};
+  const view=externalDiagnosisPresentation(r);assert.equal(view.regressionGuidance.status,'UNAVAILABLE_UNVALIDATED_RESPONSE');assert.equal(view.reusable,false);assert.equal(view.renderedResult,null);assert.doesNotMatch(view.regressionGuidance.note,/predates/);
+ }
+});

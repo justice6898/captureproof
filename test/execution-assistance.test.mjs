@@ -281,3 +281,20 @@ test('read-only cost receipts distinguish absent usage, NOT_SENT and observed ze
  const zero=diagnosisCostReceipt({usage:{input_tokens:0,output_tokens:0,input_tokens_details:{cache_write_tokens:0}}});
  assert.equal(zero.cost.usageBasedEstimateUsd,0);assert.equal(zero.costUnresolved,false);assert.equal(zero.billingConfirmed,false);
 });
+
+test('prior-contract response stays visible without consuming the new exact request; new attempt still deduplicates', async t => {
+  const f = await fixture(t), p = preview(f);
+  const old = { ...structuredClone(preparation.records[0]), id: 'prior-contract-fixture', runId: 'execution:' + p.executionId,
+    fingerprint: 'prior-contract-fingerprint', schemaVersion: 'external-diagnosis-4', promptVersion: 'external-diagnosis-4', validatorVersion: 'external-diagnosis-4',
+    input: p.input, sourceProvenance: p.provenance, providerAttempt: true, status: 'succeeded', createdAt: 1,
+    requestContext: { requestIdentity: 'prior-contract-identity' } };
+  f.records.save(old);
+  const before = preview(f);
+  assert.equal(before.records.length, 1); assert.equal(before.records[0].id, old.id);
+  assert.notEqual(before.records[0].fingerprint, before.fingerprint); assert.equal(before.dispatchEnabled, true); assert.equal(f.calls(), 0);
+  const current = await send(f, before);
+  assert.equal(current.status, 'succeeded'); assert.equal(f.calls(), 1);
+  const after = preview(f); assert.equal(after.records.length, 2); assert.equal(after.dispatchEnabled, false);
+  assert.equal((await send(f, after)).id, current.id); assert.equal(f.calls(), 1);
+  assert.deepEqual(f.records.list(old.runId).find(r => r.id === old.id), old);
+});

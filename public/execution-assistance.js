@@ -36,13 +36,16 @@ export function mountExecutionAssistance(container, { jobId, executionId, reques
       summary.textContent = 'Exact input, source citations, request identity and cost assumptions';
       pre.textContent = JSON.stringify(preview, null, 2); details.append(summary, pre);
       const run = document.createElement('button'); run.type = 'button';
-      run.textContent = preview.records?.length ? 'Attempt already recorded · no retry' : preview.dispatchEnabled
+      const currentAttempt = preview.records?.find(r => r.fingerprint === preview.fingerprint);
+      run.textContent = currentAttempt ? 'Attempt already recorded · no retry' : preview.dispatchEnabled
         ? (preview.transport === 'INJECTED_TEST_TRANSPORT' ? 'Request explanation once · test transport' : 'Confirm one paid explanation')
         : 'Live diagnosis requires separate authorization';
       run.disabled = !preview.dispatchEnabled;
       status.textContent = `Estimated upper cost: ${preview.cost.maximumUsd === undefined ? 'unavailable' : '$' + preview.cost.maximumUsd.toFixed(6)}. ${preview.config.model} / ${preview.config.reasoning} / standard. This preview sends no request and reserves no budget. ${preview.limits}${preview.unavailableReason ? ' Unavailable: ' + preview.unavailableReason + '.' : ''}`;
       content.append(heading, details, run); section.append(content); heading.focus();
+      const previewStatus = status.textContent;
       for (const result of preview.records ?? []) renderResult(preview, result);
+      if (!currentAttempt) status.textContent = previewStatus + ((preview.records?.length ?? 0) ? ' Earlier-contract responses are shown below; they do not consume this request identity.' : '');
       run.onclick = async () => {
         run.disabled = true; previewButton.disabled = true;
         status.textContent = 'Request pending. Do not retry. Refreshing can inspect the persisted attempt; closing this page does not establish cancellation.';

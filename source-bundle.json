@@ -29,8 +29,8 @@
     },
     {
       "path": "src/execution-assistance.mjs",
-      "sha256": "0bdfa064821f36b84805cce13ca61b9a8e0ad464dbdee3f91c41127962ee9d33",
-      "bytes": 8307
+      "sha256": "4e0509249c6717967ae09bfdb21b158730b2a2f3c3c7b60dc641ca886b05f580",
+      "bytes": 8426
     },
     {
       "path": "src/execution-assistance-policy.mjs",
@@ -44,8 +44,8 @@
     },
     {
       "path": "public/execution-assistance.js",
-      "sha256": "75e6f1499215301295cf6330897a58e97d4c732e8606447bad48a2969b3f303f",
-      "bytes": 4523
+      "sha256": "112ba0328c4ffb29e6b91acd9ab4ce711becef1abd8a3f8a0b46e75a72dd137d",
+      "bytes": 4853
     },
     {
       "path": "src/verified-example.mjs",
@@ -274,8 +274,8 @@
     },
     {
       "path": "public/external-diagnosis.js",
-      "sha256": "1491c49ec5e0a1beb642eb10172cbcb4be5bd8edf4f626ed22c26d3a03bfd6c9",
-      "bytes": 22307
+      "sha256": "185d0cf2693a3f606865a403e9cd4cc81f92c244d81b2398351c97e9e28bb654",
+      "bytes": 23096
     },
     {
       "path": "public/external.css",
@@ -439,8 +439,8 @@
     },
     {
       "path": "src/execution-diagnosis.mjs",
-      "sha256": "c0792aa3502d18041fc20821fd37c3f2a56a30be795037738bc64f0876a7d25f",
-      "bytes": 5785
+      "sha256": "cab431816884d446a1e340ee0203fa20d18ca1603c8347e1dfc6ca7103676162",
+      "bytes": 5858
     },
     {
       "path": "src/experiment.mjs",
@@ -449,8 +449,8 @@
     },
     {
       "path": "src/external-diagnosis-contract.mjs",
-      "sha256": "d8fe242f7915dd1494f927ca39ceff7f476f1404fdeac28ac0afd54c1d64e156",
-      "bytes": 17698
+      "sha256": "05db8db313072a2e8d7958e3786d93100120adb4f174c46eda23ef34f2598483",
+      "bytes": 18049
     },
     {
       "path": "src/regression-guidance.mjs",
@@ -464,8 +464,8 @@
     },
     {
       "path": "src/external-diagnosis-review.mjs",
-      "sha256": "2fde241bc57cee758d91ae7572bc9dfd48481e18b6d536f2d77efbb961493d7c",
-      "bytes": 6997
+      "sha256": "d9abfd622b81c813851fffeb2ce63f73d47bbd0de217bb8aeb0203cfca87dec3",
+      "bytes": 8115
     },
     {
       "path": "src/external-diagnosis-service.mjs",
@@ -579,8 +579,8 @@
     },
     {
       "path": "test/semantic-review.test.mjs",
-      "sha256": "b1cbd3ea983aad8218f2e62953fee931c42099dd53ffc9c0364e24e52a0bc782",
-      "bytes": 8255
+      "sha256": "d90b57af04ed881a620a5027e8b6bce769f5ad358b988673d666ad52ca1ba34b",
+      "bytes": 9549
     },
     {
       "path": "test-support/semantic-review-cases.mjs",
@@ -599,8 +599,8 @@
     },
     {
       "path": "test/regression-guidance.test.mjs",
-      "sha256": "b6f1697a8e772920f8d868a590866765c8d6c057501a1a1c032ac5e32f75af1c",
-      "bytes": 7199
+      "sha256": "febaaf35db5ab99e36eb006250d0d25e61c987d39971f3128f00747b50b2bacb",
+      "bytes": 7891
     },
     {
       "path": "test-support/regression-controls.mjs",
@@ -619,8 +619,8 @@
     },
     {
       "path": "test/execution-assistance.test.mjs",
-      "sha256": "d94c675922105b2b643acbc4769f2aaebc6915557b846b9b983b0f711bba063f",
-      "bytes": 22591
+      "sha256": "067dd4025564e3014240fc2d0bd128f1cb5df4ea6be3e4e6a3d3476ee2aa063c",
+      "bytes": 23914
     },
     {
       "path": "test-support/persistence-observations.mjs",

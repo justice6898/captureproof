@@ -103,7 +103,10 @@ export function externalDiagnosisPresentation(record,input=record.input,{reviews
   const semanticReview=externalSemanticReview(record,reviews),offlineRevalidations=externalOfflineRevalidations(record);
   const contractCurrent=version===EXTERNAL_VERSION&&consistent;
   const reusable=contractCurrent&&currentValidation==='ACCEPTED' && (record.mode==='mock-transport'||record.mode==='openai-live'&&semanticReuseAllowed(record,semanticReview));
-  const regressionGuidance=currentValidation==='ACCEPTED'&&contractCurrent?validateRegressionControls(record.result,input,EXTERNAL_SCHEMA.properties.regressionControls):historicalGuidanceAssessment(record,offlineRevalidations);
+  const regressionGuidance=contractCurrent
+    ? currentValidation==='ACCEPTED' ? validateRegressionControls(record.result,input,EXTERNAL_SCHEMA.properties.regressionControls)
+      : {version:'regression-guidance-1',status:'UNAVAILABLE_UNVALIDATED_RESPONSE',required:[],present:[],semanticReview:'NOT_ASSESSABLE',note:'No validated current-contract response is available. Guidance coverage and semantic quality are not established; retained text is unvalidated and must not be treated as a completed diagnosis.'}
+    : historicalGuidanceAssessment(record,offlineRevalidations);
   return {...record,currentValidation,validationChecks:{structure:currentValidation==='ACCEPTED'?'PASS':'NOT_ESTABLISHED',evidenceIntegrity:currentValidation==='ACCEPTED'?'PASS':'NOT_ESTABLISHED',regressionCoverage:regressionGuidance.status,semantic:semanticReview?.outcome??'NOT_REVIEWED'},validationVersion:version,contractCurrent,validationError,reusable,semanticReview,offlineRevalidations,regressionGuidance,semanticReviewStatus:semanticReview?.outcome??'NOT_REVIEWED',renderedResult:currentValidation==='ACCEPTED'?renderMonetaryClaims(record.result,{includeMetadata:true}):null};
 }
 export const EXTERNAL_V4_CONTRACT={PROMPT_VERSION:'external-diagnosis-4',SCHEMA_VERSION:'external-diagnosis-4',VALIDATOR_VERSION:'external-diagnosis-4',INSTRUCTIONS:EXTERNAL_V4_INSTRUCTIONS,DIAGNOSIS_SCHEMA:EXTERNAL_V4_SCHEMA,validate:validateExternalDiagnosisV4,present:externalDiagnosisPresentation};

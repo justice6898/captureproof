@@ -88,3 +88,19 @@ export function externalOfflineRevalidations(record, annotations) {
   }
   return (annotations[record.id] ?? []).filter(a => a.historicalRecordSha256 === hash(record) && a.approvedReuse === false);
 }
+
+// A review of rejected text must detach when that separately retained artifact changes.
+export function withRetainedResponse(record, retainedResponse) {
+  const offlineRevalidations = (record.offlineRevalidations ?? []).filter(a => {
+    if (a.type !== 'retained-output-review-1') return true;
+    const text = retainedResponse?.messages?.[0]?.fields?.text;
+    if (a.approvedReuse !== false || !retainedResponse || typeof text !== 'string' ||
+        a.retainedArtifactSha256 !== hash(retainedResponse) || a.retainedTextSha256 !== hash(text) ||
+        a.inputSha256 !== hash(record.input) || a.sourceSetSha256 !== hash(record.input?.sources ?? []) ||
+        a.fingerprint !== record.fingerprint || a.resultSha256 !== hash(record.result) || !Array.isArray(a.claims)) return false;
+    return a.claims.every(c => c && Number.isSafeInteger(c.startOffset) && Number.isSafeInteger(c.endOffset) &&
+      c.startOffset >= 0 && c.endOffset > c.startOffset && c.endOffset <= text.length &&
+      c.excerpt === text.slice(c.startOffset,c.endOffset));
+  });
+  return { ...record, retainedResponse, offlineRevalidations };
+}

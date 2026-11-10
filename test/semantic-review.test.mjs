@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
 import {semanticReviewCases} from '../test-support/semantic-review-cases.mjs';
-import {externalSemanticReview,inspectClaimReview,semanticReuseAllowed,reviewableClaims} from '../src/external-diagnosis-review.mjs';
+import {externalSemanticReview,withRetainedResponse,inspectClaimReview,semanticReuseAllowed,reviewableClaims} from '../src/external-diagnosis-review.mjs';
 import {externalDiagnosisPresentation,validateExternalDiagnosis,EXTERNAL_VERSION} from '../src/external-diagnosis-contract.mjs';
 import {reportHTML} from '../src/portable-report.mjs';import {hash} from '../src/diagnosis-contract.mjs';
 const cases=semanticReviewCases(),reviews=JSON.parse(readFileSync(new URL('../test-support/semantic-review-assessments.json',import.meta.url)));
@@ -78,4 +78,16 @@ test('review text is inert in portable serialization, without changing the v5 re
  const shown=externalDiagnosisPresentation(record,undefined,{reviews:{[record.id]:review}});assert.equal(shown.semanticReviewStatus,'PARTIAL');
  const html=reportHTML({primary:{analysis:{records:[shown]}}});assert.ok(!html.includes(review.summary));assert.ok(html.includes('\\u003c/script'));
  assert.equal(EXTERNAL_VERSION,'external-diagnosis-5');
+});
+
+ test('rejected-fragment review detaches from changed or missing retained output, input or excerpt',()=>{
+ const record={...cases[0].record,result:null},text='{"assessment":"issue_observed",',retained={messages:[{fields:{text}}]};
+ const a={type:'retained-output-review-1',approvedReuse:false,retainedArtifactSha256:hash(retained),retainedTextSha256:hash(text),...claimBinding(record),claims:[{startOffset:0,endOffset:13,excerpt:text.slice(0,13)}]};
+ const r={...record,offlineRevalidations:[a]};assert.equal(withRetainedResponse(r,retained).offlineRevalidations.length,1);
+ assert.equal(withRetainedResponse(r,null).offlineRevalidations.length,0);
+ assert.equal(withRetainedResponse(r,{messages:[{fields:{text:text+'changed'}}]}).offlineRevalidations.length,0);
+ assert.equal(withRetainedResponse({...r,input:{...r.input,changed:true}},retained).offlineRevalidations.length,0);
+ assert.equal(withRetainedResponse({...r,offlineRevalidations:[{...a,claims:[{...a.claims[0],excerpt:'foreign'}]}]},retained).offlineRevalidations.length,0);
+ assert.equal(r.result,null);assert.equal(r.offlineRevalidations.length,1);
+ function claimBinding(r){return {inputSha256:hash(r.input),sourceSetSha256:hash(r.input.sources),fingerprint:r.fingerprint,resultSha256:hash(r.result)};}
 });
