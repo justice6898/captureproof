@@ -119,7 +119,7 @@ export const SOURCE_FILES=Object.freeze([
 export const RELEASE_ADDITIONS=Object.freeze([
  '.env.example','.gitignore',
  'test/semantic-review.test.mjs','test-support/semantic-review-cases.mjs','test-support/semantic-review-expectations.json','test-support/semantic-review-assessments.json',
- 'test/regression-guidance.test.mjs','test-support/regression-controls.mjs',
+ 'test/regression-guidance.test.mjs','test-support/regression-controls.mjs','test-support/useful-diagnosis.mjs',
  'test/bundled-example.test.mjs','test/persistence-uncertainty.test.mjs','test/execution-assistance.test.mjs','test-support/persistence-observations.mjs',
  'test/developer-meaning.test.mjs','test-support/developer-meaning-fixtures.mjs',
  'test/release.test.mjs','test/verification-capability.test.mjs','test/verification-readiness.test.mjs','test/checkout.test.mjs','test/checkout-http.test.mjs',

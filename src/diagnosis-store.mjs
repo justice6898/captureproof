@@ -45,7 +45,7 @@ export class DiagnosisStore {
       chmodSync(this.#reviewDirectory, 0o700);
       const review = sanitizeRejectedDiagnosis(candidate, this.#sensitiveValues, schema, { trustedSources: record.input?.sources });
       const artifact = { ...review, attemptId: record.id, runId: record.runId, rejectionReason: record.error,
-        responseStatus: record.responseStatus, requestedModel: record.requestedModel, returnedModel: record.returnedModel,
+        responseStatus: record.responseStatus, incompleteReason: record.incompleteReason ?? null, requestedModel: record.requestedModel, returnedModel: record.returnedModel,
         responseId: record.responseId ?? null, metadataOmissions: record.metadataOmissions ?? [], promptVersion: record.promptVersion, schemaVersion: record.schemaVersion,
         validatorVersion: record.validatorVersion, evidenceFingerprint: record.fingerprint,
         promptHash: record.promptHash, schemaHash: record.schemaHash, createdAt: record.createdAt,

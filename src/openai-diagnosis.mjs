@@ -47,7 +47,7 @@ export class OpenAIDiagnosis {
       }
       return value;
     };
-    const metadata = { clientRequestId, providerRequestId: null, responseId: null, responseStatus: null,
+    const metadata = { clientRequestId, providerRequestId: null, responseId: null, responseStatus: null, incompleteReason: null,
       usage: null, usageStatus: 'UNKNOWN', providerOutcome: 'UNKNOWN', metadataOmissions,
       effectiveDeadlineMs: this.config.timeoutMs, transportAttempts: 1, localCancellation: false };
     let expired = false, timer;
@@ -85,6 +85,7 @@ export class OpenAIDiagnosis {
       if (!body || typeof body !== 'object' || Array.isArray(body)) throw new DiagnosisError('AI_INVALID_RESPONSE');
       Object.assign(metadata, {
         responseStatus: ['completed', 'incomplete', 'failed', 'in_progress', 'queued', 'cancelled'].includes(body.status) ? body.status : null,
+        incompleteReason: body.status === 'incomplete' && ['max_output_tokens', 'content_filter'].includes(body.incomplete_details?.reason) ? body.incomplete_details.reason : null,
         returnedModel: safeIdentifier(body.model, 'returnedModel'), responseId: safeIdentifier(body.id, 'responseId'),
         returnedServiceTier: safeIdentifier(body.service_tier, 'returnedServiceTier'),
         usage: Object.fromEntries(['input_tokens', 'output_tokens', 'total_tokens'].filter(k => Number.isSafeInteger(body.usage?.[k]) && body.usage[k] >= 0).map(k => [k, body.usage[k]]))

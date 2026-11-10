@@ -1,4 +1,4 @@
-import { authoredRegressionControls } from '../test-support/regression-controls.mjs';
+import { authoredUsefulDiagnosis } from '../test-support/useful-diagnosis.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -16,20 +16,8 @@ const html = readFileSync(new URL('../data/portable-reports/upstream-pending-rep
 const preparation = JSON.parse(html.match(/id="report-data">(.*?)<\/script>/s)[1]).primary.analysis;
 preparation.request = disabledExternalProvider().requestBody(preparation.input);
 preparation.requestHash = hash(JSON.stringify(preparation.request));
-function output(input) {
-  const host = input.sources.find(s => s.role === 'merchant_host');
-  const ref = { sourceRef: host.id, sourceSha256: host.sha256, startLine: 305, endLine: 308 };
-  const f = input.evidence.find(e => e.id === 'checkpoint-1').fields;
-  return { assessment: 'issue_observed', regressionControls:authoredRegressionControls(input), moneyClaims: [],
-    observedFacts: [{ evidenceRef: 'checkpoint-1', field: 'database.captureRowCount', value: f['database.captureRowCount'] }],
-    findings: [{ kind: 'supported', explanation: 'The supplied observation contains a persisted capture row.', evidenceRefs: ['checkpoint-1'], codeRefs: [ref] }],
-    fixDirection: { text: 'Check completed capture evidence before recording completion.', evidenceRefs: ['checkpoint-1'], codeRefs: [ref] },
-    regressionTest: { text: 'Compare the pending and completed checkpoints separately.', evidenceRefs: ['checkpoint-1'], codeRefs: [ref] },
-    uncertainties: ['This injected response tests the application contract, not model quality or a live provider.'],
-    claims: { realNetworkOutageObserved: false, duplicateChargeObserved: false, repairVerified: false, livePayPalVerified: false, concurrencyVerified: false, fulfillmentVerified: false },
-    stateClaims: [{ evidenceRef: 'checkpoint-1', capturePostAttempts: f.capturePostAttempts, distinctProviderCaptures: f.distinctCaptureCount, databaseCaptureRows: f['database.captureRowCount'], merchantCapturedAt: f['database.payment.capturedAt'] }] };
-}
-async function fixture(t, { rejected = false, fail = false, outcome = null, gated = false } = {}) {
+const output = authoredUsefulDiagnosis;
+async function fixture(t, { rejected = false, fail = false, outcome = null, incompleteReason = undefined, gated = false } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'cp-assistance-'));
   let db = new DatabaseSync(join(dir, 'requests.sqlite')); await DiagnosisStore.open(db);
   const records = new DiagnosisStore(db, { reviewDirectory: join(dir, 'reviews'), sensitiveValues: [] });
@@ -45,10 +33,11 @@ async function fixture(t, { rejected = false, fail = false, outcome = null, gate
       assert.doesNotMatch(request.input[0].content, /comparisonStatus|recordedVerdict|expectedAnswer/);
       const input = JSON.parse(request.input[0].content);
       const result = rejected ? {} : output(input);
+      if(outcome === 'missing-control') result.regressionControls = result.regressionControls.filter(c => c.kind !== 'unavailable_readback');
       if(outcome === 'invalid-citation') result.findings[0].codeRefs[0].sourceRef = 'absent-source';
       const part = outcome === 'refusal' ? { type: 'refusal', refusal: 'Injected refusal.' }
-        : { type: 'output_text', text: outcome === 'malformed' ? '{' : JSON.stringify(result) };
-      return new Response(JSON.stringify({ id: 'offline_response', model: EXTERNAL_CONFIG.model, status: outcome === 'incomplete' ? 'incomplete' : 'completed',
+        : { type: 'output_text', text: outcome === 'malformed' ? '{' : outcome === 'whitespace-incomplete' ? '{"observedFacts":[' + ' \t'.repeat(1000) : JSON.stringify(result) };
+      return new Response(JSON.stringify({ id: 'offline_response', model: EXTERNAL_CONFIG.model, status: ['incomplete','whitespace-incomplete'].includes(outcome) ? 'incomplete' : 'completed', incomplete_details: {reason: incompleteReason},
         usage: { input_tokens: 100, output_tokens: 200, output_tokens_details: { reasoning_tokens: 100 } },
         output: [{ type: 'message', content: [part] }] }));
     } });
@@ -76,7 +65,7 @@ test('concurrent duplicates and reopened controller retain one durable response 
   const [a, b] = await Promise.all([send(f, p), send(f, p)]);
   assert.equal(a.currentValidation, 'ACCEPTED', a.error); assert.equal(a.id, b.id); assert.equal(f.calls(), 1);
   assert.equal(a.semanticReviewStatus, 'NOT_REVIEWED');
-  assert.ok(f.records.retainedResponse(a.id));
+  assert.ok(f.records.retainedResponse(a.id)); assert.deepEqual(a.result, output(p.input)); assert.equal(a.regressionGuidance.status, 'COMPLETE_STRUCTURE');
   assert.equal(f.records.list('execution:' + p.executionId)[0].requestContext.requestIdentity, p.requestIdentity);
   const restarted = new ExecutionAssistance({ jobs: f.jobs, records: f.reopen(), provider: f.provider });
   const reused = await restarted.analyze(p.jobId, p.executionId, { confirm: true, requestIdentity: p.requestIdentity });
@@ -289,12 +278,36 @@ test('prior-contract response stays visible without consuming the new exact requ
     input: p.input, sourceProvenance: p.provenance, providerAttempt: true, status: 'succeeded', createdAt: 1,
     requestContext: { requestIdentity: 'prior-contract-identity' } };
   f.records.save(old);
+  const failed = {...old,id:'prior-v5-failure',fingerprint:'prior-v5-fingerprint',schemaVersion:'external-diagnosis-5',promptVersion:'external-diagnosis-5',validatorVersion:'external-diagnosis-5',status:'failed',result:null,error:'AI_INCOMPLETE_OUTPUT',responseStatus:'incomplete',usage:{input_tokens:100,output_tokens:6000},createdAt:2}; f.records.save(failed);
   const before = preview(f);
-  assert.equal(before.records.length, 1); assert.equal(before.records[0].id, old.id);
+  assert.equal(before.records.length, 2); assert.ok(before.records.some(r=>r.id===old.id)); assert.equal(before.records.find(r=>r.id===failed.id).regressionGuidance.status,'UNAVAILABLE_UNVALIDATED_RESPONSE');
   assert.notEqual(before.records[0].fingerprint, before.fingerprint); assert.equal(before.dispatchEnabled, true); assert.equal(f.calls(), 0);
   const current = await send(f, before);
   assert.equal(current.status, 'succeeded'); assert.equal(f.calls(), 1);
-  const after = preview(f); assert.equal(after.records.length, 2); assert.equal(after.dispatchEnabled, false);
+  const after = preview(f); assert.equal(after.records.length, 3); assert.equal(after.dispatchEnabled, false);
   assert.equal((await send(f, after)).id, current.id); assert.equal(f.calls(), 1);
-  assert.deepEqual(f.records.list(old.runId).find(r => r.id === old.id), old);
+  assert.deepEqual(f.records.list(old.runId).find(r => r.id === old.id), old);assert.deepEqual(f.records.list(old.runId).find(r => r.id === failed.id), failed);
+});
+
+
+test('incomplete reason is allowlisted and retention survives restart without accepting parsable or whitespace output', async t => {
+  for (const reason of ['max_output_tokens', 'content_filter', 'unrecognized-private-detail', undefined]) {
+    for (const outcome of ['incomplete', 'whitespace-incomplete']) {
+      const f = await fixture(t, {outcome, incompleteReason: reason}), p = preview(f), r = await send(f,p);
+      const expected = ['max_output_tokens','content_filter'].includes(reason) ? reason : null;
+      assert.equal(r.error,'AI_INCOMPLETE_OUTPUT'); assert.equal(r.result,null); assert.equal(r.incompleteReason,expected);
+      const retained=f.records.retainedResponse(r.id);
+      assert.equal(retained.metadata.incompleteReason,expected); assert.ok(retained.preservationComparison.every(c=>c.contentEqual));
+      assert.doesNotMatch(JSON.stringify(retained),/unrecognized-private-detail/);
+      if(outcome==='whitespace-incomplete')assert.equal(retained.messages[0].fields.text,'{"observedFacts":['+' \t'.repeat(1000));
+      const store=f.reopen(), restarted=new ExecutionAssistance({jobs:f.jobs,records:store,provider:f.provider});
+      const again=await restarted.analyze(p.jobId,p.executionId,{confirm:true,requestIdentity:p.requestIdentity});
+      assert.equal(again.id,r.id);assert.equal(again.error,r.error);assert.equal(again.incompleteReason,expected);assert.deepEqual(again.usage,r.usage);assert.equal(f.calls(),1);
+    }
+  }
+});
+test('useful authored response missing a required control is rejected through the normal application path', async t => {
+  const f=await fixture(t,{outcome:'missing-control'}),p=preview(f),r=await send(f,p);
+  assert.equal(r.status,'failed');assert.equal(r.result,null);assert.equal(r.reusable,false);assert.ok(f.records.retainedResponse(r.id));
+  assert.equal((await send(f,p)).id,r.id);assert.equal(f.calls(),1);
 });

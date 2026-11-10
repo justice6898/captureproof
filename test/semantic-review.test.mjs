@@ -64,7 +64,7 @@ for(const[name,mutate]of invalidMetadata)test('metadata fails closed: '+name,()=
 });
 test('whole-response PASS can permit exact live reuse; contradiction or missing review cannot',()=>{
  const record={...cases.find(c=>c.id==='13').record,mode:'openai-live'},review=structuredClone(reviews[record.id]);review.reuseAllowed=true;
- const valid=externalDiagnosisPresentation(record,undefined,{reviews:{[record.id]:review}});assert.equal(valid.semanticReviewStatus,'PASS');assert.equal(valid.reusable,true);
+ const valid=externalDiagnosisPresentation(record,undefined,{reviews:{[record.id]:review}});assert.equal(valid.semanticReviewStatus,'PASS');assert.equal(valid.reusable,false);assert.equal(valid.contractCurrent,false);assert.equal(semanticReuseAllowed(record,valid.semanticReview),true); // Historical review remains valid; current-version reuse is separately blocked.
  for(const edit of [r=>r.outcome='FAIL',r=>r.claims[0].disposition='CONTRADICTED',r=>r.claims[0].disposition='UNRESOLVED']){
   const invalid=structuredClone(review);edit(invalid);assert.equal(externalDiagnosisPresentation(record,undefined,{reviews:{[record.id]:invalid}}).reusable,false);
  }
@@ -77,7 +77,7 @@ test('review text is inert in portable serialization, without changing the v5 re
  const record=cases[0].record,review=structuredClone(reviews[record.id]);review.summary='</script><img src=x onerror=alert(1)>';
  const shown=externalDiagnosisPresentation(record,undefined,{reviews:{[record.id]:review}});assert.equal(shown.semanticReviewStatus,'PARTIAL');
  const html=reportHTML({primary:{analysis:{records:[shown]}}});assert.ok(!html.includes(review.summary));assert.ok(html.includes('\\u003c/script'));
- assert.equal(EXTERNAL_VERSION,'external-diagnosis-5');
+ assert.equal(EXTERNAL_VERSION,'external-diagnosis-6');assert.equal(record.schemaVersion,'external-diagnosis-5');
 });
 
  test('rejected-fragment review detaches from changed or missing retained output, input or excerpt',()=>{

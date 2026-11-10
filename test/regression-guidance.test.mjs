@@ -1,7 +1,8 @@
+import {authoredUsefulDiagnosis} from '../test-support/useful-diagnosis.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {EXTERNAL_SCHEMA,EXTERNAL_VERSION,EXTERNAL_V4_SCHEMA,EXTERNAL_V4_INSTRUCTIONS,validateExternalDiagnosis,validateExternalDiagnosisV4,externalDiagnosisPresentation} from '../src/external-diagnosis-contract.mjs';
+import {EXTERNAL_SCHEMA,EXTERNAL_CONTRACT,EXTERNAL_V5_CONTRACT,EXTERNAL_VERSION,EXTERNAL_V4_SCHEMA,EXTERNAL_V4_INSTRUCTIONS,validateExternalDiagnosis,validateExternalDiagnosisV4,externalDiagnosisPresentation} from '../src/external-diagnosis-contract.mjs';
 import {validateRegressionControls,requiredRegressionControls} from '../src/regression-guidance.mjs';
 import {authoredRegressionControls} from '../test-support/regression-controls.mjs';
 import {hash} from '../src/diagnosis-contract.mjs';
@@ -72,5 +73,22 @@ test('failed or rejected current-contract output has unavailable guidance, never
  for(const status of ['running','failed']){
   const r={id:'incomplete-authored',status,schemaVersion:EXTERNAL_VERSION,promptVersion:EXTERNAL_VERSION,validatorVersion:EXTERNAL_VERSION,input:selectedInput,result:null,mode:'mock-transport',fingerprint:'none'};
   const view=externalDiagnosisPresentation(r);assert.equal(view.regressionGuidance.status,'UNAVAILABLE_UNVALIDATED_RESPONSE');assert.equal(view.reusable,false);assert.equal(view.renderedResult,null);assert.doesNotMatch(view.regressionGuidance.note,/predates/);
+ }
+});
+
+
+test('complete useful authored response fits unchanged v5 and selective v6 without weakening schema or validation',()=>{
+ const response=authoredUsefulDiagnosis(input);
+ assert.deepEqual(EXTERNAL_V5_CONTRACT.validate(response,input),response);
+ assert.deepEqual(EXTERNAL_CONTRACT.validate(response,input),response);
+ assert.deepEqual(EXTERNAL_V5_CONTRACT.DIAGNOSIS_SCHEMA,EXTERNAL_CONTRACT.DIAGNOSIS_SCHEMA);
+ assert.equal(EXTERNAL_V5_CONTRACT.validate,EXTERNAL_CONTRACT.validate);
+ assert.notEqual(hash(EXTERNAL_V5_CONTRACT.INSTRUCTIONS),hash(EXTERNAL_CONTRACT.INSTRUCTIONS));
+ assert.ok(Buffer.byteLength(JSON.stringify(response))<10000); // Byte feasibility, not tokenizer or provider compliance.
+ assert.equal(response.findings.length,2);assert.equal(response.regressionControls.length,5);
+ assert.equal(response.stateClaims.find(s=>s.evidenceRef==='restart').capturePostAttempts,null);
+ for(const version of ['external-diagnosis-5',EXTERNAL_VERSION]){
+   const failed=externalDiagnosisPresentation({...old,status:'failed',result:null,schemaVersion:version,promptVersion:version,validatorVersion:version});
+   assert.equal(failed.renderedResult,null);assert.equal(failed.regressionGuidance.status,'UNAVAILABLE_UNVALIDATED_RESPONSE');
  }
 });

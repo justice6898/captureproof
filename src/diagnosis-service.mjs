@@ -68,7 +68,7 @@ export class DiagnosisService {
         }
       } });
       candidate = output.result;
-      metadata = { ...Object.fromEntries(['clientRequestId', 'providerRequestId', 'effectiveDeadlineMs', 'elapsedMs', 'transportAttempts', 'localCancellation', 'providerOutcome', 'usageStatus', 'returnedServiceTier'].filter(k => output[k] !== undefined).map(k => [k, output[k]])), metadataOmissions: output.metadataOmissions ?? [], responseStatus: output.responseStatus ?? null, returnedModel: output.returnedModel, responseId: output.responseId, usage: output.usage };
+      metadata = { ...Object.fromEntries(['clientRequestId', 'providerRequestId', 'effectiveDeadlineMs', 'elapsedMs', 'transportAttempts', 'localCancellation', 'providerOutcome', 'usageStatus', 'returnedServiceTier', 'incompleteReason'].filter(k => output[k] !== undefined).map(k => [k, output[k]])), metadataOmissions: output.metadataOmissions ?? [], responseStatus: output.responseStatus ?? null, returnedModel: output.returnedModel, responseId: output.responseId, usage: output.usage };
       const result = this.contract.validate(output.result, bundle.input);
       record = { ...record, ...metadata, result, status: 'succeeded' };
     } catch (error) {

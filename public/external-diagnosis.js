@@ -44,6 +44,7 @@
     const citations=item=>{const p=node('p','Citations: ');for(const id of item.evidenceRefs??[]){p.append(anchor(id,prefix+'evidence-'+id),document.createTextNode(' '));}for(const c of item.codeRefs??[]){p.append(anchor(`${c.sourceRef}:${c.startLine}–${c.endLine}`,prefix+'source-'+c.sourceRef+'-'+c.startLine),document.createTextNode(' '));}return p;};
     if(!data.records.length)section.append(node('p','No matching stored AI response. This read does not generate one.'));
     for(const r of data.records){section.append(node('h4',r.mode==='authored-offline'?'Authored review fixture — not model output':'Stored model response'),node('p',`Response ${r.id} · provider completion: ${r.responseStatus??'unknown'} · structural/factual validation: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus}`));
+      if(r.responseStatus==='incomplete')section.append(node('p',`No completed diagnosis. Provider incomplete reason: ${['max_output_tokens','content_filter'].includes(r.incompleteReason)?r.incompleteReason:'not retained or unavailable'}. Payment findings remain independent of this AI outcome.`));
       semanticReview(section,r,citations);
       for(const review of r.offlineRevalidations??[])if(review.type==='retained-output-review-1'){
         section.append(node('h4','Limited review of retained output — not an accepted diagnosis'),node('p',review.summary),node('p',review.scope),node('p',review.method));

@@ -73,11 +73,11 @@ export function externalSemanticReview(record, reviews) {
   }
   const review = reviews?.[record.id];
   if (!review || review.resultSha256 !== hash(record.result) || review.fingerprint !== record.fingerprint) return null;
-  if (review.format === CLAIM_REVIEW_VERSION || record.schemaVersion === 'external-diagnosis-5') return inspectClaimReview(record, review);
+  if (review.format === CLAIM_REVIEW_VERSION || ['external-diagnosis-5', 'external-diagnosis-6'].includes(record.schemaVersion)) return inspectClaimReview(record, review);
   return review; // Historical outcome and original annotation remain readable, never silently rewritten.
 }
 export function semanticReuseAllowed(record, review) {
-  return record.schemaVersion === 'external-diagnosis-5' && review?.format === CLAIM_REVIEW_VERSION &&
+  return ['external-diagnosis-5', 'external-diagnosis-6'].includes(record.schemaVersion) && review?.format === CLAIM_REVIEW_VERSION &&
     review.metadataValidation === 'PASS' && review.outcome === 'PASS' && review.scope?.kind === 'whole_response' &&
     review.unreviewedFields?.length === 0 && review.reuseAllowed === true;
 }
