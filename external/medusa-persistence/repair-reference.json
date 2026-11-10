@@ -1,0 +1,23 @@
+{
+  "version": "pending-repair-1",
+  "authorship": "Explicitly authored local repair; not autonomous AI discovery",
+  "original": {
+    "name": "@rsc-labs/medusa-paypal-payment",
+    "version": "0.0.2",
+    "revision": "0c4f91334409708e9b21b2ba44b824fc1a5dd0f3",
+    "publishedIntegrity": "sha512-Qz57y0SGwaAkxSebu5WJ83qMwz9jvCEWEBzL6ZtqF0OCwUv2WghgQlZpzYDXl7lSrMZT4twM39vwWzzY4K6KBw==",
+    "publishedSourceParity": "TypeScript 5.6.2 ES2021/CommonJS; parsed/printer-normalized output equals published service (comments removed only)"
+  },
+  "scope": "One full USD capture; explicit sequential reconciliation; no repeated POST after durable reservation",
+  "operationsTable": "captureproof_operation",
+  "fileHashes": {
+    "external/medusa-persistence/candidate.cjs": "a2033f303b2f5f4bf8789802999a0c36247c0979aff90c2d01a52d5c88b3a1a0",
+    "external/medusa-persistence/operations.cjs": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+    "external/medusa-persistence/repair-scenarios.json": "6486d282e5358117670deb00899889bcf4737a9a3978d7409cb129f2ba7d0b17",
+    "external/medusa-persistence/rules.json": "33768d5c10e2adffa685ad0eefb60624f323e3b18aa038b0430eeaf70ae70d23",
+    "scripts/external-persistence-worker.cjs": "388e9a16d178cd6e0c4ce6e7de2e00c00dec3d19879060968c5aa948ddf20d23",
+    "scripts/external-provider-model.cjs": "a460941287b3b3cba6ad56d430d212d76aaf07fe615317a5f67335294a6966c7",
+    "src/external-persistence.mjs": "2bc6e692c5cdc82d707caf9d926c10e7a5c6ca33bb6813fc2cf302ea3c144bd4"
+  },
+  "comparisonPolicy": "Same scenario actions and financial rules for original and candidate. Detailed capture evidence and declared observation windows gate conclusions. No fixture-label verdict branches."
+}

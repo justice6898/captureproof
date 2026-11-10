@@ -1,0 +1,13 @@
+{
+  "version": "medusa-persistence-1",
+  "declaredBeforeExecution": "2026-10-20",
+  "scope": "Medusa 2.7.0 payment module and PostgreSQL, controlled PayPal SDK transport",
+  "rules": [
+    { "id": "AUTHORIZED_NOT_CAPTURED", "contract": "An authorized payment with no capture must have no active capture rows, null captured_at and zero collection captured_amount." },
+    { "id": "COMPLETED_CAPTURE_RECORDED", "contract": "One completed full capture must correspond to one active capture of the same amount, captured_at and a completed collection with the same captured_amount." },
+    { "id": "PENDING_NOT_COMPLETED", "contract": "A pending capture must not establish completed merchant capture: captured_at must remain null and collection must not be completed or count pending money as captured. An active Medusa Capture row has no pending status and contributes to captured_amount, so it cannot represent an unresolved attempt safely in this module." },
+    { "id": "ERROR_NOT_CAPTURED", "contract": "A definitive capture rejection with no provider capture must leave no active capture rows, null captured_at and zero collection captured_amount." },
+    { "id": "EXACT_BINDING", "contract": "Provider order, authorization and capture identities, payment/session/collection relationships, and exact USD major-unit amounts must agree with the run contract." }
+  ],
+  "limitations": ["No live PayPal observation", "No fulfillment or storefront execution", "No settlement, concurrency, retries or duplicate-charge guarantee", "Pending eventual completion remains untested independently of the current-state safety rule"]
+}

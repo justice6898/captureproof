@@ -1,0 +1,24 @@
+{
+  "name": "captureproof-core-starter",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "PayPal Sandbox checkout and explicitly simulated integration experiments.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --import ./test-support/offline-network.mjs --test test/core.test.mjs test/first-use.test.mjs test/checkout.test.mjs test/checkout-http.test.mjs test/paypal-sandbox.test.mjs test/release.test.mjs test/verification-readiness.test.mjs test/developer-meaning.test.mjs",
+    "demo": "node demo.mjs",
+    "start": "node --env-file-if-exists=.env server.mjs",
+    "external:setup": "node scripts/setup-external-persistence.mjs --install",
+    "start:verification": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs server.mjs --verification",
+    "start:demo": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/start-recorded-demo.mjs --portable",
+    "verify": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/verify-local.mjs",
+    "test:first-use": "node --import ./test-support/offline-network.mjs --test test/core.test.mjs test/first-use.test.mjs",
+    "report:export": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/export-portable-report.mjs",
+    "start:example": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/start-recorded-demo.mjs --portable",
+    "release:prepare": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/prepare-first-use.mjs --release"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "plugin": {
+    "name": "@rsc-labs/medusa-paypal-payment",
+    "version": "0.0.2",
+    "revision": "0c4f91334409708e9b21b2ba44b824fc1a5dd0f3",
+    "publishedIntegrity": "sha512-Qz57y0SGwaAkxSebu5WJ83qMwz9jvCEWEBzL6ZtqF0OCwUv2WghgQlZpzYDXl7lSrMZT4twM39vwWzzY4K6KBw==",
+    "publishedSourceParity": "TypeScript 5.6.2 ES2021/CommonJS; parsed/printer-normalized output equals published service (comments removed only)"
+  },
+  "medusa": {
+    "tag": "v2.7.0",
+    "revision": "af5918d03ff40cdffa40af90ea8a7528d47d601d",
+    "paymentIntegrity": "sha512-QUg3dzLcSEwlQmoB0LToNOBSO8nUm/hHy0NFjrfzAFzd/8LRYf8uuum5YJhxXzA7HwV6emxh0gRD8FF+uaUFfg==",
+    "sourceHashes": {
+      "cp-payment-module.ts": "da2698a1b79f6b5ad9733708e54333d8ee9f76a8996a6f9483ba1adef34c33b1",
+      "cp-payment-provider.ts": "6dbf57df2bd4196920d31471db7057d25d38b8da95409b6e1a02bc90c8920664",
+      "cp-capture-model.ts": "a41e38b6e9f60cfb5fe3084a266beca187ae9473e799ee0d4bad12f5e74a8105",
+      "cp-smallest.ts": "0f4e8f6a4afcee861bd553440fabfda42110eb45d561caff205fe6a565aad83c"
+    }
+  },
+  "documentation": {
+    "paymentsSchema": {
+      "url": "https://developer.paypal.com/api/payments/v2/schema.json",
+      "sha256": "c2c95b3b8a4baca873712cc72cc63240ba95f0627aae12614526a2c17792803a",
+      "accessedAt": "2026-10-21T02:15:13.558Z"
+    },
+    "pendingExample": "authorizations_capture_empty_request",
+    "errorExample": "authorizations_capture_422_expired"
+  },
+  "versions": {
+    "@embedded-postgres/darwin-arm64": "16.14.0-beta.17",
+    "@medusajs/framework": "2.7.0",
+    "@medusajs/link-modules": "2.7.0",
+    "@medusajs/payment": "2.7.0",
+    "@medusajs/test-utils": "2.7.0",
+    "@mikro-orm/core": "6.4.3",
+    "@mikro-orm/knex": "6.4.3",
+    "@mikro-orm/migrations": "6.4.3",
+    "@mikro-orm/postgresql": "6.4.3",
+    "@paypal/paypal-server-sdk": "1.0.0",
+    "awilix": "8.0.1",
+    "pg": "8.13.0",
+    "typescript": "5.6.2",
+    "@medusajs/utils": "2.7.0",
+    "@medusajs/modules-sdk": "2.7.0"
+  },
+  "files": {
+    "target-service.cjs": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+    "published-plugin.json": "fc081f6514b8783b34a7311a64e938e1f6726532a66248628297639aa1e57e32",
+    "package-lock.json": "451d1c0bb9c2fbc4baf3400be3a13a1936a93e4ba669246fc3fb08b813c8769a",
+    "node_modules/@medusajs/payment/dist/services/payment-module.js": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+    "node_modules/@medusajs/payment/dist/services/payment-provider.js": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+    "node_modules/@medusajs/payment/dist/models/capture.js": "679c8d56158d7239d97d0df00148b47bdf629115aab1df616466176fe7fbcb5c",
+    "node_modules/@medusajs/payment/dist/models/payment.js": "65dbcfd74a628cb71c4c2097cd8a698df7865a46afb9af77f5f7c39badcc961a",
+    "node_modules/@medusajs/payment/dist/models/payment-collection.js": "60c1d97614f8865ebc482721f08314d015f9fd60c61f3bc102f6b6963190395b",
+    "node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+    "node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/ordersController.js": "c6a5b050f626ac6f5fb53314b43cfd55910ed069d606e8311384d852dab80820"
+  }
+}

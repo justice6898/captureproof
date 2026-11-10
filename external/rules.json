@@ -1,0 +1,13 @@
+{
+  "version": "external-rsc-1",
+  "scope": "Unmodified payment-provider module with simulated SDK; not merchant database or fulfillment correctness.",
+  "completionBoundary": "Each requested async method must resolve or reject within the disposable process's 8-second bound. Pending capture remains inconclusive until an explicit simulated settlement.",
+  "rules": [
+    {"id":"APPROVAL_IS_NOT_AUTHORIZATION", "meaning":"In the selected AUTHORIZE workflow, buyer approval without authorization must not return an authorized session or cause a capture."},
+    {"id":"RETURNED_ORDER_BINDING", "meaning":"Returned order snapshots must retain the requested provider order, exact amount and currency; capture identities must match independent simulated-provider observations."},
+    {"id":"READS_HAVE_NO_FINANCIAL_EFFECT", "meaning":"getPaymentStatus and retrievePayment must not create, capture, void or refund a payment."},
+    {"id":"ONE_FULL_CAPTURE", "meaning":"Within the selected full-authorization provider model, repeated attempts must not establish more than one completed full capture. Provider-enforced rejection is not merchant idempotency."}
+  ],
+  "unobserved": ["Medusa database paid state", "fulfillment and duplicate fulfillment", "complete storefront/core workflow", "real SDK transport", "PayPal Sandbox or production behavior", "concurrency", "webhooks", "partial captures/refunds"],
+  "interpretation": "The pinned Medusa 2.7.0 type includes both authorized and captured. This adapter returns authorized for an order with status COMPLETED. That return alone does not establish a merchant-database unpaid regression; host workflow semantics are unobserved. Capture evidence is read separately."
+}

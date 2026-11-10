@@ -1,0 +1,1052 @@
+{
+  "version": "external-input-1",
+  "selections": [
+    {
+      "key": "prior",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "artifact": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/prior.json",
+      "artifactSha256": "c7f431e9b346b047b73a89f7d64491ca149684521a8a84ebee552a406cc5f2ad",
+      "summary": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/summary.json",
+      "summarySha256": "5dc57b5cf47f5a5b8f62307715b9034ab13dbd1c0be3f8220a799f68b8ecb60a",
+      "runId": "071f6e4b-6675-41eb-8c1c-e606886f1606",
+      "implementation": "candidate",
+      "mode": "initial",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate.cjs",
+          "sha256": "a2033f303b2f5f4bf8789802999a0c36247c0979aff90c2d01a52d5c88b3a1a0",
+          "snapshot": "external/diagnosis-sources/a2033f303b2f5f4bf8789802999a0c36247c0979aff90c2d01a52d5c88b3a1a0.txt",
+          "ranges": [
+            [
+              1,
+              91
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788",
+          "snapshot": "external/diagnosis-sources/1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "repaired",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "artifact": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/repaired.json",
+      "artifactSha256": "67c1e45246f62a03f1d852bb898df272fbac988023fde5b75880a281487e42e1",
+      "summary": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/summary.json",
+      "summarySha256": "5dc57b5cf47f5a5b8f62307715b9034ab13dbd1c0be3f8220a799f68b8ecb60a",
+      "runId": "c0ec2cef-e124-4649-94fb-6305fb9c3a1a",
+      "implementation": "candidate-v2",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v2.cjs",
+          "sha256": "25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd",
+          "snapshot": "external/diagnosis-sources/25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd.txt",
+          "ranges": [
+            [
+              1,
+              96
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788",
+          "snapshot": "external/diagnosis-sources/1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "accepted",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "artifact": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/accepted.json",
+      "artifactSha256": "e5c1ff1250b99e2aef46c879f977c3751ca16b85b105770592db94c311f84d20",
+      "summary": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/summary.json",
+      "summarySha256": "5dc57b5cf47f5a5b8f62307715b9034ab13dbd1c0be3f8220a799f68b8ecb60a",
+      "runId": "5881638c-0726-42dd-a171-b42f943a5fbd",
+      "implementation": "candidate-v2",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v2.cjs",
+          "sha256": "25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd",
+          "snapshot": "external/diagnosis-sources/25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd.txt",
+          "ranges": [
+            [
+              1,
+              96
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788",
+          "snapshot": "external/diagnosis-sources/1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "completed",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "artifact": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/completed.json",
+      "artifactSha256": "f745c5522af2f6c777a8599a298064be0131f2278c01239e1037a5a8e6a0fa85",
+      "summary": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/summary.json",
+      "summarySha256": "5dc57b5cf47f5a5b8f62307715b9034ab13dbd1c0be3f8220a799f68b8ecb60a",
+      "runId": "1ce1a3e6-2f82-43c3-b050-fd82a172ff8d",
+      "implementation": "candidate-v2",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v2.cjs",
+          "sha256": "25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd",
+          "snapshot": "external/diagnosis-sources/25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd.txt",
+          "ranges": [
+            [
+              1,
+              96
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788",
+          "snapshot": "external/diagnosis-sources/1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "pending",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "artifact": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/pending.json",
+      "artifactSha256": "6b2d7ea624a501e494d47283882cb1c42b566192c860d114f344a541c46be8b3",
+      "summary": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/summary.json",
+      "summarySha256": "5dc57b5cf47f5a5b8f62307715b9034ab13dbd1c0be3f8220a799f68b8ecb60a",
+      "runId": "4b5db594-a47c-43e0-9b61-2cc2afff149c",
+      "implementation": "candidate-v2",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v2.cjs",
+          "sha256": "25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd",
+          "snapshot": "external/diagnosis-sources/25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd.txt",
+          "ranges": [
+            [
+              1,
+              96
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788",
+          "snapshot": "external/diagnosis-sources/1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "invalid",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "artifact": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/invalid.json",
+      "artifactSha256": "7ffe15f8010e6204407cae4dbb9bfd82a1ca9b5c23f30816cd638b0112fd8521",
+      "summary": "data/external-executions/da3bbb86-3647-49d3-973d-efc3eacbb4be/summary.json",
+      "summarySha256": "5dc57b5cf47f5a5b8f62307715b9034ab13dbd1c0be3f8220a799f68b8ecb60a",
+      "runId": "5ff3992f-f811-4171-b2b1-9d7ccf0ff931",
+      "implementation": "candidate-v2",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v2.cjs",
+          "sha256": "25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd",
+          "snapshot": "external/diagnosis-sources/25de578d8d317e5c087320139c5c3f5b53dc2fa14dbd4d456f146a967b34b7dd.txt",
+          "ranges": [
+            [
+              1,
+              96
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788",
+          "snapshot": "external/diagnosis-sources/1282e02f241a565bc921402e1f22ac9dd04099fca0b1e9ba5c0f010483312788.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "v3-reservation",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "83720d76-9068-485c-bea6-d0d3ebe5ea18",
+      "artifact": "data/external-executions/83720d76-9068-485c-bea6-d0d3ebe5ea18/after-reservation.json",
+      "artifactSha256": "b893ff99a40067e729077b9a02b30e30a031be45abfef34cb1b51744efc6218e",
+      "summary": "data/external-executions/83720d76-9068-485c-bea6-d0d3ebe5ea18/summary.json",
+      "summarySha256": "a84f84dd6434647a52607cc389df42aa5fe7471d2f14503a18593e6740ce8221",
+      "runId": "a05a368f-8b0e-49e3-8e83-a63b01ae7b33",
+      "implementation": "candidate-v3",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v3.cjs",
+          "sha256": "9f1960ce62b59b4f62b232fab0961f98628253cf622aae02a9251a98b4dd36ef",
+          "snapshot": "external/diagnosis-sources/9f1960ce62b59b4f62b232fab0961f98628253cf622aae02a9251a98b4dd36ef.txt",
+          "ranges": [
+            [
+              1,
+              98
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "20fb6c7cbb21c8fb9cc6a9a36ee389118a31f3466c904f05f79375d2ef87fa4c",
+          "snapshot": "external/diagnosis-sources/20fb6c7cbb21c8fb9cc6a9a36ee389118a31f3466c904f05f79375d2ef87fa4c.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "eligibility",
+          "path": "external/medusa-persistence/capture-recovery-v3.cjs",
+          "sha256": "14a8b2772c99299f39eacfebd4e0d990340a40b1cdd2529683e031ba7e7cfb90",
+          "snapshot": "external/diagnosis-sources/14a8b2772c99299f39eacfebd4e0d990340a40b1cdd2529683e031ba7e7cfb90.txt",
+          "ranges": [
+            [
+              1,
+              23
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "policy",
+          "path": "external/medusa-persistence/capture-contract.cjs",
+          "sha256": "09522a31fcdf99094b8002367a75afafa72d0df5a8394c6bb577e0237bdc6c16",
+          "snapshot": "external/diagnosis-sources/09522a31fcdf99094b8002367a75afafa72d0df5a8394c6bb577e0237bdc6c16.txt",
+          "ranges": [
+            [
+              1,
+              3
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    },
+    {
+      "key": "v3-acceptance",
+      "reportId": "da3bbb86-3647-49d3-973d-efc3eacbb4be",
+      "campaignId": "83720d76-9068-485c-bea6-d0d3ebe5ea18",
+      "artifact": "data/external-executions/83720d76-9068-485c-bea6-d0d3ebe5ea18/after-acceptance.json",
+      "artifactSha256": "37dd88379a12c371e7961ad05cb11604fb767a5fd5bb0507392a7c0ced1b9079",
+      "summary": "data/external-executions/83720d76-9068-485c-bea6-d0d3ebe5ea18/summary.json",
+      "summarySha256": "a84f84dd6434647a52607cc389df42aa5fe7471d2f14503a18593e6740ce8221",
+      "runId": "ffd3a78e-abb9-4388-a0c2-958f48ab7196",
+      "implementation": "candidate-v3",
+      "mode": "observation_review",
+      "sources": [
+        {
+          "role": "candidate",
+          "path": "external/medusa-persistence/candidate-v3.cjs",
+          "sha256": "9f1960ce62b59b4f62b232fab0961f98628253cf622aae02a9251a98b4dd36ef",
+          "snapshot": "external/diagnosis-sources/9f1960ce62b59b4f62b232fab0961f98628253cf622aae02a9251a98b4dd36ef.txt",
+          "ranges": [
+            [
+              1,
+              98
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "operations",
+          "path": "external/medusa-persistence/operations.cjs",
+          "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+          "snapshot": "external/diagnosis-sources/b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96.txt",
+          "ranges": [
+            [
+              1,
+              26
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+          "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+          "snapshot": "external/diagnosis-sources/0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9.txt",
+          "ranges": [
+            [
+              260,
+              333
+            ],
+            [
+              660,
+              674
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "provider-dispatch",
+          "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+          "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+          "snapshot": "external/diagnosis-sources/a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692.txt",
+          "ranges": [
+            [
+              61,
+              64
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "sdk",
+          "path": "external/medusa-persistence/node_modules/@paypal/paypal-server-sdk/dist/cjs/controllers/paymentsController.js",
+          "sha256": "5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4",
+          "snapshot": "external/diagnosis-sources/5d2c9e84f5d850ac04499bbe6c003b12613a1872e8e53640065f75d9e2749cd4.txt",
+          "ranges": [
+            [
+              90,
+              122
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "plugin",
+          "path": "external/medusa-persistence/target-service.cjs",
+          "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+          "snapshot": "external/diagnosis-sources/a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a.txt",
+          "ranges": [
+            [
+              115,
+              153
+            ],
+            [
+              180,
+              212
+            ]
+          ],
+          "provenance": "Bytes copied at preparation and verified against execution-time pinned dependency hash."
+        },
+        {
+          "role": "barrier",
+          "path": "scripts/external-persistence-worker.cjs",
+          "sha256": "20fb6c7cbb21c8fb9cc6a9a36ee389118a31f3466c904f05f79375d2ef87fa4c",
+          "snapshot": "external/diagnosis-sources/20fb6c7cbb21c8fb9cc6a9a36ee389118a31f3466c904f05f79375d2ef87fa4c.txt",
+          "ranges": [
+            [
+              33,
+              51
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "host-recovery",
+          "path": "external/medusa-persistence/capture-recovery.cjs",
+          "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+          "snapshot": "external/diagnosis-sources/00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d.txt",
+          "ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "eligibility",
+          "path": "external/medusa-persistence/capture-recovery-v3.cjs",
+          "sha256": "14a8b2772c99299f39eacfebd4e0d990340a40b1cdd2529683e031ba7e7cfb90",
+          "snapshot": "external/diagnosis-sources/14a8b2772c99299f39eacfebd4e0d990340a40b1cdd2529683e031ba7e7cfb90.txt",
+          "ranges": [
+            [
+              1,
+              23
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        },
+        {
+          "role": "policy",
+          "path": "external/medusa-persistence/capture-contract.cjs",
+          "sha256": "09522a31fcdf99094b8002367a75afafa72d0df5a8394c6bb577e0237bdc6c16",
+          "snapshot": "external/diagnosis-sources/09522a31fcdf99094b8002367a75afafa72d0df5a8394c6bb577e0237bdc6c16.txt",
+          "ranges": [
+            [
+              1,
+              3
+            ]
+          ],
+          "provenance": "Frozen execution source snapshot; full hash matches execution record."
+        }
+      ]
+    }
+  ]
+}

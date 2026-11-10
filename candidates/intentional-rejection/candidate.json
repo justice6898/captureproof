@@ -1,0 +1,15 @@
+{
+  "format": "captureproof-medusa-candidate-1",
+  "target": "@rsc-labs/medusa-paypal-payment@0.0.2",
+  "baseSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+  "integration": "captureproof-v3",
+  "name": "intentional-rejection",
+  "entry": "provider.cjs",
+  "files": [
+    "capture-contract.cjs",
+    "capture-recovery-v3.cjs",
+    "provider.cjs",
+    "base.cjs",
+    "capture-recovery.cjs"
+  ]
+}

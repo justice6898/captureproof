@@ -1,0 +1,21 @@
+{
+  "version": "pending-repair-1",
+  "declaredBeforeComparison": "2026-10-21",
+  "scenarios": [
+    {"name":"authorized","mode":"authorized","phases":[["observe"]]},
+    {"name":"completed","mode":"completed","phases":[["capture"]]},
+    {"name":"pending","mode":"pending","phases":[["capture"]]},
+    {"name":"error","mode":"error","phases":[["capture"]]},
+    {"name":"pending-remains","mode":"pending","phases":[["capture","observe","capture"]]},
+    {"name":"pending-completes","mode":"pending","phases":[["capture","settle","capture","capture"]]},
+    {"name":"pending-restart","mode":"pending","phases":[["capture"],["settle","capture","capture"]]},
+    {"name":"lookup-failure","mode":"pending","phases":[["capture","settle","lookup-unavailable","capture","restore","capture"]]},
+    {"name":"repeat-completed","mode":"completed","phases":[["capture","capture","capture"]]},
+    {"name":"invalid-amount","mode":"pending","negativeEvidence":true,"phases":[["capture","settle","invalid-amount","capture","restore","capture"]]},
+    {"name":"invalid-currency","mode":"pending","negativeEvidence":true,"phases":[["capture","settle","invalid-currency","capture","restore","capture"]]},
+    {"name":"invalid-id","mode":"pending","negativeEvidence":true,"phases":[["capture","settle","invalid-id","capture","restore","capture"]]},
+    {"name":"invalid-missing-amount","mode":"pending","negativeEvidence":true,"phases":[["capture","settle","invalid-missing-amount","capture","restore","capture"]]},
+    {"name":"invalid-related-order","mode":"pending","negativeEvidence":true,"phases":[["capture","settle","invalid-related-order","capture","restore","capture"]]},
+    {"name":"ambiguous-restart","mode":"completed","lostResponse":true,"openCheckpoints":[0],"phases":[["capture"],["hide-capture","capture","reveal-capture","capture"]]}
+  ]
+}

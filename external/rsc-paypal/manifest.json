@@ -1,0 +1,42 @@
+{
+  "id": "rsc-paypal-0.0.2",
+  "repository": "https://github.com/RSC-Labs/medusa-paypal-payment",
+  "revision": "0c4f91334409708e9b21b2ba44b824fc1a5dd0f3",
+  "version": "0.0.2",
+  "license": "MIT",
+  "upstreamPath": "src/providers/paypal-payment/service.ts",
+  "integrationLevel": "Unmodified external service module; type erasure only. SDK/framework dependency seams simulated. Not the complete Medusa application.",
+  "files": {
+    "service.ts": "d314935ae6f5ffbebd25b2af429b41a53b6938dcf5fb0514d2027e81c5178d3a",
+    "package.json": "fc081f6514b8783b34a7311a64e938e1f6726532a66248628297639aa1e57e32",
+    "LICENSE": "37127337497d9265594cf894b0bac3c561b271b9b39f59c7a35ff6b24e99e536",
+    "README.upstream.md": "aa6e26922068fd3485ede510a4b13b4344227163e9da6dbf53cac3f72df774fb"
+  },
+  "workflow": "AUTHORIZE at checkout; separate manual capture. PaymentSession authorized is not a claim of captured funds.",
+  "dependencies": {
+    "declared": "Upstream package.json retained, including Medusa 2.7.0 and PayPal Server SDK ^1.0.0.",
+    "executed": "Node 24 built-ins only; no npm install or upstream lifecycle scripts. Minimal explicit dependency doubles."
+  },
+  "sourceMethods": {
+    "capturePayment": [
+      96,
+      117
+    ],
+    "authorizePayment": [
+      118,
+      133
+    ],
+    "initiatePayment": [
+      166,
+      200
+    ],
+    "getPaymentStatus": [
+      204,
+      235
+    ],
+    "retrievePayment": [
+      269,
+      294
+    ]
+  }
+}

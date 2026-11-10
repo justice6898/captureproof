@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CaptureProof Sandbox Checkout</title><link rel="stylesheet" href="/checkout.css"><script src="/checkout.js" defer></script><script src="/diagnosis.js" defer></script><script src="/runs.js" defer></script></head>
+<body><main>
+  <h1>CaptureProof</h1><p>Local Sandbox checkout · No real money</p>
+  <p><a href="/external">Inspect the recorded external Medusa comparison →</a> · Simulated PayPal, separate from these Sandbox experiments.</p>
+  <p id="configuration" role="status">Loading configuration…</p>
+  <section id="run-panel" aria-labelledby="run-heading">
+    <h2 id="run-heading">Lost-response comparison</h2>
+    <p>Isolated merchant fixtures. Both discard a successful capture response inside this application. This is not a verified network outage. Other scenarios remain local simulations.</p>
+    <button id="new-flawed" disabled>Create flawed run</button>
+    <button id="new-corrected" disabled>Create corrected run</button>
+    <p><label for="runs">Saved runs</label> <select id="runs"><option value="">Select a run</option></select></p>
+    <div id="run-actions" hidden>
+      <button id="run-prepare">Prepare / retry PayPal order</button>
+      <a id="run-approve" hidden rel="noreferrer">Approve this run with Sandbox buyer</a>
+      <p><button id="run-execute">Execute capture with response discard</button>
+      <button id="run-audit">Collect evidence (no recovery)</button>
+      <button id="run-recover">Explicitly recover merchant</button></p>
+    </div>
+    <p id="run-message" role="status" aria-live="polite"></p>
+    <dl id="run-summary"></dl>
+    <ul id="run-findings"></ul>
+    <ol id="run-timeline"></ol>
+    <section id="diagnosis-panel" hidden aria-labelledby="diagnosis-heading">
+      <h3 id="diagnosis-heading">AI interpretation</h3>
+      <p>AI explains the saved evidence. The deterministic verdict above remains authoritative. Fixes and tests are proposals.</p>
+      <button id="analyze-ai" disabled>Analyze with AI</button>
+      <p id="diagnosis-status" role="status" aria-live="polite"></p>
+      <div id="diagnosis-result"></div>
+      <details><summary>Supplied evidence, source excerpts, provenance and analysis metadata</summary><pre id="diagnosis-json"></pre></details>
+    </section>
+    <details><summary>Run record / raw JSON (sanitized)</summary><pre id="run-json">No run selected.</pre></details>
+  </section>
+  <section id="checkout">
+  <h2>Development checkout</h2>
+  <h2 id="product">Digital sample</h2>
+  <p>Create an order, approve it with a Sandbox buyer, then capture on this page. Buyer approval alone never marks an order paid.</p>
+  <label><input id="fault" type="checkbox" disabled> Test: discard the capture response after provider success</label>
+  <p><button id="new" disabled>Create a new business order</button></p>
+  <label for="orders">Saved orders (latest 50)</label> <select id="orders"><option value="">Select an order</option></select>
+  <div id="actions" hidden>
+    <p><button id="create">Create / retry PayPal order</button> <a id="approve" hidden rel="noreferrer">Approve with Sandbox buyer</a></p>
+    <p><button id="capture">Capture / retry and read back</button> <button id="reconcile">Read provider state</button></p>
+  </div>
+  <p id="message" role="status" aria-live="polite"></p>
+  <pre id="record">No order selected.</pre>
+  <p>Paid state requires one matching completed capture from a server-side provider read-back. Fulfillment is one persisted sample entitlement; no external delivery is performed.</p>
+  </section>
+</main></body></html>
