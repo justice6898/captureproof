@@ -69,6 +69,26 @@ export class VerificationJobs {
  }
  candidate(id){if(id==='builtin-v3')return builtinCandidate();if(!/^[a-f0-9]{64}$/.test(id))fail('INVALID_CANDIDATE_ID');const c=validateCandidate(JSON.parse(readFileSync(join(this.directory,'candidates',id+'.json'),'utf8')));if(c.id!==id)fail('CANDIDATE_IDENTITY_MISMATCH');return c;}
  importCandidate(slug){const c=readLocalCandidate(slug),dir=join(this.directory,'candidates');mkdirSync(dir,{recursive:true,mode:0o700});const path=join(dir,c.id+'.json');if(!existsSync(path))writeFileSync(path,JSON.stringify(c,null,2),{flag:'wx',mode:0o600});return {id:c.id,name:c.name};}
+ // Read-only plan review. Admission still rechecks capability and freezes source itself.
+ previewPlan(input) {
+  let plan, candidate = null;
+  if (input?.campaign) {
+   if (Object.keys(input).sort().join(',') !== 'campaign,candidateId' || input.campaign !== CORE_CAMPAIGN.id) fail('UNSUPPORTED_CAMPAIGN');
+   candidate = this.candidate(input.candidateId);
+   plan = { kind: 'campaign', candidate: candidate.name, candidateDigest: candidate.id,
+    cases: CORE_CAMPAIGN.cases, maxExecutions: 8 };
+  } else {
+   if (!input || Object.keys(input).sort().join(',') !== 'scenario,target') fail('INVALID_VERIFICATION_INPUT');
+   plan = { ...executionPlan(input.target, input.scenario), maxExecutions: 2 };
+  }
+  const sources = sourcePaths.map(path => {
+   try { return { path, availability: 'PRESENT', sha256: digest(readFileSync(join(root, path))) }; }
+   catch { return { path, availability: 'UNAVAILABLE', sha256: null }; }
+  });
+  return { plan, fingerprint: digest(JSON.stringify({ plan, sources })), sources,
+   capability: this.readiness(), evidenceMode: 'SIMULATED_PROVIDER_REAL_MEDUSA_POSTGRES',
+   limits: 'Plan review does not launch. Running creates new isolated executions; it does not call PayPal or AI. Capability is rechecked at admission.' };
+ }
  admit(input){
   if(input?.campaign){if(Object.keys(input).sort().join(',')!=='campaign,candidateId,launchKey'||input.campaign!==CORE_CAMPAIGN.id)fail('UNSUPPORTED_CAMPAIGN');
    const c=this.candidate(input.candidateId);return this.admitPlan(input.launchKey,{kind:'campaign',target:c.id,scenario:CORE_CAMPAIGN.id,candidateName:c.name,maxExecutions:8,cases:CORE_CAMPAIGN.cases},c);

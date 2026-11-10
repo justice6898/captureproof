@@ -17,9 +17,19 @@ const env = { LANG: 'C', TZ: 'UTC' };
 const q = JSON.stringify;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+export const PERSISTENCE_ASSESSMENT_VERSION = 'persistence-assessment-2';
+
 export function evaluatePersistence(trace) {
-  const inconclusive = reason => ({ status: 'INCONCLUSIVE', reason, rules: [], eventualCompletion: 'UNTESTED' });
-  if (!Array.isArray(trace?.events) || !trace.events.length || !trace.contract || !trace.ids || !trace.isolation ||
+  const rules = [];
+  // Uncertainty cannot erase a violation already established by trusted observations.
+  const inconclusive = reason => ({
+    status: rules.some(rule => rule.status === 'FAIL') ? 'FAIL' : 'INCONCLUSIVE',
+    reason: rules.some(rule => rule.status === 'FAIL')
+      ? 'Confirmed payment-rule violation; unresolved evidence is reported separately.' : reason,
+    rules, eventualCompletion: 'UNTESTED',
+    ...(rules.length ? { uncertainty: { status: 'INCONCLUSIVE', reason } } : {})
+  });
+  if (!Array.isArray(trace?.events) || !trace.events.length || trace.events.some(e => !e || typeof e !== 'object') || !trace.contract || !trace.ids || !trace.isolation ||
       !['environmentScrubbed','fileReadBlocked','subprocessBlocked','networkBlocked'].every(k => trace.isolation[k] === true)) return inconclusive('Isolated observations and a money/identity contract are required.');
   if (!['order','authorization','capture','payment','session','collection'].every(k => typeof trace.ids[k] === 'string' && trace.ids[k]) ||
       !trace.events.some(e => e.kind === 'fresh_database_read' && e.id)) return inconclusive('Complete identities and database observation references are required.');
@@ -28,12 +38,13 @@ export function evaluatePersistence(trace) {
   if (new Set(snapshots.map(x => x.backend_pid)).size !== 3 || JSON.stringify(trace.after.rows) !== JSON.stringify(trace.afterShutdown.rows)) return inconclusive('Independent post-operation reads must agree, including after ORM shutdown.');
   const rows = trace.afterShutdown.rows;
   if (rows.payment.length !== 1 || rows.payment_session.length !== 1 || rows.payment_collection.length !== 1) return inconclusive('A single complete payment/session/collection is required.');
+  if (Object.values(rows).some(values => Array.isArray(values) && values.some(row => !row || typeof row !== 'object'))) return inconclusive('Database row observations are malformed.');
   const payment = rows.payment[0], session = rows.payment_session[0], collection = rows.payment_collection[0], captures = rows.capture.filter(c => !c.deleted_at);
   const responses = trace.events.filter(e => e.kind === 'provider_response');
   const captureResponse = responses.findLast(e => e.path?.endsWith('/capture'));
   const readBack = responses.findLast(e => e.path === `/v2/checkout/orders/${trace.ids.order}`);
   const boundary = trace.events.findLast(e => e.kind === 'capture_boundary_end');
-  if (readBack?.status !== 200 || !trace.providerFinal?.order || (captureResponse && !boundary)) return inconclusive('Read-back and the completion boundary must be observed.');
+  if (!readBack?.id || (captureResponse && !captureResponse.id) || readBack?.status !== 200 || !trace.providerFinal?.order || (captureResponse && !boundary)) return inconclusive('Read-back and the completion boundary must be observed.');
   if (JSON.stringify(readBack.body)!==JSON.stringify(trace.providerFinal.order)) return inconclusive('Provider read-back conflicts with the independently retained scenario state.');
   const providerCapture = trace.providerFinal.capture;
   const detail=responses.findLast(e=>e.path===`/v2/payments/captures/${trace.ids.capture}`);
@@ -45,9 +56,22 @@ export function evaluatePersistence(trace) {
   const isAmount = value => usdMinor(String(value)) === amount;
   const order = trace.providerFinal.order, unit = order.purchase_units?.[0], auth = unit?.payments?.authorizations?.[0];
   if (!unit?.amount || !auth?.amount || !payment.data?.paypalOrder || (providerCapture && !providerCapture.amount)) return inconclusive('Order, authorization or money binding evidence is missing.');
-  const rules = [];
   const check = (id, ok, reason) => rules.push({ id, status: ok ? 'PASS' : 'FAIL', reason, evidenceRefs: [trace.events.findLast(e => e.kind === 'fresh_database_read').id, captureResponse?.id ?? readBack.id] });
   const stored = payment.data.paypalOrder, storedUnit = stored.purchaseUnits?.[0];
+  const present = value => value !== undefined && value !== null && value !== '';
+  const moneyPresent = resource => present(resource?.value) && present(resource?.currency_code);
+  if (![order.id, auth.id, stored.id, payment.data.paypalOrderId,
+        storedUnit?.payments?.authorizations?.[0]?.id, storedUnit?.amount?.currencyCode,
+        storedUnit?.amount?.value, ...['order', 'authorization', 'capture'].map(k => trace.contract.ids?.[k]),
+        ...[payment, session, collection].flatMap(row => [row.id, row.amount, row.raw_amount?.value, row.currency_code]),
+        payment.payment_session_id, payment.payment_collection_id, session.payment_collection_id,
+        ...captures.flatMap(row => [row.payment_id, row.amount, row.raw_amount?.value])].every(present) ||
+      !Object.hasOwn(payment, 'captured_at') || !Object.hasOwn(collection, 'completed_at') ||
+      !present(collection.captured_amount) || !present(collection.status) ||
+      !moneyPresent(unit.amount) || !moneyPresent(auth.amount) ||
+      (providerCapture && (!present(providerCapture.id) || !moneyPresent(providerCapture.amount)))) {
+    return inconclusive('Required identity or money observations are missing; absence is not a mismatch.');
+  }
   check('EXACT_BINDING', ['order','authorization','capture'].every(k => trace.ids[k] === trace.contract.ids?.[k]) &&
     order.id === trace.ids.order && order.purchase_units.length === 1 && auth.id === trace.ids.authorization &&
     unit.amount.currency_code === 'USD' && isAmount(unit.amount.value) && auth.amount.currency_code === 'USD' && isAmount(auth.amount.value) &&
@@ -60,13 +84,23 @@ export function evaluatePersistence(trace) {
       (!(captures.length || payment.captured_at || collection.captured_amount!=='0') || (storedUnit?.payments?.captures?.length === 1 && storedUnit.payments.captures[0].id === providerCapture.id && storedUnit.payments.captures[0].status === providerCapture.status && storedUnit.payments.captures[0].amount?.currencyCode === 'USD' && isAmount(storedUnit.payments.captures[0].amount?.value))))),
     'Provider identities, exact money and persisted relationships are checked; Medusa values are major units.');
   const unresolved = captures.length === 0 && payment.captured_at === null && collection.completed_at === null && collection.captured_amount === '0' && collection.status === 'authorized';
-  if(trace.completionWindowOpen && providerCapture?.status==='COMPLETED' && unresolved) return inconclusive('The declared explicit-reconciliation window has not finished.');
+  if (trace.completionWindowOpen && providerCapture?.status === 'COMPLETED' && unresolved) {
+    return inconclusive('The declared explicit-reconciliation window has not finished.');
+  }
   if (!providerCapture && !captureResponse && !trace.events.some(e => e.kind === 'capture_boundary_start')) check('AUTHORIZED_NOT_CAPTURED', unresolved, 'Authorization is distinct from captured payment.');
   else if (captureResponse?.status === 422 && !providerCapture && boundary?.result?.kind === 'rejected' && trace.returned?.kind === 'rejected') check('ERROR_NOT_CAPTURED', unresolved, 'Definitive provider rejection must not leave captured merchant state.');
   else if (providerCapture?.status === 'PENDING') check('PENDING_NOT_COMPLETED', unresolved, 'A PENDING resource cannot support completed merchant capture, even after the method resolves.');
   else if (providerCapture?.status === 'COMPLETED') check('COMPLETED_CAPTURE_RECORDED', captures.length === 1 && Boolean(payment.captured_at) && Boolean(collection.completed_at) && collection.status === 'completed' && isAmount(collection.captured_amount), 'Completed full capture must correspond to committed capture and collection totals.');
   else return inconclusive('Provider outcome is unresolved or unsupported by this contract.');
   return { status: rules.some(r => r.status === 'FAIL') ? 'FAIL' : 'PASS', rules, eventualCompletion: providerCapture?.status === 'PENDING' ? 'UNTESTED' : 'NOT_APPLICABLE', limitations: PERSISTENCE_RULES.limitations };
+}
+
+// Read-only reinterpretation is explicitly versioned and keeps the original result intact.
+export function assessPersistence(trace) {
+  const current = evaluatePersistence(trace);
+  return { version: PERSISTENCE_ASSESSMENT_VERSION, recorded: trace.verdict ?? null,
+    current, changed: JSON.stringify(current) !== JSON.stringify(trace.verdict ?? null),
+    scope: 'Current evaluator applied to retained observations; not a new execution.' };
 }
 
 // Extends the existing fixed-target evidence path; never starts CaptureProof's
@@ -146,7 +180,7 @@ export async function runExternalPersistence(mode, options={}) {
     }
     const trace=workers.at(-1);
     await sleep(50);
-    const result = { ...trace, ...(crash?{crash}:{}), startedAt, finishedAt:new Date().toISOString(), evidenceMode:'SIMULATED_PROVIDER_REAL_MEDUSA_POSTGRES', provenance,
+    const result = { ...trace, assessmentVersion: PERSISTENCE_ASSESSMENT_VERSION, ...(crash?{crash}:{}), startedAt, finishedAt:new Date().toISOString(), evidenceMode:'SIMULATED_PROVIDER_REAL_MEDUSA_POSTGRES', provenance,
       contract: { amountMinor:1200, currency:'USD', medusaMajor:'12', paypalMajor:'12.00', ids:config.ids },
       rules:PERSISTENCE_RULES, transactionLog:pgLog.split('\n').filter(s=>/statement: (begin|commit|rollback)|(?:statement:|execute .*:) (?:insert into|update|delete from) "(?:public"\.")?(?:capture|payment|payment_collection)"/i.test(s)),
       scenario:{phases,lostResponse:config.lostResponse,openCheckpoints:config.openCheckpoints},databaseProcessId:postgres.pid,workerPids:workers.map(w=>w.workerPid),events:workers.flatMap(w=>w.events),

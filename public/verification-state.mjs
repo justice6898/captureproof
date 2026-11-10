@@ -12,10 +12,10 @@ export function compareRuleObservations(baseline,candidate,{expectedCheckpoints}
  const introduced=complete&&b.at(-1)?.verdict?.status!=='INCONCLUSIVE'?now.filter(id=>!old.includes(id)&&contrasted(c,b,id)):[];
  const remaining=old.filter(id=>now.includes(id));
  const unresolved=[...new Set([...old.filter(id=>!remaining.includes(id)&&!resolved.includes(id)),...now.filter(id=>!remaining.includes(id)&&!introduced.includes(id))])];
- const inconclusive=b.concat(c).some(cp=>!['PASS','FAIL'].includes(cp.verdict?.status)||!cp.verdict?.rules?.length);
+ const inconclusive=b.concat(c).some(cp=>!['PASS','FAIL'].includes(cp.verdict?.status)||cp.verdict?.uncertainty||!cp.verdict?.rules?.length);
  const final={baseline:b.at(-1)?.verdict?.status??'NOT OBSERVED',candidate:c.at(-1)?.verdict?.status??'NOT OBSERVED'};
  const outcome=!complete?'NOT_COMPLETED':introduced.length&&resolved.length?'MIXED':introduced.length?'REGRESSION':remaining.length?'REMAINS':resolved.length?'RESOLVED':inconclusive||unresolved.length?'INCONCLUSIVE':'NO_OBSERVED_FAILURE';
- return {scope:'scenario pair',comparison:complete?'COMPLETE':'UNAVAILABLE',outcome,baselineFailures:old,candidateFailures:now,resolved,introduced,remaining,unresolved,final,earlierUncertainty:b.concat(c).some(cp=>cp.verdict?.status==='INCONCLUSIVE'),summary:!complete?'Comparison unavailable — incomplete execution or observations.':`Rule changes at matching observed boundaries: ${resolved.length} resolved, ${introduced.length} introduced, ${remaining.length} retained, ${unresolved.length} unattributed.`,limits:'Rule changes describe this scenario pair; final checkpoints do not erase history. Missing or uncollected observations are not zero.'};
+ return {scope:'scenario pair',comparison:complete?'COMPLETE':'UNAVAILABLE',outcome,baselineFailures:old,candidateFailures:now,resolved,introduced,remaining,unresolved,final,earlierUncertainty:b.concat(c).some(cp=>cp.verdict?.status==='INCONCLUSIVE'||cp.verdict?.uncertainty),summary:!complete?'Comparison unavailable — incomplete execution or observations.':`Rule changes at matching observed boundaries: ${resolved.length} resolved, ${introduced.length} introduced, ${remaining.length} retained, ${unresolved.length} unattributed.`,limits:'Rule changes describe this scenario pair; final checkpoints do not erase history. Missing or uncollected observations are not zero.'};
 }
 export function jobPresentation(job){
  const count=job.executions.length,stopped=['FAILED','INTERRUPTED'].includes(job.state),pairs=job.summary?.cases.filter(c=>c.outcome!=='NOT_COMPLETED')??[];
@@ -32,17 +32,18 @@ export function scenarioFinding(baseline,candidate,options={}){
  for(const[label,r]of [['Original',baseline],['Candidate',candidate]]){
   const violated=points(r).find(c=>c.verdict?.status==='FAIL');if(!violated)continue;
   let text='An observed payment evidence rule failed.';
-  if(violated.providerCapture?.status==='PENDING'&&violated.afterShutdown?.collection?.status==='completed')text='Payment was committed while provider capture was still PENDING.';
+  if(violated.verdict.rules?.some(r=>r.id==='EXACT_BINDING'&&r.status==='FAIL'))text='Observed order identity, money or persisted relationships do not match the payment contract.';
+  else if(violated.providerCapture?.status==='PENDING'&&violated.afterShutdown?.collection?.status==='completed')text='Payment was committed while provider capture was still PENDING.';
   else if(violated.providerCapture?.status==='COMPLETED'&&violated.afterShutdown?.collection?.status!=='completed')text='Provider completed capture, but the merchant did not record completed payment.';
   descriptions.push(`${label}${label==='Candidate'&&comparison.introduced.length?' regression':''}: ${text}`);
  }
- const last=points(candidate).at(-1),history=points(candidate).some(c=>c.verdict?.status==='INCONCLUSIVE');
+ const last=points(candidate).at(-1),history=points(candidate).some(c=>c.verdict?.status==='INCONCLUSIVE'||c.verdict?.uncertainty);
  const finding=descriptions.join(' ')||(comparison.comparison!=='COMPLETE'?'No complete comparison — unobserved results are NOT RUN.':comparison.outcome==='INCONCLUSIVE'?'Evidence remains inconclusive. No absence-of-defect conclusion.':'No violation observed in the completed pair.');
  return {finding,comparison,candidate:!last?'Candidate NOT RUN':`Candidate final checkpoint: ${last.verdict?.status??'Unknown'}${history?' · earlier INCONCLUSIVE retained':''}`,consequence:descriptions.length?'Observed payment-rule violation; inspect the bound observations. External delivery and fulfillment were not tested.':null};
 }
 export function checkpointDescription(cp){
  if(!cp)return 'Required observation unavailable.';
- return `${cp.providerCapture?.status??'Unknown'} provider / ${cp.afterShutdown?.collection?.status??'Unknown'} merchant; ${cp.afterShutdown?.captures?.length??'Unknown'} active capture rows; rule outcome ${cp.verdict?.status??'Unknown'}.`;
+ return `${cp.providerCapture?.status??'Unknown'} provider / ${cp.afterShutdown?.collection?.status??'Unknown'} merchant; ${cp.afterShutdown?.captures?.length??'Unknown'} active capture rows; rule outcome ${cp.verdict?.status??'Unknown'}.${cp.verdict?.uncertainty ? ' Unresolved: '+cp.verdict.uncertainty.reason : ''}`;
 }
 
 // Explicit selection only. A legacy case-only link must resolve to exactly one saved campaign.
@@ -76,4 +77,12 @@ export function storedAnalysisSummary(data,executionId){
  if(data.status==='UNAVAILABLE')return 'Stored analysis unavailable for this execution. Inspect its evidence; no generation was attempted.';
  if(!data.records.length)return 'No matching stored AI response for this execution. The finding and repair comparison are independent of AI; no response was generated.';
  return data.records.map(r=>`Stored response: structural/factual validation ${r.currentValidation??'Unknown'}; semantic review ${r.semanticReviewStatus??'NOT_REVIEWED'}.`).join(' ')+' Inspect the exact input, explanation, citations and response-preservation receipt below. Acceptance is not complete semantic endorsement.';
+}
+
+// A current assessment is commentary on immutable observations, never their replacement.
+export function assessmentDescription(assessment) {
+ if (!assessment) return '';
+ const current = assessment.current;
+ const binding = current.rules?.some(rule => rule.id === 'EXACT_BINDING' && rule.status === 'FAIL');
+ return `Current assessment: ${current.status}. ${binding ? 'Observed identity, money or persisted relationships violate the contract. ' : ''}${current.uncertainty ? 'Still unresolved: ' + current.uncertainty.reason + ' ' : ''}Recorded outcome remains ${assessment.recorded?.status ?? 'unavailable'}. No new execution.`;
 }

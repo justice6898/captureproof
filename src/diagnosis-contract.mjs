@@ -88,3 +88,6 @@ export function validateDiagnosis(result, input, { moneyPolicy = 'referenced' } 
   validateMonetaryClaims(result, input, invalid, moneyPolicy);
   return result;
 }
+
+// Shared schema checker; external contracts retain their own versioned requirements.
+export { check as matchesDiagnosisSchema };

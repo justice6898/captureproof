@@ -1,11 +1,12 @@
-import {jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,resultRoute,savedJobLabel,checkpointPhase,storedAnalysisSummary} from './verification-state.mjs';
+import { mountExecutionAssistance } from './execution-assistance.js';
+import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,resultRoute,savedJobLabel,checkpointPhase,storedAnalysisSummary} from './verification-state.mjs';
 (() => {
  const $=id=>document.getElementById(id),node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
  const add=(n,...children)=>{n.append(...children);return n;};
  const details=(label,value)=>add(node('details'),node('summary',label),node('pre',typeof value==='string'?value:JSON.stringify(value,null,2)));
  let recordedOnly=false,setupReady=false,submitting=false,executionActive=false;
- const syncControls=()=>{for(const id of ['campaign-launch','verification-launch'])$(id).disabled=recordedOnly||!setupReady||submitting||executionActive;};
- let historicalExample=null;
+ const syncControls=()=>{for(const id of ['campaign-launch','verification-launch'])$(id).disabled=recordedOnly||!setupReady||submitting||executionActive||(id==='campaign-launch'&&(!reviewedPlan||reviewedPlan.candidateId!==$('campaign-candidate').value));};
+ let historicalExample=null,reviewedPlan=null;
  let choices,activeId=null,selectedCase=null,currentView='explore',timer=null,launchKey=sessionStorage.getItem('verificationLaunchKey');
  const link=(label,id)=>{const a=node('a',label);a.href='#'+id;a.onclick=()=>{const t=$(id);if(t){for(let p=t;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;t.tabIndex=-1;t.focus({preventScroll:true});}};return a;};
  function setView(view){
@@ -16,6 +17,8 @@ import {jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,
  function unavailable(message){setView('unavailable');$('saved-result-title').textContent='Saved result unavailable';$('verification-status').textContent=message;$('verification-result').replaceChildren(node('p','No other investigation was substituted. Choose a saved result or return to exploration.'));$('saved-result-title').focus();}
  function preview(example){const panel=$('preview-content');panel.replaceChildren();if(!example?.available){panel.append(node('p',example?.reason??'No reviewed comparison is registered in this workspace.'));return;}
   panel.append(node('p',example.finding.finding,'finding-lead'));
+  if(example.origin==='BUNDLED_RECORDED_EVIDENCE')panel.append(node('p',example.scope,'notice'));
+  if(example.download){const a=node('a','Download this bundled report');a.href=example.download;panel.append(a);}
   const cards=node('div',undefined,'comparison');for(const[label,c]of [['Original · first returned checkpoint',example.baseline],['Repair · same checkpoint',example.candidate]])cards.append(add(node('article',undefined,'observation-card'),node('h3',label),node('p',checkpointDescription(c))));panel.append(cards);
   panel.append(node('p','Repair final observation: '+checkpointDescription(example.final)));const a=node('a','Inspect this finding →','primary-action');a.href=example.url;panel.append(a);
  }
@@ -95,7 +98,7 @@ import {jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,
   panel.append(details('Job, candidate and scenario identity',{id:job.id,plan:job.plan,candidateDigest:job.candidateDigest}));
   for(const e of job.executions){
    const card=node('details',undefined,'execution');card.id=`execution-${e.runId}`;card.append(node('summary',`${e.caseId??e.role} · ${e.role} · ${e.verdict} — evidence, AI & exports`));portableDownload(card,job,e);add(card,node('h3',`${e.caseId??e.role} · ${e.role} · ${e.verdict}`),node('p',`Execution ${e.runId}`,'small'));
-   for(const c of e.checkpoints){for(const rule of c.verdict.rules??[])if(rule.status==='FAIL'){const finding=node('p',`${rule.id}: ${rule.reason} `,'warning');finding.append(link(`Inspect checkpoint ${c.index}`,`evidence-${e.runId}-${c.index}`));card.append(finding);}if(c.verdict.status==='INCONCLUSIVE')card.append(node('p',`Checkpoint ${c.index}: INCONCLUSIVE — ${c.verdict.reason??'Evidence or observation window is incomplete.'}`));}
+   for(const c of e.checkpoints){for(const rule of c.verdict.rules??[])if(rule.status==='FAIL'){const finding=node('p',`${rule.id}: ${rule.reason} `,'warning');finding.append(link(`Inspect checkpoint ${c.index}`,`evidence-${e.runId}-${c.index}`));card.append(finding);}if(c.verdict.uncertainty)card.append(node('p',`Checkpoint ${c.index}: ${c.verdict.uncertainty.reason}`,'warning'));if(c.assessment?.changed)add(card,node('p',assessmentDescription(c.assessment),'notice'),details(`Separate current assessment · ${c.assessment.version} · ${c.assessment.current.status}`,c.assessment));if(c.verdict.status==='INCONCLUSIVE')card.append(node('p',`Checkpoint ${c.index}: INCONCLUSIVE — ${c.verdict.reason??'Evidence or observation window is incomplete.'}`));}
    for(const p of e.checkpoints)add(card,node('p',`Checkpoint ${p.index}: ${p.providerCapture?.status??'unavailable'} provider / ${p.afterShutdown.collection.status} merchant; POSTs ${p.counters.posts??'unknown'}, accepted ${p.counters.accepted??'unknown'}, provider captures ${p.counters.providerCaptures??'unknown'}, active DB rows ${p.afterShutdown.captures.length}. ${p.verdict.status}.`));
    for(const c of e.checkpoints){const d=details(`Checkpoint ${c.index} · ${c.returned?.kind??'Unknown'} · ${c.verdict.status}`,c);d.id=`evidence-${e.runId}-${c.index}`;card.append(d);}
    const refs=node('details');refs.append(node('summary','Inspect executed source'));for(const [path,sha]of Object.entries(e.sourceHashes)){const index=job.sources.findIndex(s=>s.path===path&&s.sha256===sha);if(index>=0)refs.append(add(node('p'),link(path,`verification-source-${index}`)));}card.append(refs);
@@ -110,6 +113,7 @@ import {jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,
     for(const [action,label]of (currentView==='develop'?[['replay','Replay failure · 1 execution'],...(e.role==='baseline'&&job.executions.some(p=>p.role==='candidate'&&p.caseId===e.caseId)?[['repair','Replay matching repair · 1 execution']]:[]),['reduce','Reduce failure · at most 4 executions']]:[])){const b=node('button',label);b.disabled=recordedOnly||running||!setupReady;b.onclick=async()=>{if(submitting||executionActive||recordedOnly||!setupReady)return;submitting=true;syncControls();b.disabled=true;try{const reproducer=await (action==='repair'?loadRepair():load()),key=`reproductionLaunchKey:${job.id}:${e.runId}:${action}`,launchKey=sessionStorage.getItem(key)??crypto.randomUUID();sessionStorage.setItem(key,launchKey);const j=await request('/api/reproductions',{action:action==='repair'?'replay':action,reproducer,artifactText:JSON.stringify(reproducer,null,2)+'\n',launchKey});sessionStorage.removeItem(key);await refreshList();await select(j.id);}catch(err){$('verification-status').textContent=err.message;}finally{submitting=false;syncControls();b.disabled=recordedOnly||executionActive||!setupReady;}};card.append(b);}
    }
    const analysis=node('button','Read stored AI analysis · no generation');analysis.id='read-analysis-'+e.runId;analysis.onclick=async()=>{analysis.disabled=true;try{const data=await request(`/api/verifications/${job.id}/analysis/${e.runId}`);card.querySelector('#exact-diagnosis-'+e.runId)?.remove();window.mountExactExecutionDiagnosis(card,data);}catch(err){card.append(node('p',`Stored analysis unavailable: ${err.message}`));}finally{analysis.disabled=false;}};card.append(analysis);
+   if(!recordedOnly)mountExecutionAssistance(card,{jobId:job.id,executionId:e.runId,request});
    const prepare=node('button','Inspect exact-run AI input · no generation');prepare.onclick=async()=>{prepare.disabled=true;try{const p=await request(`/api/verifications/${job.id}/diagnosis/${e.runId}`);add(card,node('p','Request inspection only. Use Read stored AI analysis for this execution’s generation and review status.'),download('Download UNSENT request',p,`captureproof-unsent-${e.runId}.json`),details('Bound input and source',p));}catch(err){card.append(node('p',`Preparation unavailable: ${err.message}`));}finally{prepare.disabled=false;}};const advanced=node('details');advanced.append(node('summary','Advanced request inspection'));advanced.append(prepare);card.append(advanced);panel.append(card);
   }
   const sourceGroup=node('details');sourceGroup.id='frozen-sources';sourceGroup.append(node('summary','Frozen source snapshots'));panel.append(sourceGroup);
@@ -137,17 +141,86 @@ import {jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,
  }
  async function select(id,{caseId=null,view='result'}={}){activeId=id;selectedCase=caseId;clearTimeout(timer);const url=new URL(location.href);url.searchParams.set('job',id);url.searchParams.delete('report');url.searchParams.delete('example');if(view==='develop')url.searchParams.set('view','develop');else url.searchParams.delete('view');if(caseId)url.searchParams.set('case',caseId);else url.searchParams.delete('case');history.replaceState(null,'',url);setView(view);await poll();if(currentView==='result'||currentView==='develop'){$('saved-result-title').focus({preventScroll:true});$('saved-result-title').scrollIntoView({block:'start'});}}
  async function poll(){try{const id=activeId,job=await request(`/api/verifications/${id}`);if(id!==activeId)return;render(job);if(['QUEUED','RUNNING'].includes(job.state))timer=setTimeout(poll,1500);else await refreshList();}catch(e){unavailable(e.message);}}
- async function refreshList(){const v=await request('/api/verifications');if($('verification-empty'))$('verification-empty').hidden=v.jobs.length>0;if($('example-status')){$('example-status').textContent=v.example?.available?'Recorded upstream PENDING failure, independently tested repair and exact replay. Actual Medusa/PostgreSQL; simulated PayPal. Viewing starts no execution or AI call.':v.example?.reason??'This read-only view does not include the newer portable example.';const links=$('example-links');links.replaceChildren();if(v.example?.available)for(const [label,path]of [['Open verified example',v.example.url],['Download portable HTML',v.example.download]]){const a=node('a',label);a.href=path;links.append(add(node('p'),a));}}historicalExample=v.example;recordedOnly=v.recordedOnly===true;if($('explore-example'))$('explore-example').hidden=!v.example?.available;if(recordedOnly&&$('verify-entry')){$('verify-entry').textContent='Review saved results';$('verify-entry').href='#verification-workspace';}choices=v.choices;setupReady=v.setup?.ready===true;executionActive=v.setup?.availability?.ready===false||v.jobs.some(j=>['QUEUED','RUNNING'].includes(j.state));if($('capability-banner'))$('capability-banner').textContent=recordedOnly?'Recorded viewing available':!setupReady?`Fresh execution unavailable · ${v.setup?.code??'Capability unknown'}`:executionActive?'Verification running · saved evidence remains available':'Fresh execution available · dependencies and child isolation checked';if($('verification-setup'))$('verification-setup').textContent=v.setup?`${v.setup.code}: ${v.setup.message} ${v.setup.command??''}`:'';if(v.candidates){const selected=$('campaign-candidate').value;$('campaign-candidate').replaceChildren();for(const c of v.candidates){const o=node('option',c.name);o.value=c.id;$('campaign-candidate').append(o);}if(v.candidates.some(c=>c.id===selected))$('campaign-candidate').value=selected;}recordedOnly=v.recordedOnly===true;const list=$('verification-history');list.replaceChildren();for(const j of v.jobs){const label=savedJobLabel(j),row=node('article',undefined,'saved-result'),a=node('a',label.title);a.href='/external?job='+j.id;add(row,a,node('p',label.outcome),node('p',label.execution,'small'),details('Identity and recorded time',{id:j.id,candidate:j.plan.candidateName??j.plan.target,createdAt:j.createdAt}));list.append(row);}if(v.resultExample!==undefined){preview(v.resultExample);const a=$('explore-example');if(v.resultExample?.available){a.hidden=false;a.href=v.resultExample.url;}else {a.hidden=false;a.href='#result-preview';a.textContent='Reviewed comparison unavailable';}}syncControls();return v;}
- $('candidate-import').onclick=async()=>{try{const c=await request('/api/candidates',{directory:$('candidate-directory').value});await refreshList();$('campaign-candidate').value=c.id;$('candidate-status').textContent=`Frozen ${c.name} · ${c.id}. Input validation is not evidence of payment correctness.`;}catch(e){$('candidate-status').textContent=e.message;}};
+ async function refreshList() {
+  const data = await request('/api/verifications');
+  $('verification-empty').hidden = data.jobs.length > 0;
+  historicalExample = data.example;
+  recordedOnly = data.recordedOnly === true;
+  choices = data.choices;
+  setupReady = data.setup?.ready === true;
+  executionActive = data.setup?.availability?.ready === false || data.jobs.some(job => ['QUEUED', 'RUNNING'].includes(job.state));
+
+  $('example-status').textContent = data.example?.available
+   ? 'Separate earlier recorded example with stored AI review. Actual Medusa/PostgreSQL; simulated PayPal. Viewing starts no execution or AI call.'
+   : data.example?.reason ?? 'The earlier recorded example is unavailable.';
+  const links = $('example-links'); links.replaceChildren();
+  if (data.example?.available) {
+   for (const [label, path] of [['Open earlier analyzed example', data.example.url], ['Download earlier example HTML', data.example.download]]) {
+    const anchor = node('a', label); anchor.href = path; links.append(add(node('p'), anchor));
+   }
+  }
+  if (recordedOnly) {
+   $('verify-entry').textContent = 'Review saved results';
+   $('verify-entry').href = '#verification-workspace';
+  }
+  $('capability-banner').textContent = recordedOnly ? 'Recorded viewing available'
+   : !setupReady ? `Fresh execution unavailable · ${data.setup?.code ?? 'Capability unknown'}`
+   : executionActive ? 'Verification running · saved evidence remains available'
+   : 'Fresh execution available · dependencies and child isolation checked';
+  $('verification-setup').textContent = data.setup ? `${data.setup.code}: ${data.setup.message ?? ''} ${data.setup.command ?? ''}` : '';
+  if (data.candidates) {
+   const selected = $('campaign-candidate').value;
+   $('campaign-candidate').replaceChildren();
+   for (const candidate of data.candidates) {
+    const option = node('option', candidate.name); option.value = candidate.id; $('campaign-candidate').append(option);
+   }
+   if (data.candidates.some(candidate => candidate.id === selected)) $('campaign-candidate').value = selected;
+  }
+  const list = $('verification-history'); list.replaceChildren();
+  for (const job of data.jobs) {
+   const label = savedJobLabel(job), row = node('article', undefined, 'saved-result'), anchor = node('a', label.title);
+   anchor.href = '/external?job=' + job.id;
+   add(row, anchor, node('p', label.outcome), node('p', label.execution, 'small'),
+    details('Identity and recorded time', { id: job.id, candidate: job.plan.candidateName ?? job.plan.target, createdAt: job.createdAt }));
+   list.append(row);
+  }
+  if (data.resultExample !== undefined) {
+   // Bundled evidence is labeled and never resolved through private job IDs.
+   const selected = data.resultExample?.available ? data.resultExample : data.bundledExample;
+   preview(selected);
+   const anchor = $('explore-example'); anchor.hidden = false;
+   if (selected?.available) {
+    anchor.href = selected.url;
+    anchor.textContent = selected.origin === 'BUNDLED_RECORDED_EVIDENCE' ? 'Inspect bundled recorded comparison' : 'Inspect workspace comparison';
+   } else {
+    anchor.href = '#result-preview'; anchor.textContent = 'Reviewed comparison unavailable';
+   }
+  }
+  syncControls();
+  return data;
+ }
+ $('candidate-import').onclick=async()=>{try{const c=await request('/api/candidates',{directory:$('candidate-directory').value});await refreshList();$('campaign-candidate').value=c.id;reviewedPlan=null;syncControls();$('candidate-status').textContent=`Imported ${c.name}. Review the plan next. Validation is not evidence of payment correctness.`;$('campaign-review').focus();}catch(e){$('candidate-status').textContent=e.message;}};
  async function submit(event,selection){
   event.preventDefault();if(recordedOnly||!setupReady||executionActive||submitting)return;
+  const chosen=selection();if(chosen.campaign&&(!reviewedPlan||reviewedPlan.candidateId!==chosen.candidateId))return;
   submitting=true;syncControls();launchKey??=crypto.randomUUID();sessionStorage.setItem('verificationLaunchKey',launchKey);
-  try{const job=await request('/api/verifications',{...selection(),launchKey});launchKey=null;sessionStorage.removeItem('verificationLaunchKey');await refreshList();await select(job.id);}
+  try{const job=await request('/api/verifications',{...chosen,launchKey,...(chosen.campaign?{planFingerprint:reviewedPlan.fingerprint}:{})});launchKey=null;sessionStorage.removeItem('verificationLaunchKey');await refreshList();await select(job.id);}
   catch(e){$('verification-status').textContent=e.message;await refreshList();}
   finally{submitting=false;syncControls();}
  }
+ $('campaign-candidate').onchange=()=>{reviewedPlan=null;$('plan-preview').replaceChildren();syncControls();};
+ $('campaign-review').onclick=async()=>{
+  const button=$('campaign-review'),candidateId=$('campaign-candidate').value;button.disabled=true;
+  try{
+   const plan=await request('/api/verification-plan',{campaign:'core-1',candidateId});
+   if(candidateId!==$('campaign-candidate').value)return;
+   reviewedPlan={candidateId,fingerprint:plan.fingerprint};
+   const panel=$('plan-preview');panel.replaceChildren(node('p',`${plan.plan.maxExecutions} isolated executions · ${plan.plan.candidate} · simulated PayPal. No AI request. Review all scenarios and source identity before running.`),details('Scenarios, source identity and capability',plan));panel.focus();
+  }catch(error){reviewedPlan=null;$('plan-preview').textContent=error.message;}
+  finally{button.disabled=false;syncControls();}
+ };
  $('campaign-form').onsubmit=e=>submit(e,()=>({campaign:'core-1',candidateId:$('campaign-candidate').value}));
  $('verification-form').onsubmit=e=>submit(e,()=>({target:$('verification-target').value,scenario:$('verification-scenario').value}));
  if($('capability-recheck'))$('capability-recheck').onclick=async()=>{const b=$('capability-recheck');b.disabled=true;try{await request('/api/verification-capability',{});await refreshList();}catch(e){$('verification-status').textContent=e.message;}finally{b.disabled=false;}};
- (async()=>{try{const v=await refreshList();for(const [id,entries]of[['verification-target',choices.targets],['verification-scenario',choices.scenarios]])for(const entry of entries){const o=node('option',entry.label);o.value=entry.id;$(id).append(o);}context();$('candidate-campaign').hidden=recordedOnly;$('campaign-launch').disabled=recordedOnly||!setupReady;$('verification-scenario').onchange=context;$('verification-launch').disabled=recordedOnly||!setupReady;if(recordedOnly){$('verification-workspace').before($('recorded-demo'));$('verification-launch').textContent='Fresh verification unavailable in recorded demo';$('verification-context').textContent='Read-only selected artifacts; no payment database or worker access. Fresh local verification remains an explicit action in npm run start:verification.';}const route=resultRoute(location.search,v.jobs,location.hash);setView(recordedOnly&&route.view==='explore'?'history':route.view);if(route.id)await select(route.id,{caseId:route.caseId,view:route.view});else if(route.view==='unavailable')unavailable(route.reason);else if(currentView==='history'){document.querySelector('.history-archive').open=true;window.dispatchEvent(new Event('captureproof:history'));document.querySelector('.history-archive').scrollIntoView();}else $('verification-status').textContent=currentView==='develop'?'Execution requires an explicit action. Saved results remain available below.':'Saved results only — browsing creates no execution.';}catch(e){$('verification-status').textContent=e.message;}})();
+ (async()=>{try{const v=await refreshList();for(const [id,entries]of[['verification-target',choices.targets],['verification-scenario',choices.scenarios]])for(const entry of entries){const o=node('option',entry.label);o.value=entry.id;$(id).append(o);}context();$('candidate-campaign').hidden=recordedOnly;syncControls();$('verification-scenario').onchange=context;$('verification-launch').disabled=recordedOnly||!setupReady;if(recordedOnly){$('verification-workspace').before($('recorded-demo'));$('verification-launch').textContent='Fresh verification unavailable in recorded demo';$('verification-context').textContent='Read-only selected artifacts; no payment database or worker access. Fresh local verification remains an explicit action in npm run start:verification.';}const route=resultRoute(location.search,v.jobs,location.hash);setView(recordedOnly&&route.view==='explore'?'history':route.view);if(route.id)await select(route.id,{caseId:route.caseId,view:route.view});else if(route.view==='unavailable')unavailable(route.reason);else if(currentView==='history'){document.querySelector('.history-archive').open=true;window.dispatchEvent(new Event('captureproof:history'));document.querySelector('.history-archive').scrollIntoView();}else $('verification-status').textContent=currentView==='develop'?'Execution requires an explicit action. Saved results remain available below.':'Saved results only — browsing creates no execution.';}catch(e){$('verification-status').textContent=e.message;}})();
 })();

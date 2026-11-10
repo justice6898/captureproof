@@ -8,7 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --import ./test-support/offline-network.mjs --test test/core.test.mjs test/first-use.test.mjs test/checkout.test.mjs test/checkout-http.test.mjs test/paypal-sandbox.test.mjs test/release.test.mjs test/verification-readiness.test.mjs test/developer-meaning.test.mjs",
+    "test": "node --import ./test-support/offline-network.mjs --test test/regression-guidance.test.mjs test/bundled-example.test.mjs test/persistence-uncertainty.test.mjs test/execution-assistance.test.mjs test/core.test.mjs test/first-use.test.mjs test/checkout.test.mjs test/checkout-http.test.mjs test/paypal-sandbox.test.mjs test/release.test.mjs test/verification-readiness.test.mjs test/developer-meaning.test.mjs",
     "demo": "node demo.mjs",
     "start": "node --env-file-if-exists=.env server.mjs",
     "external:setup": "node scripts/setup-external-persistence.mjs --install",
@@ -18,7 +18,8 @@
     "test:first-use": "node --import ./test-support/offline-network.mjs --test test/core.test.mjs test/first-use.test.mjs",
     "report:export": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/export-portable-report.mjs",
     "start:example": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/start-recorded-demo.mjs --portable",
-    "release:prepare": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/prepare-first-use.mjs --release"
+    "release:prepare": "env -i PATH=\"$PATH\" node --import ./test-support/offline-network.mjs scripts/prepare-first-use.mjs --release",
+    "start:assistance": "env -i PATH=\"$PATH\" node scripts/start-execution-assistance.mjs"
   },
   "license": "MIT"
 }

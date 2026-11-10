@@ -28,7 +28,7 @@ export class OpenAIDiagnosis {
       instructions: this.contract.INSTRUCTIONS, input: [{ role: 'user', content: JSON.stringify(input) }],
       text: { format: { type: 'json_schema', name: 'captureproof_diagnosis', strict: true, schema: this.contract.DIAGNOSIS_SCHEMA } } };
   }
-  async analyze(input, { clientRequestId = randomUUID(), onLateMetadata = null } = {}) {
+  async analyze(input, { clientRequestId = randomUUID(), onLateMetadata = null, beforeDispatch = null } = {}) {
     if (!this.configured) throw new DiagnosisError(this.unavailableReason);
     input = withMonetaryFacts(input);
     const payload = JSON.stringify(input);
@@ -60,6 +60,8 @@ export class OpenAIDiagnosis {
     });
     const work = (async () => {
       let response;
+      if (beforeDispatch) await beforeDispatch(requestBody);
+      if (signal.aborted) throw new DiagnosisError('AI_TIMEOUT');
       response = await this.#fetch('https://api.openai.com/v1/responses', {
         method: 'POST', redirect: 'error', signal,
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.#key}`, 'X-Client-Request-Id': clientRequestId },

@@ -4,11 +4,11 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "dc84f2e7c2530cdc5f2a7c8980a2af7766576ab135f6d1617e5be43dba802ea1",
-      "bytes": 12755,
+      "sha256": "a77760c16b0f6fcd6eb014735901d4f8ea8e4c8018a48d6688b17d40b1e2df28",
+      "bytes": 18410,
       "derivedFrom": {
         "path": "README.md",
-        "sha256": "1173e7745851b07857c087001cbf10465728b381caf244409deb642ded764258",
+        "sha256": "6877790ef4c53adf378871321796ca9ccbf03860a5b417f7de65ab1fe2e43c89",
         "transformation": "Release entry section only; workspace history omitted."
       }
     },
@@ -24,13 +24,33 @@
     },
     {
       "path": "src/portable-report.mjs",
-      "sha256": "48715011368ca418e8b38c36cb055e48466e117212f6c2342bf3273161d2ec26",
-      "bytes": 14995
+      "sha256": "888ab11f8e55df02c3d02a62fa682187091617713a6d725eb1c8b9650473a30e",
+      "bytes": 15402
+    },
+    {
+      "path": "src/execution-assistance.mjs",
+      "sha256": "0bdfa064821f36b84805cce13ca61b9a8e0ad464dbdee3f91c41127962ee9d33",
+      "bytes": 8307
+    },
+    {
+      "path": "src/execution-assistance-policy.mjs",
+      "sha256": "f2cdd7f53bb41caa034612e53e7635133407f6631cd7a6f79190a69a4ed6fa8c",
+      "bytes": 2435
+    },
+    {
+      "path": "scripts/start-execution-assistance.mjs",
+      "sha256": "d35cad1c65657c8851354bfc01ee44a90ffd7670c8a015cf0112388f5ef1515b",
+      "bytes": 1714
+    },
+    {
+      "path": "public/execution-assistance.js",
+      "sha256": "75e6f1499215301295cf6330897a58e97d4c732e8606447bad48a2969b3f303f",
+      "bytes": 4523
     },
     {
       "path": "src/verified-example.mjs",
-      "sha256": "97fc399d8afb8ca7a18caafe966d7851a1399bbcd3caf7a70b74506cd8d531b6",
-      "bytes": 1885
+      "sha256": "35afbaba1a2605f7ba4d529b9c98defd81e014a2ed24f594a54bf01cdcc0dd2d",
+      "bytes": 3248
     },
     {
       "path": "src/replay-verification.mjs",
@@ -39,8 +59,8 @@
     },
     {
       "path": "public/portable-report.js",
-      "sha256": "1ead7215629533100f2e40ff1ca3da7db7eb364b03cbccc9741aaff8ea3ef254",
-      "bytes": 11195
+      "sha256": "aa568873b62a1047582a3be72cf5849ce041ce7cf9d9d0f54e2f8aeb0a5fa54c",
+      "bytes": 11496
     },
     {
       "path": "public/portable-report.css",
@@ -229,11 +249,11 @@
     },
     {
       "path": "package.json",
-      "sha256": "f8c4ca39964c5a84c86f25b91267d68688685abe3998602442e4eced20f18758",
-      "bytes": 1629,
+      "sha256": "819362b9d01aa39872215de44d121a07e7027188fa9fd436c348a852459f101b",
+      "bytes": 1859,
       "derivedFrom": {
         "path": "package.json",
-        "sha256": "3f631f01ea2181dcd8fc412b114ff4060c7982586487b44b7a4469ff34d7ea9f",
+        "sha256": "c585565925ae5df87cb15c3531aa28d4f4cd0e2da2591b13a26a706008058dcf",
         "transformation": "Offline test selection; recorded demo alias; omitted commands requiring excluded historical tests."
       }
     },
@@ -254,8 +274,8 @@
     },
     {
       "path": "public/external-diagnosis.js",
-      "sha256": "deba8b86119018b8d9b158755a91be4e387f5c883811f86393c75dd3188e7cf2",
-      "bytes": 18079
+      "sha256": "1ac21bc609d006621530f57e4b1a6c98fe611803e45b144bda3f319cb8a92536",
+      "bytes": 20966
     },
     {
       "path": "public/external.css",
@@ -264,8 +284,8 @@
     },
     {
       "path": "public/external.html",
-      "sha256": "0b8f19187f5ce689cc747680b63c1b15276eaa1ed22ee2299ee2579ec8006827",
-      "bytes": 10146
+      "sha256": "a660a5c063dcf37147410e73587bdd3334495609690e80ff665308e807232d7e",
+      "bytes": 10681
     },
     {
       "path": "public/external.js",
@@ -294,13 +314,13 @@
     },
     {
       "path": "public/verification.js",
-      "sha256": "e8968b97267a7c8e6774a77c71fd83e33c720ddd9f5d6901a4377d66d301ff32",
-      "bytes": 33441
+      "sha256": "ad6afbefd6d9e62e568a36b43a3e9ca0fbfba39d1fbdcdd10d302c6bd0a58557",
+      "bytes": 35967
     },
     {
       "path": "public/verification-state.mjs",
-      "sha256": "43556168e55bc2b80d77e8329b461f6bfa076974c4cf1a510c9781a37a7c1ffe",
-      "bytes": 9760
+      "sha256": "9ed34ed8fcfa778a6745630f42540594fba69c66cfcef99743e810a019e883b8",
+      "bytes": 10732
     },
     {
       "path": "scripts/external-persistence-worker.cjs",
@@ -319,8 +339,8 @@
     },
     {
       "path": "scripts/prepare-first-use.mjs",
-      "sha256": "36a2a374ee1373167138aeb30b5176b8530fa73a822fd5f3e25bf9570991c443",
-      "bytes": 10422
+      "sha256": "a1d37a172371ef6d67499897a7cbcbc375528cdaebe5ccc8d02118860687bb2e",
+      "bytes": 10987
     },
     {
       "path": "scripts/prepare-recorded-demo.mjs",
@@ -354,8 +374,8 @@
     },
     {
       "path": "server.mjs",
-      "sha256": "5ec3f1f87d6cdc1cdd02d25ba25fafbad743ec1e5b0dc2b17f353ed2982bb004",
-      "bytes": 4017
+      "sha256": "fe6527d09969840417f40134dca07021914914259d79d664d85581493a132472",
+      "bytes": 6162
     },
     {
       "path": "src/checkout-contract.mjs",
@@ -364,8 +384,8 @@
     },
     {
       "path": "src/checkout-http.mjs",
-      "sha256": "9cfeaf64ffaf8b2f6bef2d169ee4826c30ad129fd8823b34e291bb9d009db22b",
-      "bytes": 12970
+      "sha256": "3a4634cef75ece7591dddde0a8996ec3a64d55d154cc514b9ef57e72dce5dbe6",
+      "bytes": 15126
     },
     {
       "path": "src/checkout-service.mjs",
@@ -379,13 +399,13 @@
     },
     {
       "path": "src/diagnosis-contract.mjs",
-      "sha256": "f54ddcf6739218a73d6d83f37c27d80cf2f9d2394ad9f25262fbecaa7eea5071",
-      "bytes": 8816
+      "sha256": "554e7135fc9beb963eeb5f3ab5c67defd8625f631a4fcfc046435233da010918",
+      "bytes": 8947
     },
     {
       "path": "src/diagnosis-cost.mjs",
-      "sha256": "040b2b89afebe7d6fb7b059353cf59dca8aa636c1a51e357a67cbf10e8738285",
-      "bytes": 3434
+      "sha256": "ab620d1e50a137da3fe8e61980bb750fb655cb76ed53d2885c0030d7929cb668",
+      "bytes": 4130
     },
     {
       "path": "src/diagnosis-input.mjs",
@@ -394,8 +414,8 @@
     },
     {
       "path": "src/diagnosis-money.mjs",
-      "sha256": "33b2b0c31f7b082a35caa5a1564e1b5941d5ebdf2fe8b21dbaa404b01b11e9cf",
-      "bytes": 5465
+      "sha256": "768fff6f848c715741976fec8ed1bad71932238bca2684cf786e27d72353967e",
+      "bytes": 6048
     },
     {
       "path": "src/diagnosis-presentation.mjs",
@@ -409,8 +429,8 @@
     },
     {
       "path": "src/diagnosis-service.mjs",
-      "sha256": "83b83bffbf049c015d39c81492910a72a004cae0dbf6bdd69cdeff5098db7d51",
-      "bytes": 5893
+      "sha256": "77211ea99ee0d47818947c37d558acfa16fa12b152ff9859cb8606445a01b40b",
+      "bytes": 6479
     },
     {
       "path": "src/diagnosis-store.mjs",
@@ -419,8 +439,8 @@
     },
     {
       "path": "src/execution-diagnosis.mjs",
-      "sha256": "84987dd0a9ef077814d3207e5f627502005f0ed4c7fb2fe0ad849323f8af5e80",
-      "bytes": 5629
+      "sha256": "c0792aa3502d18041fc20821fd37c3f2a56a30be795037738bc64f0876a7d25f",
+      "bytes": 5785
     },
     {
       "path": "src/experiment.mjs",
@@ -429,8 +449,13 @@
     },
     {
       "path": "src/external-diagnosis-contract.mjs",
-      "sha256": "c597d46456d4c8ee350b54e128d51c5eae4aa5e8dfa15a74fd30f2c7980c80c5",
-      "bytes": 11949
+      "sha256": "b47a7d9c83e2ddcbe3b9a13cde8769aad3a089833769457d5b07377430dbcfc9",
+      "bytes": 17615
+    },
+    {
+      "path": "src/regression-guidance.mjs",
+      "sha256": "e5101f9a4c2aa86393ea3c9de296af62a4a1f05b155202daa0b6d15a423ac261",
+      "bytes": 6842
     },
     {
       "path": "src/external-diagnosis-input.mjs",
@@ -459,13 +484,13 @@
     },
     {
       "path": "src/external-persistence.mjs",
-      "sha256": "2f8e13a240763a0bb7518dd9b8189f0f742742779e6c8b096143b9d3befb78e4",
-      "bytes": 19524
+      "sha256": "af2d00ad79a2ba789aa35e41cbad0eb130f4b6313bcf9215a28e9e1418aa4efb",
+      "bytes": 22008
     },
     {
       "path": "src/external-report.mjs",
-      "sha256": "8669694aff6c9efcd9bcca8b96a6ede3149c2b66173d7f81129a5ff001d59205",
-      "bytes": 25633
+      "sha256": "4412ec22c9744034a43f376a9613ffef800f0879f4211708f18694cf87197d96",
+      "bytes": 25729
     },
     {
       "path": "src/local-candidate.mjs",
@@ -479,8 +504,8 @@
     },
     {
       "path": "src/openai-diagnosis.mjs",
-      "sha256": "970119e5ebc9fdbdbcfd30a03f097f09b07b1134983eee421c2b8073195ed330",
-      "bytes": 9635
+      "sha256": "f0b48d2e8c47aac4e2272cd1df2668a859df39af7dee5ecba20d64525fb18d15",
+      "bytes": 9785
     },
     {
       "path": "src/order-store.mjs",
@@ -499,8 +524,8 @@
     },
     {
       "path": "src/recorded-demo-server.mjs",
-      "sha256": "1feffd0613eabafa304c350e39263f23a5307f8c2ef3764f496d1e188820999c",
-      "bytes": 2676
+      "sha256": "0d1134b6758a45d6556928b1b7499059366f945a71c54c79731f3c9423f0ba58",
+      "bytes": 2702
     },
     {
       "path": "src/regression-campaign.mjs",
@@ -529,8 +554,8 @@
     },
     {
       "path": "src/verification-jobs.mjs",
-      "sha256": "1a427255cb9ce096b4410c9f5e6d1dcfbbeeefc6367d04e1f6b5133143196e7a",
-      "bytes": 23643
+      "sha256": "2df4a790e696c0489ae644c3f10ddc825459273345c8aa3e1b403f031bf12c55",
+      "bytes": 24901
     },
     {
       "path": "test-support/offline-network.mjs",
@@ -551,6 +576,36 @@
       "path": ".gitignore",
       "sha256": "ef17f24f2e564200356607ae079dab56037131844e8d691578651e036834695d",
       "bytes": 675
+    },
+    {
+      "path": "test/regression-guidance.test.mjs",
+      "sha256": "6374434a16557b7578698f49d70ec591a36642c0b88fd09fd5afab09a11ae90e",
+      "bytes": 7207
+    },
+    {
+      "path": "test-support/regression-controls.mjs",
+      "sha256": "1a074f347f564c18550b55605ef0e9e2164d65db757192613e558088fdaa6948",
+      "bytes": 4084
+    },
+    {
+      "path": "test/bundled-example.test.mjs",
+      "sha256": "35f5ca744ac97f2c5670e6d89ee4a8865a97535f2f2ee5b376364fde88759c6c",
+      "bytes": 4347
+    },
+    {
+      "path": "test/persistence-uncertainty.test.mjs",
+      "sha256": "b2debcff80cd34a6ed69f71c59661d5d22417376c85654817635e870097d057d",
+      "bytes": 6208
+    },
+    {
+      "path": "test/execution-assistance.test.mjs",
+      "sha256": "d94c675922105b2b643acbc4769f2aaebc6915557b846b9b983b0f711bba063f",
+      "bytes": 22591
+    },
+    {
+      "path": "test-support/persistence-observations.mjs",
+      "sha256": "e18c212941bf077cb1870cfbc10452f418cff58438d667aebbf4158a4c9ae8fb",
+      "bytes": 2395
     },
     {
       "path": "test/developer-meaning.test.mjs",
@@ -632,6 +687,5 @@
     "representation": "Unchanged self-contained selected export; historical semantic PARTIAL retained; no database bundled."
   },
   "licenseStatus": "MIT; Copyright (c) 2026 Jeongui Hong; third-party notices retained",
-  "testCommand": "npm test",
-  "assembly": "MANIFEST_ONLY; files have not been staged, installed or executed as this candidate"
+  "testCommand": "npm test"
 }

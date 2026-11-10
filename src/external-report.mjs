@@ -1,3 +1,4 @@
+import { assessPersistence } from './external-persistence.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual as equal } from 'node:util';
@@ -232,7 +233,7 @@ function loadCrashReport() {
 export function projectVerificationExecution(r) {
   requireEvidence(uuid.test(r.runId) && r.evidenceMode==='SIMULATED_PROVIDER_REAL_MEDUSA_POSTGRES' && r.checkpoints?.length, 'INVALID_VERIFICATION_RESULT');
   requireEvidence(aggregate(r.checkpoints)===r.comparisonStatus,'VERDICT_HISTORY_MISMATCH');
-  const checkpoints=r.checkpoints.map((c,i)=>({index:i+1,action:c.action,returned:pick(c.returned,['kind','message']),verdict:c.verdict,
+  const checkpoints=r.checkpoints.map((c,i)=>({index:i+1,action:c.action,returned:pick(c.returned,['kind','message']),verdict:c.verdict,assessment:assessPersistence(c),
     counters:{posts:c.providerCounters?.capturePostAttempts,accepted:c.providerCounters?.acceptedOperations??null,providerCaptures:c.providerCounters?.distinctCaptures},
     afterShutdown:snapshot(c.afterShutdown),providerCapture:resource(c.providerFinal.capture),auditorNonMutation:c.auditorNonMutation===true,
     observations:c.events.filter(e=>e.kind==='provider_response').map(e=>({ref:e.id,actor:e.actor,path:e.path,httpStatus:e.status,capture:e.path.includes('/payments/captures/')?resource(e.body):null,orderCaptures:(e.body?.purchase_units?.[0]?.payments?.captures??[]).map(resource)}))}));

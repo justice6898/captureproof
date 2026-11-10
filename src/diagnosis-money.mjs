@@ -59,6 +59,7 @@ export function validateMonetaryClaims(result, input, fail, policy = 'referenced
   for (const f of result.findings) inspect(f.explanation, f.evidenceRefs);
   if (result.fixDirection) inspect(result.fixDirection.text, result.fixDirection.evidenceRefs);
   if (result.regressionTest) inspect(result.regressionTest.text, result.regressionTest.evidenceRefs, true);
+  for (const c of result.regressionControls ?? []) for (const text of [c.purpose,c.preconditions,...c.actions,...c.assertions.map(a=>a.observation),c.reason,c.evidenceGap].filter(x=>x!==null)) inspect(text,c.evidenceRefs);
   for (const u of result.uncertainties) inspect(u, []);
   // Displayed observed/expected facts need no prose token, but every claim above
   // is grounded first. Hypothetical inputs still require regression-test context.
@@ -78,6 +79,7 @@ export function renderMonetaryClaims(result, { includeMetadata = false } = {}) {
   });
   return { ...result,
     ...(includeMetadata ? { monetaryMetadata: result.moneyClaims.map(formatMoneyClaim) } : {}),
+    ...(result.regressionControls ? {regressionControls:result.regressionControls.map(c=>({...c,purpose:render(c.purpose),preconditions:render(c.preconditions),actions:c.actions.map(render),assertions:c.assertions.map(a=>({...a,observation:render(a.observation)})),reason:render(c.reason),evidenceGap:c.evidenceGap===null?null:render(c.evidenceGap)}))} : {}),
     findings: result.findings.map(f => ({ ...f, explanation: render(f.explanation) })),
     fixDirection: result.fixDirection && { ...result.fixDirection, text: render(result.fixDirection.text) },
     regressionTest: result.regressionTest && { ...result.regressionTest, text: render(result.regressionTest.text) },

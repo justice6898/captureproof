@@ -29,3 +29,15 @@ export function usageCost(usage) {
     confirmedBilling: false, note: 'Usage-based estimates, not a billing receipt. standardNoDiscountEstimateUsd is the base-rate subtotal before cache-write uplift; usageBasedEstimateUsd includes reported writes. No regional surcharge is asserted for the global endpoint; the premium estimate retains a 10% reserve. Reasoning is included in output_tokens, not charged twice.' };
 }
 // A separately authorized contract verification gets one durable slot; prior history is never reset.
+
+// Read-only accounting projection shared by the live view and portable reports.
+// Missing usage is unknown; a known pre-dispatch failure is not a billed attempt.
+export function diagnosisCostReceipt(record) {
+  const cost = usageCost(record.usage), notSent = record.dispatchPhase === 'NOT_SENT';
+  return { requestIdentity: record.requestContext?.requestIdentity ?? null,
+    requestHash: record.requestContext?.requestHash ?? null,
+    preflightCost: record.requestContext?.cost ?? null, cost,
+    costUnresolved: !notSent && cost === null,
+    unresolvedMaximumEstimateUsd: !notSent && cost === null ? record.requestContext?.cost?.maximumUsd ?? null : null,
+    billingConfirmed: false };
+}

@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
-const files=['external.html','external.css','external.js','external-diagnosis.js','recorded-evidence.js','verification.js','verification-state.mjs','repair-review.js'];
+const files=['execution-assistance.js','external.html','external.css','external.js','external-diagnosis.js','recorded-evidence.js','verification.js','verification-state.mjs','repair-review.js'];
 export function createRecordedServer(bundle){
  if(bundle.portableExample){
   const example=bundle.portableExample;

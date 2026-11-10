@@ -7,6 +7,10 @@ export const SOURCE_FILES=Object.freeze([
   "docs/DEMO.md",
   "docs/SUBMISSION.md",
   "src/portable-report.mjs",
+  "src/execution-assistance.mjs",
+  "src/execution-assistance-policy.mjs",
+  "scripts/start-execution-assistance.mjs",
+  "public/execution-assistance.js",
   "src/verified-example.mjs",
   "src/replay-verification.mjs",
   "public/portable-report.js",
@@ -87,6 +91,7 @@ export const SOURCE_FILES=Object.freeze([
   "src/execution-diagnosis.mjs",
   "src/experiment.mjs",
   "src/external-diagnosis-contract.mjs",
+  "src/regression-guidance.mjs",
   "src/external-diagnosis-input.mjs",
   "src/external-diagnosis-review.mjs",
   "src/external-diagnosis-service.mjs",
@@ -113,6 +118,8 @@ export const SOURCE_FILES=Object.freeze([
 // Release additions are intentional, fixed files, not a recursive data/workspace copy.
 export const RELEASE_ADDITIONS=Object.freeze([
  '.env.example','.gitignore',
+ 'test/regression-guidance.test.mjs','test-support/regression-controls.mjs',
+ 'test/bundled-example.test.mjs','test/persistence-uncertainty.test.mjs','test/execution-assistance.test.mjs','test-support/persistence-observations.mjs',
  'test/developer-meaning.test.mjs','test-support/developer-meaning-fixtures.mjs',
  'test/release.test.mjs','test/verification-capability.test.mjs','test/verification-readiness.test.mjs','test/checkout.test.mjs','test/checkout-http.test.mjs',
  'test/paypal-sandbox.test.mjs','test-support/checkout-fixture.mjs',
@@ -122,7 +129,7 @@ export const RELEASE_ADDITIONS=Object.freeze([
  'data/portable-reports/upstream-pending-replayed-2026-10-29/manifest.json'
 ]);
 export const RELEASE_FILES=Object.freeze([...SOURCE_FILES,...RELEASE_ADDITIONS]);
-export const RELEASE_TESTS=Object.freeze(['test/core.test.mjs','test/first-use.test.mjs','test/checkout.test.mjs','test/checkout-http.test.mjs','test/paypal-sandbox.test.mjs','test/release.test.mjs','test/verification-readiness.test.mjs','test/developer-meaning.test.mjs']);
+export const RELEASE_TESTS=Object.freeze(['test/regression-guidance.test.mjs','test/bundled-example.test.mjs','test/persistence-uncertainty.test.mjs','test/execution-assistance.test.mjs','test/core.test.mjs','test/first-use.test.mjs','test/checkout.test.mjs','test/checkout-http.test.mjs','test/paypal-sandbox.test.mjs','test/release.test.mjs','test/verification-readiness.test.mjs','test/developer-meaning.test.mjs']);
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 function releaseContents(path,bytes){
  if(path==='README.md'){

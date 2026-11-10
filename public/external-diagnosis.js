@@ -2,16 +2,39 @@
   const node=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
   const detail=(label,value)=>{const d=node('details');d.append(node('summary',label),node('pre',JSON.stringify(value,null,2)));return d;};
   const downloadJSON=(label,value,filename)=>{const button=node('button',label);button.onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:'application/json'}));const a=node('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};return button;};
+  // A coverage receipt is not a semantic verdict or an executed test result.
+  const guidance=(parent,r,cite)=>{
+    const g=r.regressionGuidance;if(!g)return;
+    parent.append(node('h4','Regression guidance'),node('p',`${g.status.replaceAll('_',' ')} · ${g.version}. ${g.note}`),node('p',`Validation uses ${r.validationVersion??r.schemaVersion}; independent semantic review: ${r.semanticReviewStatus}. Structure: ${r.validationChecks?.structure??'see original record'}; structured evidence/reference integrity: ${r.validationChecks?.evidenceIntegrity??'see original record'}. These checks do not prove every sentence.`));
+    if(g.missing?.length)parent.append(node('p','Missing controls (independent review): '+g.missing.join(', ')));
+    if(g.present?.length)parent.append(node('p','Present controls: '+g.present.join(', ')));
+    for(const c of r.renderedResult?.regressionControls??[]){
+      const d=node('details'),summary=node('summary',`${c.kind.replaceAll('_',' ')} · ${c.status.replaceAll('_',' ')} — ${c.purpose}`);d.append(summary,node('p','Preconditions: '+c.preconditions));
+      const actions=node('ol');for(const a of c.actions)actions.append(node('li',a));d.append(actions);
+      for(const a of c.assertions)d.append(node('p',`${a.boundary}: ${a.observation}`));
+      d.append(node('p','Applicability: '+c.reason));if(c.evidenceGap)d.append(node('p','Evidence gap: '+c.evidenceGap));
+      if(cite)d.append(cite(c));d.append(node('p','Proposed only; no test or repair was executed.'));parent.append(d);
+    }
+  };
   const selections=[['prior','Initial diagnosis · pre-recovery revision'],['repaired','Observation review · recorded revision 2 reservation crash'],['accepted','Observation review · recorded revision 2 accepted interruption'],['completed','Observation review · recorded revision 2 completed'],['pending','Observation review · recorded revision 2 pending'],['invalid','Observation review · recorded revision 2 conflicting amount'],['v3-reservation','Separate revision 3 evidence · reservation interruption'],['v3-acceptance','Separate revision 3 evidence · accepted interruption']];
   // Same stored diagnosis representation, scoped to one verification execution.
-  window.mountExactExecutionDiagnosis=(parent,data,{repairHref}={})=>{
-    const section=node('section');section.className='summary-callout';section.id='exact-diagnosis-'+data.executionId;
+  window.mountExactExecutionDiagnosis=(parent,data,{repairHref,instance}={})=>{
+    const section=node('section');section.className='summary-callout';section.id=(instance?instance+'-':'exact-diagnosis-')+data.executionId;
     section.append(node('h3','AI explanation for this exact execution'),node('p',`Run ${data.executionId} · ${data.contractVersion} · actual Medusa/PostgreSQL and installed SDK; simulated PayPal.`));
-    const prefix='analysis-'+data.executionId+'-';
+    const prefix=(instance?instance+'-':'')+'analysis-'+data.executionId+'-';
     const anchor=(label,id)=>{const a=node('a',label);a.href='#'+id;a.onclick=e=>{e.preventDefault();const target=document.getElementById(id);if(!target)return;for(let p=target;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;target.tabIndex=-1;target.scrollIntoView({block:'center'});target.focus?.();};return a;};
     const citations=item=>{const p=node('p','Citations: ');for(const id of item.evidenceRefs??[]){p.append(anchor(id,prefix+'evidence-'+id),document.createTextNode(' '));}for(const c of item.codeRefs??[]){p.append(anchor(`${c.sourceRef}:${c.startLine}–${c.endLine}`,prefix+'source-'+c.sourceRef+'-'+c.startLine),document.createTextNode(' '));}return p;};
     if(!data.records.length)section.append(node('p','No matching stored AI response. This read does not generate one.'));
     for(const r of data.records){section.append(node('h4','Stored model response'),node('p',`Response ${r.id} · provider completion: ${r.responseStatus??'unknown'} · structural/factual validation: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus}`));
+      if (r.cost !== undefined || r.preflightCost !== undefined) {
+        const money = value => Number.isFinite(value) ? '$' + value.toFixed(6) : 'Unknown';
+        const count = value => Number.isSafeInteger(value) && value >= 0 ? String(value) : 'Unknown';
+        section.append(node('h4', 'Usage and cost estimates'),
+          node('p', `Preflight maximum estimate: ${money(r.preflightCost?.maximumUsd)}. Usage-based estimate: ${money(r.cost?.usageBasedEstimateUsd)}. Confirmed billing: unknown.`),
+          node('p', `Input: ${count(r.usage?.input_tokens)} tokens; output: ${count(r.usage?.output_tokens)} tokens, including reasoning: ${count(r.usage?.output_tokens_details?.reasoning_tokens)}. Cached input: ${count(r.usage?.input_tokens_details?.cached_tokens)}; cache-write input: ${count(r.usage?.input_tokens_details?.cache_write_tokens)}.`),
+          node('p', r.providerOutcome === 'NOT_SENT' ? 'Blocked before transmission; no provider request sent.' : r.costUnresolved ? 'Usage or outcome remains unresolved. Do not assume zero cost or retry.' : 'Estimates use reported usage and the recorded pricing policy; they are not settled billing. Reasoning is included in output, not charged twice.'));
+      }
+      guidance(section,r,citations);
       const retention=r.retainedResponse;section.append(node('p',`Preservation: ${retention?.preservationComparison?.length>0&&retention.preservationComparison.every(x=>x.contentEqual)&&retention.omittedMessages===0&&retention.omittedFields===0&&retention.redactedFields===0?'PASS — sanitized fields equal the received parsed content':'inspect retention receipt; completeness not established'}. Generation and retries are disabled in this page.`));
       if(r.semanticReview)section.append(node('h4','Independent development-session review — not model output'),node('p',r.semanticReview.summary),detail('Supported findings, unsupported claims and unresolved points',r.semanticReview));
       if(r.renderedResult){const d=r.renderedResult;section.append(node('h4',d.assessment.replaceAll('_',' ')));
@@ -66,6 +89,7 @@
         if(review.monetaryMetadata?.length){content.append(node('h4','Offline grounded monetary facts — not a new model response'));
           for(const value of review.monetaryMetadata)content.append(node('p',value));}
       }
+      guidance(content,r);
       if(r.renderedResult){const d=r.renderedResult;
         if(!r.matchesCurrentInputs)content.append(node('p','Validated against its own saved input, not the current selection. Inspect the saved input and review below; this does not grant reuse for the current selection.'));
         content.append(node('h4',d.assessment.replaceAll('_',' ')));

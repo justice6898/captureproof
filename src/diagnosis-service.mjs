@@ -6,8 +6,8 @@ import { diagnosisPresentation } from './diagnosis-presentation.mjs';
 
 export class DiagnosisService {
   #active = new Map();
-  constructor({ orders, records, provider, buildInput = buildDiagnosisInput, now = Date.now, contract = null }) {
-    Object.assign(this, { orders, records, provider, buildInput, now });
+  constructor({ orders, records, provider, buildInput = buildDiagnosisInput, now = Date.now, contract = null, attemptContext = null, beforeDispatch = null }) {
+    Object.assign(this, { orders, records, provider, buildInput, now, attemptContext, beforeDispatch });
     this.contract = contract ?? { PROMPT_VERSION, SCHEMA_VERSION, VALIDATOR_VERSION, INSTRUCTIONS, DIAGNOSIS_SCHEMA, validate: validateDiagnosis, present: diagnosisPresentation };
     this.present = (record, input) => this.contract.present(record, input);
   }
@@ -48,11 +48,19 @@ export class DiagnosisService {
       requestedModel: this.provider.config.model, returnedModel: null, responseStatus: null, config: this.provider.config,
       createdAt: start, finishedAt: null, latencyMs: null, usage: null, error: null, result: null,
       input: bundle.input, sourceProvenance: bundle.provenance, sourceMappings: bundle.mappings, literalAliases: bundle.aliases };
+    if (this.attemptContext) record.requestContext = this.attemptContext({ bundle, fingerprint });
+    if (this.beforeDispatch) record.dispatchPhase = 'NOT_SENT';
     const reserved = this.records.reserve(record, this.provider.config.maxAttempts, this.provider.config.timeoutMs, this.present);
     if (reserved.id !== record.id) return { ...this.present(reserved, bundle.input), saved: true };
     let metadata = {}, candidate, finalized = false, lateMetadata;
     try {
-      const output = await this.provider.analyze(bundle.input, { clientRequestId: record.id, onLateMetadata: late => {
+      const output = await this.provider.analyze(bundle.input, { clientRequestId: record.id,
+        ...(this.beforeDispatch ? { beforeDispatch: async requestBody => {
+          await this.beforeDispatch({ bundle, fingerprint, record, requestBody });
+          const dispatchRecord = { ...record, dispatchPhase: 'TRANSMISSION_POSSIBLE' };
+          this.records.save(dispatchRecord);
+          record = dispatchRecord;
+        } } : {}), onLateMetadata: late => {
         lateMetadata = late;
         if (finalized && record.error === 'AI_TIMEOUT') {
           record = { ...record, lateTransportMetadata: late, costReconciliationRequired: late.usageStatus === 'REPORTED' };
