@@ -4,11 +4,11 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "a77760c16b0f6fcd6eb014735901d4f8ea8e4c8018a48d6688b17d40b1e2df28",
-      "bytes": 18410,
+      "sha256": "be2be1002bc7308bcbf7c41d30ce1b6b0f3a03b6d33a399e1efe16976c7764ad",
+      "bytes": 19411,
       "derivedFrom": {
         "path": "README.md",
-        "sha256": "6877790ef4c53adf378871321796ca9ccbf03860a5b417f7de65ab1fe2e43c89",
+        "sha256": "f6c8e4078f0603e16da2bc74bedcb54a21fb207a301bf000c91613155b53d79a",
         "transformation": "Release entry section only; workspace history omitted."
       }
     },
@@ -249,8 +249,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "819362b9d01aa39872215de44d121a07e7027188fa9fd436c348a852459f101b",
-      "bytes": 1859,
+      "sha256": "ab72a3f0e9e8d67cb82e8cc58627207a2ee494fcd4a3a560513acb3889f96358",
+      "bytes": 1889,
       "derivedFrom": {
         "path": "package.json",
         "sha256": "c585565925ae5df87cb15c3531aa28d4f4cd0e2da2591b13a26a706008058dcf",
@@ -274,8 +274,8 @@
     },
     {
       "path": "public/external-diagnosis.js",
-      "sha256": "1ac21bc609d006621530f57e4b1a6c98fe611803e45b144bda3f319cb8a92536",
-      "bytes": 20966
+      "sha256": "1491c49ec5e0a1beb642eb10172cbcb4be5bd8edf4f626ed22c26d3a03bfd6c9",
+      "bytes": 22307
     },
     {
       "path": "public/external.css",
@@ -339,8 +339,8 @@
     },
     {
       "path": "scripts/prepare-first-use.mjs",
-      "sha256": "a1d37a172371ef6d67499897a7cbcbc375528cdaebe5ccc8d02118860687bb2e",
-      "bytes": 10987
+      "sha256": "2ade90932bfb7273f46b57bf578b875ea83a43e683b7fce6a9f9d0cd246a67f7",
+      "bytes": 11191
     },
     {
       "path": "scripts/prepare-recorded-demo.mjs",
@@ -449,8 +449,8 @@
     },
     {
       "path": "src/external-diagnosis-contract.mjs",
-      "sha256": "b47a7d9c83e2ddcbe3b9a13cde8769aad3a089833769457d5b07377430dbcfc9",
-      "bytes": 17615
+      "sha256": "d8fe242f7915dd1494f927ca39ceff7f476f1404fdeac28ac0afd54c1d64e156",
+      "bytes": 17698
     },
     {
       "path": "src/regression-guidance.mjs",
@@ -464,8 +464,8 @@
     },
     {
       "path": "src/external-diagnosis-review.mjs",
-      "sha256": "ff8bcbc0e472a1653eb5dbe2abe0b4ec03d6d398d5b625a8d0ada678cfe8c6c5",
-      "bytes": 998
+      "sha256": "2fde241bc57cee758d91ae7572bc9dfd48481e18b6d536f2d77efbb961493d7c",
+      "bytes": 6997
     },
     {
       "path": "src/external-diagnosis-service.mjs",
@@ -578,9 +578,29 @@
       "bytes": 675
     },
     {
+      "path": "test/semantic-review.test.mjs",
+      "sha256": "b1cbd3ea983aad8218f2e62953fee931c42099dd53ffc9c0364e24e52a0bc782",
+      "bytes": 8255
+    },
+    {
+      "path": "test-support/semantic-review-cases.mjs",
+      "sha256": "59866bb215842b715b1bcadf07a49b46396bc4400c1d8eea766cd962fe95febc",
+      "bytes": 7646
+    },
+    {
+      "path": "test-support/semantic-review-expectations.json",
+      "sha256": "f53659e3fbc05907a2767687e4c9b86529a429da907578b0552ddc2786dcb1a2",
+      "bytes": 2592
+    },
+    {
+      "path": "test-support/semantic-review-assessments.json",
+      "sha256": "44275d44a9f7e262a460d13d853ebc6c0bd794c559c86008c30116fd575758d8",
+      "bytes": 37115
+    },
+    {
       "path": "test/regression-guidance.test.mjs",
-      "sha256": "6374434a16557b7578698f49d70ec591a36642c0b88fd09fd5afab09a11ae90e",
-      "bytes": 7207
+      "sha256": "b6f1697a8e772920f8d868a590866765c8d6c057501a1a1c032ac5e32f75af1c",
+      "bytes": 7199
     },
     {
       "path": "test-support/regression-controls.mjs",

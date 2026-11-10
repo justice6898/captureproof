@@ -1,7 +1,7 @@
 import { regressionControlsSchema, validateRegressionControls, historicalGuidanceAssessment } from './regression-guidance.mjs';
 import { DIAGNOSIS_SCHEMA as legacySchema, INSTRUCTIONS as legacyInstructions, validateDiagnosis, DiagnosisError } from './diagnosis-contract.mjs';
 import { renderMonetaryClaims, validateMonetaryClaims } from './diagnosis-money.mjs';
-import { externalSemanticReview, externalOfflineRevalidations } from './external-diagnosis-review.mjs';
+import { externalSemanticReview, externalOfflineRevalidations, semanticReuseAllowed } from './external-diagnosis-review.mjs';
 import { validateStateClaims } from './external-observation-contract.mjs';
 export const EXTERNAL_VERSION='external-diagnosis-5';
 const object=properties=>({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
@@ -94,15 +94,15 @@ function validateExternal(result,input,moneyPolicy) {
   if(result.assessment!=='insufficient_evidence'&&(!result.stateClaims.length||!input.evidence.some(e=>e.fields.phase==='returned_call'&&e.fields['database.available']===true)))fail('EXTERNAL_BOUNDARY_INCOMPLETE');
   return result;
 }
-export function externalDiagnosisPresentation(record,input=record.input){
+export function externalDiagnosisPresentation(record,input=record.input,{reviews}={}){
   let currentValidation='NOT_VALIDATED',validationError=null;
   const version=record.schemaVersion,consistent=[record.promptVersion,record.validatorVersion].every(v=>v===version);
   const validator=consistent?({'external-diagnosis-2':validateExternalDiagnosisV2,'external-diagnosis-3':validateExternalDiagnosisV3,'external-diagnosis-4':validateExternalDiagnosisV4,[EXTERNAL_VERSION]:validateExternalDiagnosis})[version]:null;
   if(!validator)currentValidation='HISTORICAL_CONTRACT';
   else if(record.status==='succeeded')try{validator(record.result,input);currentValidation='ACCEPTED';}catch(e){currentValidation='REJECTED';validationError=e.code??'INVALID_SAVED_DIAGNOSIS';}
-  const semanticReview=externalSemanticReview(record),offlineRevalidations=externalOfflineRevalidations(record);
+  const semanticReview=externalSemanticReview(record,reviews),offlineRevalidations=externalOfflineRevalidations(record);
   const contractCurrent=version===EXTERNAL_VERSION&&consistent;
-  const reusable=contractCurrent&&currentValidation==='ACCEPTED' && (record.mode!=='openai-live'||semanticReview?.reuseAllowed===true);
+  const reusable=contractCurrent&&currentValidation==='ACCEPTED' && (record.mode==='mock-transport'||record.mode==='openai-live'&&semanticReuseAllowed(record,semanticReview));
   const regressionGuidance=currentValidation==='ACCEPTED'&&contractCurrent?validateRegressionControls(record.result,input,EXTERNAL_SCHEMA.properties.regressionControls):historicalGuidanceAssessment(record,offlineRevalidations);
   return {...record,currentValidation,validationChecks:{structure:currentValidation==='ACCEPTED'?'PASS':'NOT_ESTABLISHED',evidenceIntegrity:currentValidation==='ACCEPTED'?'PASS':'NOT_ESTABLISHED',regressionCoverage:regressionGuidance.status,semantic:semanticReview?.outcome??'NOT_REVIEWED'},validationVersion:version,contractCurrent,validationError,reusable,semanticReview,offlineRevalidations,regressionGuidance,semanticReviewStatus:semanticReview?.outcome??'NOT_REVIEWED',renderedResult:currentValidation==='ACCEPTED'?renderMonetaryClaims(record.result,{includeMetadata:true}):null};
 }

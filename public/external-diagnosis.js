@@ -5,8 +5,8 @@
   // A coverage receipt is not a semantic verdict or an executed test result.
   const guidance=(parent,r,cite)=>{
     const g=r.regressionGuidance;if(!g)return;
-    parent.append(node('h4','Regression guidance'),node('p',`${g.status.replaceAll('_',' ')} · ${g.version}. ${g.note}`),node('p',`Validation uses ${r.validationVersion??r.schemaVersion}; independent semantic review: ${r.semanticReviewStatus}. Structure: ${r.validationChecks?.structure??'see original record'}; structured evidence/reference integrity: ${r.validationChecks?.evidenceIntegrity??'see original record'}. These checks do not prove every sentence.`));
-    if(g.missing?.length)parent.append(node('p','Missing controls (independent review): '+g.missing.join(', ')));
+    parent.append(node('h4','Regression guidance'),node('p',`${g.status.replaceAll('_',' ')} · ${g.version}. ${g.note}`),node('p',`Validation uses ${r.validationVersion??r.schemaVersion}; semantic review: ${r.semanticReviewStatus}. Structure: ${r.validationChecks?.structure??'see original record'}; structured evidence/reference integrity: ${r.validationChecks?.evidenceIntegrity??'see original record'}. These checks do not prove every sentence.`));
+    if(g.missing?.length)parent.append(node('p','Missing controls (recorded review): '+g.missing.join(', ')));
     if(g.present?.length)parent.append(node('p','Present controls: '+g.present.join(', ')));
     for(const c of r.renderedResult?.regressionControls??[]){
       const d=node('details'),summary=node('summary',`${c.kind.replaceAll('_',' ')} · ${c.status.replaceAll('_',' ')} — ${c.purpose}`);d.append(summary,node('p','Preconditions: '+c.preconditions));
@@ -16,16 +16,35 @@
       if(cite)d.append(cite(c));d.append(node('p','Proposed only; no test or repair was executed.'));parent.append(d);
     }
   };
+  const semanticReview=(parent,r,cite)=>{
+    const review=r.semanticReview;if(!review)return;
+    parent.append(node('h4','Development-session review — not model output'),node('p',review.summary));
+    if(review.sanitizedExcerpt)parent.append(node('blockquote',review.sanitizedExcerpt));
+    if(review.format==='diagnosis-claim-review-1'){
+      parent.append(node('p',`Scope: ${review.scope?.kind?.replaceAll('_',' ')??'not established'} · ${review.reviewedClaimCount??0} of ${review.materialClaimCount??'unknown'} prose fields reviewed. Reuse: ${r.reusable?'allowed for this exact response':'not approved'}.`));
+      if(review.unreviewedFields?.length)parent.append(node('p','Other claims remain unreviewed; this assessment does not cover them.'));
+      for(const c of review.claims??[]){const d=node('details');d.append(node('summary',`${c.disposition} · ${c.field}`),node('blockquote',c.excerpt),node('p',`${c.classification}: ${c.reason}`));
+        if(c.evidenceGap)d.append(node('p','Missing premise: '+c.evidenceGap));
+        if(cite)d.append(cite(c));else d.append(node('p','Evidence: '+c.evidenceRefs.join(', ')));
+        if(c.contextFields.length)d.append(node('p','Context checked: '+c.contextFields.join(', ')));
+        parent.append(d);
+      }
+      parent.append(node('p',`${review.authorship??'Review metadata invalid'}. ${review.method??'No method established'}.`));
+    }
+    parent.append(detail('Review scope, bindings and detail',review));
+  };
   const selections=[['prior','Initial diagnosis · pre-recovery revision'],['repaired','Observation review · recorded revision 2 reservation crash'],['accepted','Observation review · recorded revision 2 accepted interruption'],['completed','Observation review · recorded revision 2 completed'],['pending','Observation review · recorded revision 2 pending'],['invalid','Observation review · recorded revision 2 conflicting amount'],['v3-reservation','Separate revision 3 evidence · reservation interruption'],['v3-acceptance','Separate revision 3 evidence · accepted interruption']];
   // Same stored diagnosis representation, scoped to one verification execution.
   window.mountExactExecutionDiagnosis=(parent,data,{repairHref,instance}={})=>{
     const section=node('section');section.className='summary-callout';section.id=(instance?instance+'-':'exact-diagnosis-')+data.executionId;
-    section.append(node('h3','AI explanation for this exact execution'),node('p',`Run ${data.executionId} · ${data.contractVersion} · actual Medusa/PostgreSQL and installed SDK; simulated PayPal.`));
+    const authored=data.records.some(r=>r.mode==='authored-offline');
+    section.append(node('h3',authored?'Authored diagnosis review exercise':'AI explanation for this exact execution'),node('p',`Run ${data.executionId} · ${data.contractVersion} · ${authored?'Authored offline response over supplied evidence; no new model or integration execution.':'actual Medusa/PostgreSQL and installed SDK; simulated PayPal.'}`));
     const prefix=(instance?instance+'-':'')+'analysis-'+data.executionId+'-';
     const anchor=(label,id)=>{const a=node('a',label);a.href='#'+id;a.onclick=e=>{e.preventDefault();const target=document.getElementById(id);if(!target)return;for(let p=target;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;target.tabIndex=-1;target.scrollIntoView({block:'center'});target.focus?.();};return a;};
     const citations=item=>{const p=node('p','Citations: ');for(const id of item.evidenceRefs??[]){p.append(anchor(id,prefix+'evidence-'+id),document.createTextNode(' '));}for(const c of item.codeRefs??[]){p.append(anchor(`${c.sourceRef}:${c.startLine}–${c.endLine}`,prefix+'source-'+c.sourceRef+'-'+c.startLine),document.createTextNode(' '));}return p;};
     if(!data.records.length)section.append(node('p','No matching stored AI response. This read does not generate one.'));
-    for(const r of data.records){section.append(node('h4','Stored model response'),node('p',`Response ${r.id} · provider completion: ${r.responseStatus??'unknown'} · structural/factual validation: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus}`));
+    for(const r of data.records){section.append(node('h4',r.mode==='authored-offline'?'Authored review fixture — not model output':'Stored model response'),node('p',`Response ${r.id} · provider completion: ${r.responseStatus??'unknown'} · structural/factual validation: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus}`));
+      semanticReview(section,r,citations);
       if (r.cost !== undefined || r.preflightCost !== undefined) {
         const money = value => Number.isFinite(value) ? '$' + value.toFixed(6) : 'Unknown';
         const count = value => Number.isSafeInteger(value) && value >= 0 ? String(value) : 'Unknown';
@@ -36,7 +55,6 @@
       }
       guidance(section,r,citations);
       const retention=r.retainedResponse;section.append(node('p',`Preservation: ${retention?.preservationComparison?.length>0&&retention.preservationComparison.every(x=>x.contentEqual)&&retention.omittedMessages===0&&retention.omittedFields===0&&retention.redactedFields===0?'PASS — sanitized fields equal the received parsed content':'inspect retention receipt; completeness not established'}. Generation and retries are disabled in this page.`));
-      if(r.semanticReview)section.append(node('h4','Independent development-session review — not model output'),node('p',r.semanticReview.summary),detail('Supported findings, unsupported claims and unresolved points',r.semanticReview));
       if(r.renderedResult){const d=r.renderedResult;section.append(node('h4',d.assessment.replaceAll('_',' ')));
         for(const f of d.findings)section.append(node('p',`${f.kind}: ${f.explanation}`),citations(f));
         for(const [label,v]of [['Proposed correction — not applied',d.fixDirection],['Proposed regression test — not executed',d.regressionTest]])if(v)section.append(node('h4',label),node('p',v.text),citations(v));
@@ -45,9 +63,9 @@
       }else {section.append(node('p',`Saved attempt was not accepted: ${r.error??r.validationError??r.currentValidation}. No retry.`));if(retention)section.append(detail('Unvalidated sanitized response — not an accepted diagnosis',retention.messages));}
       section.append(detail('Complete stored structured response and metadata',r));
     }
-    const evidence=node('details');evidence.append(node('summary','Exact observations supplied to the model'));
+    const evidence=node('details');evidence.append(node('summary',authored?'Evidence used by the authored fixture':'Exact observations supplied to the model'));
     for(const e of data.input.evidence){const d=detail(e.id,e.fields);d.id=prefix+'evidence-'+e.id;evidence.append(d);}section.append(evidence);
-    const sources=node('details');sources.append(node('summary','Executed source excerpts supplied to the model'));
+    const sources=node('details');sources.append(node('summary',authored?'Frozen reference source used by the authored fixture':'Executed source excerpts supplied to the model'));
     for(const s of data.input.sources){const d=node('details');d.append(node('summary',s.path),node('p',s.sha256));const code=node('pre');for(const l of s.lines){const line=node('span',`${l.line}: ${l.text}\n`);line.id=prefix+'source-'+s.id+'-'+l.line;code.append(line);}d.append(code);sources.append(d);}section.append(sources);
     if(data.repairComparison){const c=data.repairComparison;section.append(node('h4','Independent repair comparison'),node('p',c.attribution),node('p',`Candidate execution ${c.runId} · historical aggregate ${c.verdict} · final boundary ${c.finalVerdict}.`));const link=node('a','Inspect the separately tested candidate, checkpoints and frozen source');link.href=repairHref??`/external?job=${c.jobId}#execution-${c.runId}`;section.append(link);}
     section.append(downloadJSON('Download exact analysis, evidence and review',data,`captureproof-analysis-${data.executionId}.json`));parent.append(section);
@@ -68,11 +86,7 @@
       content.append(node('p',`Saved response ${r.id} · Execution ${r.input?.execution?.runId??'unavailable'} · Evidence scope: ${r.input?.observationScope?.kind??'complete supplied execution'}.`));
       content.append(node('p',`${r.matchesCurrentInputs?'Current':'Stale — not reused'} · ${r.schemaVersion} · structural: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus??'NOT_REVIEWED'}`));
       if(r.status==='failed')content.append(node('p',`Saved attempt rejected: ${r.error}. No automatic retry. Rejected content is retained privately.`));
-      if(r.semanticReview){
-        content.append(node('h4','Independent review of saved response'),node('p',r.semanticReview.summary));
-        if(r.semanticReview.sanitizedExcerpt)content.append(node('blockquote',r.semanticReview.sanitizedExcerpt));
-        content.append(detail('Independent semantic review — proposal not executed',r.semanticReview));
-      }
+      semanticReview(content,r);
       for(const review of r.offlineRevalidations??[]){
         if(review.kind==='ENGINEERING_RECOVERY_PLAN'){
           const plan=node('section');plan.id='external-recovery-plan';

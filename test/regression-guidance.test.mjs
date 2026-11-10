@@ -54,7 +54,7 @@ test('healthy scoped guidance and insufficient next-evidence use distinct requir
  }
  const r=result();r.assessment='no_issue_observed';r.fixDirection=null;r.regressionControls=[{...r.regressionControls[0],status:'not_applicable',reason:'No failing completion observation is diagnosed; no repair proposed.',actions:[],assertions:[]}];validateExternalDiagnosis(r,input);
 });
-test('filler, contradictory prose and valid-range but irrelevant citations cannot earn semantic approval',()=>{
+test('one unsupported production-safety prose claim remains NOT_REVIEWED despite valid structure',()=>{
  const r=result();r.regressionControls[0].assertions[0].observation='A completed result always proves production safety.';
  validateExternalDiagnosis(r,input); // Reliable automation checks typed assertions, not natural-language truth.
  const view=externalDiagnosisPresentation({...old,id:'authored-misleading-prose',result:r,promptVersion:EXTERNAL_VERSION,schemaVersion:EXTERNAL_VERSION,validatorVersion:EXTERNAL_VERSION});

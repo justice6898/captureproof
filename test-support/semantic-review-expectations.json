@@ -1,0 +1,20 @@
+{
+  "authorship": "Declared by the same development assistant before the recorded reviews; not blinded or independent human evaluation.",
+  "scope": "Expected disposition of the selected claim, not whole-response accuracy. Never supplied to the review validator.",
+  "cases": {
+    "01": {"disposition":"SUPPORTED","reason":"A normal successful completion control detects a reject-everything repair; it is a proposal under bound-completion requirements."},
+    "02": {"disposition":"SUPPORTED","reason":"Paraphrase preserves the PENDING non-completion obligation without a fixed merchant status string."},
+    "03": {"disposition":"CONTRADICTED","reason":"Completing the merchant payment during PENDING directly conflicts with the completion invariant and checkpoint-1 violation."},
+    "04": {"disposition":"CONTRADICTED","reason":"Unavailable lookup does not establish that capture was unsent or authorize another POST; correct later assertions do not excuse the action."},
+    "05": {"disposition":"UNSUPPORTED","reason":"The cancelPayment declaration at dispatcher line 65 contains no pending capture guard; range integrity is not relevance."},
+    "06": {"disposition":"UNSUPPORTED","reason":"Sequential saved observations establish no simultaneous-process guarantee; asserted certainty lacks a premise."},
+    "07": {"disposition":"UNSUPPORTED","reason":"The proposed normal-control execution and repaired implementation are not supplied in the selected input."},
+    "08": {"disposition":"CONTRADICTED","reason":"restart explicitly records null/not_recorded, not zero or unsent; neither absence nor zero requests would independently establish completed payment."},
+    "09": {"disposition":"CONTRADICTED","reason":"A confirmed mismatch remains a violation even if recovery is unfinished."},
+    "10": {"disposition":"UNRESOLVED","reason":"Concurrency remains unknown; this appropriately leaves the unobserved proposition open and identifies the missing trace."},
+    "11": {"disposition":"SUPPORTED","reason":"The positive counterpart preserves confirmed conflict and unresolved recovery as separate facts."},
+    "12": {"disposition":"SUPPORTED","reason":"The positive action seeks bound application-visible evidence without assuming absence authorizes capture."},
+    "13": {"disposition":"SUPPORTED","reason":"Healthy guidance is confined to an authored completed state, with no universal guard or repair claim."},
+    "14": {"disposition":"SUPPORTED","reason":"The incomplete prefix calls for missing returned and application-visible evidence without inventing an outcome."}
+  }
+}

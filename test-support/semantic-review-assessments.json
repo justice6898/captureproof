@@ -1,0 +1,665 @@
+{
+  "authored-semantic-01": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "0d2c1cc58213344d39e649b11c91c0821f3c82e464e50f02f62e49a5e7b3f5c6",
+    "resultSha256": "49bea9859e437494c0bfccdc34835756fd8875393b47247b2b6496eaa999c16a",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.721Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/0/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/0/assertions/0/observation",
+        "excerpt": "Independent merchant snapshot records completion only for the matching completed capture.",
+        "classification": "proposal",
+        "disposition": "SUPPORTED",
+        "reason": "The control requires the merchant to permit a legitimately bound COMPLETED payment, so a repair that rejects every payment would fail this positive test. checkpoint-1 motivates a completion gate but does not show this future normal control executed. Read its matching-identity precondition and returned-call action together.",
+        "contextFields": [
+          "/regressionControls/0/purpose",
+          "/regressionControls/0/preconditions",
+          "/regressionControls/0/reason",
+          "/regressionControls/0/evidenceGap",
+          "/regressionControls/0/actions/0",
+          "/regressionControls/0/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1"
+        ],
+        "codeRefs": [
+          {
+            "sourceRef": "source-a59c2e7ba870bcf2-e8b97f",
+            "sourceSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+            "startLine": 46,
+            "endLine": 57
+          }
+        ],
+        "evidenceGap": "No fresh normal-control execution is supplied."
+      }
+    ],
+    "outcome": "PARTIAL",
+    "reuseAllowed": false,
+    "summary": "The control requires the merchant to permit a legitimately bound COMPLETED payment, so a repair that rejects every payment would fail this positive test. checkpoint-1 motivates a completion gate but does not show this future normal control executed. Read its matching-identity precondition and returned-call action together."
+  },
+  "authored-semantic-02": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "24a245c095c518411b44a35c8a9551d9f1ddbd260c77aa7c0bbcf897346e0341",
+    "resultSha256": "245a3c6e463a4af00ca3e7c627c9f04006444186fce1bc5e84a7b58c0abcab28",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.728Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/1/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/1/assertions/0/observation",
+        "excerpt": "When the application call returns with the capture still pending, its saved payment must withhold completion even if the order itself is marked complete.",
+        "classification": "proposal",
+        "disposition": "SUPPORTED",
+        "reason": "The different wording preserves the same boundary: a completed order does not turn its PENDING capture into a completed payment. checkpoint-1 records the observed premature completion, and provider lines 46–57/214–228 explain why the proposed assertion is relevant.",
+        "contextFields": [
+          "/regressionControls/1/purpose",
+          "/regressionControls/1/preconditions",
+          "/regressionControls/1/reason",
+          "/regressionControls/1/evidenceGap",
+          "/regressionControls/1/actions/0"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1"
+        ],
+        "codeRefs": [
+          {
+            "sourceRef": "source-a59c2e7ba870bcf2-e8b97f",
+            "sourceSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+            "startLine": 46,
+            "endLine": 57
+          }
+        ],
+        "evidenceGap": null
+      }
+    ],
+    "outcome": "PARTIAL",
+    "reuseAllowed": false,
+    "summary": "The different wording preserves the same boundary: a completed order does not turn its PENDING capture into a completed payment. checkpoint-1 records the observed premature completion, and provider lines 46–57/214–228 explain why the proposed assertion is relevant."
+  },
+  "authored-semantic-03": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "d947d852fea169941386cc67166e0da2c25411acda3da350e3fe14474d7c3643",
+    "resultSha256": "689912ef27e2d839222673a487ca9045b5215d81794b8db7de04477f665263c8",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.728Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/1/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/1/assertions/0/observation",
+        "excerpt": "At the returned boundary, mark the merchant payment complete while the provider capture is still PENDING.",
+        "classification": "proposal",
+        "disposition": "CONTRADICTED",
+        "reason": "The instruction requires exactly the premature completion that checkpoint-1 demonstrates as a defect. It contradicts its pending_must_not_complete rule and the declared completed-provider-evidence invariant; a valid rule identifier does not repair the opposing prose.",
+        "contextFields": [
+          "/regressionControls/1/purpose",
+          "/regressionControls/1/preconditions",
+          "/regressionControls/1/reason",
+          "/regressionControls/1/evidenceGap",
+          "/regressionControls/1/actions/0"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1"
+        ],
+        "codeRefs": [
+          {
+            "sourceRef": "source-a59c2e7ba870bcf2-e8b97f",
+            "sourceSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+            "startLine": 46,
+            "endLine": 57
+          }
+        ],
+        "evidenceGap": null
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "The instruction requires exactly the premature completion that checkpoint-1 demonstrates as a defect. It contradicts its pending_must_not_complete rule and the declared completed-provider-evidence invariant; a valid rule identifier does not repair the opposing prose."
+  },
+  "authored-semantic-04": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "73ba38341501731c7f621197d3214cd8d539e597c39bedf13624453611908db5",
+    "resultSha256": "663e4bfa0522da40c09ba9c3fbf1498e89e99ee04718b6972183533e1c43b8c3",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.729Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/2/actions/0"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/2/actions/0",
+        "excerpt": "If read-back is unavailable, immediately send another capture POST without reconciliation.",
+        "classification": "proposal",
+        "disposition": "CONTRADICTED",
+        "reason": "The action orders a new POST solely because lookup is unavailable. Neither an unavailable read nor the null restart counters prove the previous capture was unsent. The unchanged assertions require unresolved outcome and no retry authorized by absence, so the preceding action contradicts them. Merchant recovery must obtain application-visible evidence and establish retry eligibility first.",
+        "contextFields": [
+          "/regressionControls/2/purpose",
+          "/regressionControls/2/preconditions",
+          "/regressionControls/2/reason",
+          "/regressionControls/2/evidenceGap",
+          "/regressionControls/2/assertions/0/observation",
+          "/regressionControls/2/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "restart",
+          "checkpoint-1"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "This input contains no executed unavailable-read-back control."
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "The action orders a new POST solely because lookup is unavailable. Neither an unavailable read nor the null restart counters prove the previous capture was unsent. The unchanged assertions require unresolved outcome and no retry authorized by absence, so the preceding action contradicts them. Merchant recovery must obtain application-visible evidence and establish retry eligibility first."
+  },
+  "authored-semantic-05": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "ccc4dd1963ecc27f9e061cb351c2daf17ce261cc3de3118d89cc885375dd4064",
+    "resultSha256": "58ea8322d94388336e5655ac774976eb33d9b7656a77665b3b1034a0af1d2a26",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.729Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/1/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/1/assertions/0/observation",
+        "excerpt": "The cited cancelPayment declaration implements the guard that prevents merchant completion during PENDING capture.",
+        "classification": "inference",
+        "disposition": "UNSUPPORTED",
+        "reason": "Dispatcher line 65 only declares cancelPayment. It contains no PENDING guard and does not support the asserted implementation. Capture dispatch is at 61–64; provider 46–57 and retrieve 214–228 show the relevant path. Hash/range validity establishes location, not relevance.",
+        "contextFields": [
+          "/regressionControls/1/purpose",
+          "/regressionControls/1/preconditions",
+          "/regressionControls/1/reason",
+          "/regressionControls/1/evidenceGap",
+          "/regressionControls/1/actions/0"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1"
+        ],
+        "codeRefs": [
+          {
+            "sourceRef": "source-a595cc3c742c6ecf-f22439",
+            "sourceSha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+            "startLine": 65,
+            "endLine": 65
+          },
+          {
+            "sourceRef": "source-a595cc3c742c6ecf-f22439",
+            "sourceSha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+            "startLine": 61,
+            "endLine": 64
+          },
+          {
+            "sourceRef": "source-a59c2e7ba870bcf2-e8b97f",
+            "sourceSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+            "startLine": 46,
+            "endLine": 57
+          }
+        ],
+        "evidenceGap": null
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "Dispatcher line 65 only declares cancelPayment. It contains no PENDING guard and does not support the asserted implementation. Capture dispatch is at 61–64; provider 46–57 and retrieve 214–228 show the relevant path. Hash/range validity establishes location, not relevance."
+  },
+  "authored-semantic-06": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "86aef0c41f5721f7387ebacb4fb1567fe62a3b2bd65057598adb813a2469dd51",
+    "resultSha256": "9fe6d20a4e9f3d0e023f9cab7ab1cfb4d7d0c19f723c616224ffb15f5df4ffe9",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.729Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/4/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/4/assertions/0/observation",
+        "excerpt": "The same implementation will prevent duplicate captures under simultaneous merchant processes after restart.",
+        "classification": "verification",
+        "disposition": "UNSUPPORTED",
+        "reason": "The claim guarantees simultaneous-process behavior from a sequential saved execution. Restart observations and repeated returned calls do not establish interleaving, atomicity or competing-process capture safety. A separate concurrency trace would be required.",
+        "contextFields": [
+          "/regressionControls/4/purpose",
+          "/regressionControls/4/preconditions",
+          "/regressionControls/4/reason",
+          "/regressionControls/4/evidenceGap",
+          "/regressionControls/4/actions/0",
+          "/regressionControls/4/assertions/1/observation",
+          "/regressionControls/4/assertions/2/observation"
+        ],
+        "evidenceRefs": [
+          "restart",
+          "checkpoint-2",
+          "checkpoint-3"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "No concurrent merchant observations or tested concurrency repair are supplied."
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "The claim guarantees simultaneous-process behavior from a sequential saved execution. Restart observations and repeated returned calls do not establish interleaving, atomicity or competing-process capture safety. A separate concurrency trace would be required."
+  },
+  "authored-semantic-07": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "04828b871403b178355f8c685391cb4db22a4a55c6fc7b4e97be409c6757fd85",
+    "resultSha256": "d13218c96fa49e4c9664a5eb1f11edc6f27b26dae01e69c36f51ebfc64a75852",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.730Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/0/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/0/assertions/0/observation",
+        "excerpt": "This proposed normal-completion control was executed and passed against the repaired implementation.",
+        "classification": "verification",
+        "disposition": "UNSUPPORTED",
+        "reason": "The supplied observations concern the original implementation and a pending/restart sequence. Neither a direct normal-first-capture control nor the proposed repaired implementation was executed in this input. The control status and testsExecuted=false also contradict the prose execution claim.",
+        "contextFields": [
+          "/regressionControls/0/purpose",
+          "/regressionControls/0/preconditions",
+          "/regressionControls/0/reason",
+          "/regressionControls/0/evidenceGap",
+          "/regressionControls/0/actions/0",
+          "/regressionControls/0/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1",
+          "checkpoint-2"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "The proposed normal control and repair execution receipts are absent."
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "The supplied observations concern the original implementation and a pending/restart sequence. Neither a direct normal-first-capture control nor the proposed repaired implementation was executed in this input. The control status and testsExecuted=false also contradict the prose execution claim."
+  },
+  "authored-semantic-08": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "344d178b559965f4d0aaf83d05106a0d932ffa0dae991d59c52967ab0712627e",
+    "resultSha256": "f54ee6d25d8c25f96d242ad57b60c53d483e49adb5fd9260a0778190661e8063",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.731Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/4/assertions/2/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/4/assertions/2/observation",
+        "excerpt": "The unrecorded restart POST count is zero, so the earlier capture was not sent and the payment is safe to complete.",
+        "classification": "observation",
+        "disposition": "CONTRADICTED",
+        "reason": "restart.counterObservation is not_recorded and capturePostAttempts is null, not zero. checkpoint-1 already records one POST and one capture. Missing telemetry proves neither an unsent operation nor payment completion; the observation borrows certainty the evidence cannot supply.",
+        "contextFields": [
+          "/regressionControls/4/purpose",
+          "/regressionControls/4/preconditions",
+          "/regressionControls/4/reason",
+          "/regressionControls/4/evidenceGap",
+          "/regressionControls/4/actions/0",
+          "/regressionControls/4/assertions/0/observation",
+          "/regressionControls/4/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "restart",
+          "checkpoint-1"
+        ],
+        "codeRefs": [],
+        "evidenceGap": null
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "restart.counterObservation is not_recorded and capturePostAttempts is null, not zero. checkpoint-1 already records one POST and one capture. Missing telemetry proves neither an unsent operation nor payment completion; the observation borrows certainty the evidence cannot supply."
+  },
+  "authored-semantic-09": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "018d2123df7f1fe99a3a82da97228b1aa48c9c9aa80dfed36a056075a7415acd",
+    "resultSha256": "180637ea979a9d2c1c3085d5df7669427723c91f8df178a774ff1b322db37671",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.731Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/3/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/3/assertions/0/observation",
+        "excerpt": "Once a binding mismatch is confirmed, hide that violation until recovery finishes; show only inconclusive in the meantime.",
+        "classification": "proposal",
+        "disposition": "CONTRADICTED",
+        "reason": "The confirmed_violation_remains_visible assertion requires the confirmed mismatch to remain visible in an unfinished window. Hiding it until recovery finishes defeats that assertion. checkpoint-1 remains a historical PENDING/merchant completion violation even when later observations settle; recovery uncertainty does not erase established evidence.",
+        "contextFields": [
+          "/regressionControls/3/purpose",
+          "/regressionControls/3/preconditions",
+          "/regressionControls/3/reason",
+          "/regressionControls/3/evidenceGap",
+          "/regressionControls/3/actions/0",
+          "/regressionControls/3/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1",
+          "checkpoint-2"
+        ],
+        "codeRefs": [],
+        "evidenceGap": null
+      }
+    ],
+    "outcome": "FAIL",
+    "reuseAllowed": false,
+    "summary": "The confirmed_violation_remains_visible assertion requires the confirmed mismatch to remain visible in an unfinished window. Hiding it until recovery finishes defeats that assertion. checkpoint-1 remains a historical PENDING/merchant completion violation even when later observations settle; recovery uncertainty does not erase established evidence."
+  },
+  "authored-semantic-10": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "68cf51894ef4acd0d0bc12ef7a763e0a47602dea217d74700964ecf18c728bc8",
+    "resultSha256": "2a65306c67807d0534c61049d312aaa9fc30f7e5a696c8f37f2cfc73c70ff876",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.732Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/4/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/4/assertions/0/observation",
+        "excerpt": "Whether simultaneous merchant processes preserve this identity is unresolved; collect a separately authorized concurrency trace before deciding.",
+        "classification": "inference",
+        "disposition": "UNRESOLVED",
+        "reason": "The concurrency proposition cannot be decided from these sequential observations. The wording correctly leaves it open and identifies a separately authorized trace rather than asserting a guarantee or requesting an automatic execution. This is an unresolved proposition, not a detected implementation defect.",
+        "contextFields": [
+          "/regressionControls/4/purpose",
+          "/regressionControls/4/preconditions",
+          "/regressionControls/4/reason",
+          "/regressionControls/4/evidenceGap",
+          "/regressionControls/4/actions/0",
+          "/regressionControls/4/assertions/1/observation",
+          "/regressionControls/4/assertions/2/observation"
+        ],
+        "evidenceRefs": [
+          "restart",
+          "checkpoint-2",
+          "checkpoint-3"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "No simultaneous-process trace is present."
+      }
+    ],
+    "outcome": "PARTIAL",
+    "reuseAllowed": false,
+    "summary": "The concurrency proposition cannot be decided from these sequential observations. The wording correctly leaves it open and identifies a separately authorized trace rather than asserting a guarantee or requesting an automatic execution. This is an unresolved proposition, not a detected implementation defect."
+  },
+  "authored-semantic-11": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "0d2c1cc58213344d39e649b11c91c0821f3c82e464e50f02f62e49a5e7b3f5c6",
+    "resultSha256": "49bea9859e437494c0bfccdc34835756fd8875393b47247b2b6496eaa999c16a",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.732Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/3/assertions/0/observation"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/3/assertions/0/observation",
+        "excerpt": "The known binding violation remains reported while recovery progress stays unresolved.",
+        "classification": "proposal",
+        "disposition": "SUPPORTED",
+        "reason": "The proposed observation keeps the known mismatch visible while recovery progress remains unresolved. It is the positive counterpart of hiding a confirmed violation; it asserts no executed wrong-binding experiment. Read the conflicting-evidence precondition together with its unfinished-window assertion.",
+        "contextFields": [
+          "/regressionControls/3/purpose",
+          "/regressionControls/3/preconditions",
+          "/regressionControls/3/reason",
+          "/regressionControls/3/evidenceGap",
+          "/regressionControls/3/actions/0",
+          "/regressionControls/3/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "checkpoint-1",
+          "checkpoint-2"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "The future wrong-binding control is proposed, not supplied as executed evidence."
+      }
+    ],
+    "outcome": "PARTIAL",
+    "reuseAllowed": false,
+    "summary": "The proposed observation keeps the known mismatch visible while recovery progress remains unresolved. It is the positive counterpart of hiding a confirmed violation; it asserts no executed wrong-binding experiment. Read the conflicting-evidence precondition together with its unfinished-window assertion."
+  },
+  "authored-semantic-12": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "277e0747f767f90869e3f2a782a9c6bd8de0e725516831bff968d919f92189db",
+    "resultSha256": "b76950f8583c9cc7efa9876df4d745e1937da3b19da5c72fae7c4cd5abd92d39",
+    "inputSha256": "9677b5124983ed308939b896de189fa93f7030681fc5a3fa87c2162d6eb3c93c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.732Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/2/actions/0"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/2/actions/0",
+        "excerpt": "Keep the outcome unresolved when lookup fails. Obtain merchant-visible bound evidence before deciding whether completion or a retry is eligible.",
+        "classification": "proposal",
+        "disposition": "SUPPORTED",
+        "reason": "The action withholds an outcome when lookup fails and seeks merchant-visible bound evidence before deciding completion or retry eligibility. It does not turn simulator-only counters, a missing response, or a correct later assertion into permission for an immediate POST.",
+        "contextFields": [
+          "/regressionControls/2/purpose",
+          "/regressionControls/2/preconditions",
+          "/regressionControls/2/reason",
+          "/regressionControls/2/evidenceGap",
+          "/regressionControls/2/assertions/0/observation",
+          "/regressionControls/2/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "restart",
+          "checkpoint-1"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "No executed outage test is claimed."
+      }
+    ],
+    "outcome": "PARTIAL",
+    "reuseAllowed": false,
+    "summary": "The action withholds an outcome when lookup fails and seeks merchant-visible bound evidence before deciding completion or retry eligibility. It does not turn simulator-only counters, a missing response, or a correct later assertion into permission for an immediate POST."
+  },
+  "authored-semantic-13": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "82d69d4642d649c3efb897b58d880d1546137407fd8bf2c32173e7a3a61daed7",
+    "resultSha256": "79863d3f7f56986f78cd998446fc1ba4fec8ff48dd301545d4cf47fcb2b53754",
+    "inputSha256": "8280ae736a617a757733d5f8e4a6d1da85aa1510333601acc88dde270d333939",
+    "sourceSetSha256": "92e3ddc9c2b805cec4dfa34b7396aa0731215960866907bbe311a875274fbe09",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.732Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "whole_response",
+      "fields": [
+        "/findings/0/explanation",
+        "/uncertainties/0"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/findings/0/explanation",
+        "excerpt": "In this authored checkpoint the provider capture is COMPLETED and the merchant has a captured timestamp and one row. This narrow state observation does not establish the correctness of earlier or concurrent paths.",
+        "classification": "observation",
+        "disposition": "SUPPORTED",
+        "reason": "The authored-return fields report a COMPLETED provider capture, captured timestamp and one active row. The statement is explicitly confined to that authored state. Provider 46–57 supports only capture followed by retrieval; it is not treated as proof of a guard or earlier/concurrent safety.",
+        "contextFields": [
+          "/uncertainties/0"
+        ],
+        "evidenceRefs": [
+          "authored-return"
+        ],
+        "codeRefs": [
+          {
+            "sourceRef": "source-a59c2e7ba870bcf2-e8b97f",
+            "sourceSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+            "startLine": 46,
+            "endLine": 57
+          }
+        ],
+        "evidenceGap": "This positive state is authored, not a new real execution."
+      },
+      {
+        "field": "/uncertainties/0",
+        "excerpt": "This is an authored normalized state fixture. The reference code shows capture followed by retrieval, not proof that a guard or repair passed a test.",
+        "classification": "inference",
+        "disposition": "SUPPORTED",
+        "reason": "The case explicitly declares an authored normalized state; the frozen reference path is not an execution receipt or a safety proof.",
+        "contextFields": [
+          "/findings/0/explanation"
+        ],
+        "evidenceRefs": [
+          "authored-return"
+        ],
+        "codeRefs": [
+          {
+            "sourceRef": "source-a59c2e7ba870bcf2-e8b97f",
+            "sourceSha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+            "startLine": 46,
+            "endLine": 57
+          }
+        ],
+        "evidenceGap": "No real execution of this authored state is asserted."
+      }
+    ],
+    "outcome": "PASS",
+    "reuseAllowed": false,
+    "summary": "The authored-return fields report a COMPLETED provider capture, captured timestamp and one active row. The statement is explicitly confined to that authored state. Provider 46–57 supports only capture followed by retrieval; it is not treated as proof of a guard or earlier/concurrent safety."
+  },
+  "authored-semantic-14": {
+    "format": "diagnosis-claim-review-1",
+    "fingerprint": "54e7f27677db4091a8f43ac6c1ff1348c5e19091636a493e96fa779b51621e50",
+    "resultSha256": "b0f4817258dd948368d6f6b95a4c134157816474942bbf940e71fe20135c2d03",
+    "inputSha256": "e1023d8b7f4f736853c7e848190bde2aa529705dbf1f754ad02683b9dea23f4c",
+    "sourceSetSha256": "daf7cc1c553556fec9858cd540a1839b7a957cf5380eab2b89eed33fe36faedf",
+    "contractVersion": "external-diagnosis-5",
+    "reviewedAt": "2026-11-10T19:40:46.733Z",
+    "method": "Development-session claim review: read the exact statement, surrounding preconditions/actions/assertions, cited source lines and normalized observations; no model call or keyword classifier.",
+    "authorship": "Authored and reviewed by the same coding assistant; not blinded or independent human evaluation",
+    "scope": {
+      "kind": "selected_claims",
+      "fields": [
+        "/regressionControls/0/actions/0"
+      ]
+    },
+    "claims": [
+      {
+        "field": "/regressionControls/0/actions/0",
+        "excerpt": "Collect a returned merchant operation and independent bound provider/merchant snapshots.",
+        "classification": "proposal",
+        "disposition": "SUPPORTED",
+        "reason": "The restart-only prefix omits any returned recovery call and has unrecorded controller counters. Collecting a returned application operation, merchant-visible read-back and independent snapshot targets those exact missing observations. No success, failure or zero is invented.",
+        "contextFields": [
+          "/regressionControls/0/purpose",
+          "/regressionControls/0/preconditions",
+          "/regressionControls/0/reason",
+          "/regressionControls/0/evidenceGap",
+          "/regressionControls/0/assertions/0/observation",
+          "/regressionControls/0/assertions/1/observation"
+        ],
+        "evidenceRefs": [
+          "restart"
+        ],
+        "codeRefs": [],
+        "evidenceGap": "Returned recovery and application-visible read-back are absent in this prefix."
+      }
+    ],
+    "outcome": "PARTIAL",
+    "reuseAllowed": false,
+    "summary": "The restart-only prefix omits any returned recovery call and has unrecorded controller counters. Collecting a returned application operation, merchant-visible read-back and independent snapshot targets those exact missing observations. No success, failure or zero is invented."
+  }
+}
