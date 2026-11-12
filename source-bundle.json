@@ -4,18 +4,18 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "18390fb57c93ecbd2bfccd63d79ec834cc8f233a020c4465d2a1965317621f10",
-      "bytes": 3567
+      "sha256": "b7a2e10d62745d92e07b01d59b9461776555ad6dcd30e65d1024df474d4c7aca",
+      "bytes": 3725
     },
     {
       "path": "docs/DEMO.md",
-      "sha256": "2e20c579fee770c915ecbfeedddd66aaa2c4c05cc9884430549df0c47377ad3c",
-      "bytes": 3731
+      "sha256": "1f4a4182b31e02364aacc542bdea4ec181aeed7023c77bdba0e562c2f8a0a455",
+      "bytes": 3668
     },
     {
       "path": "docs/SUBMISSION.md",
-      "sha256": "106296d9fce8697682b4c1240e608a8438b6d9c25d25d410293f015d76009f60",
-      "bytes": 4359
+      "sha256": "4e3e0d317fde8474f06e5285ce654486d9f08752a66a13cc585b1131fa0a6d5d",
+      "bytes": 4952
     },
     {
       "path": "docs/OPERATIONS.md",

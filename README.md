@@ -2,6 +2,8 @@
 
 CaptureProof is a local debugging tool for PayPal integrations. It compares provider capture state with merchant records, links mismatches to source code, and packages the evidence in a report you can inspect offline.
 
+[Watch the 2:59 demonstration](https://youtu.be/lVA9luL7J9Y) · [Open the included report](data/portable-reports/reviewed-v6-journey-2026-11-12/report.html)
+
 ## What the example shows
 
 The provider capture is **PENDING**, but the original integration has already recorded completed payment and one capture row. At the same boundary, a separately developer-authored repair keeps the merchant state authorized and records no capture row. Later observations and saved replay results are shown separately.

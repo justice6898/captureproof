@@ -1,6 +1,6 @@
 # Demonstration — reviewed v6 example
 
-The **2:59 narrated video** follows the saved report through **Overview → Evidence → AI review → Repair → Files**. The owner reports that it is uploaded to YouTube and plays in the Devpost submission preview. Final Devpost submission has not been confirmed.
+[Watch the 2:59 narrated video](https://youtu.be/lVA9luL7J9Y), then follow the saved report through **Overview → Evidence → AI review → Repair → Files**. The guide below connects each screen to the included evidence. See [submission notes](SUBMISSION.md) for submission status and provenance.
 
 ## Open the same report
 
@@ -16,13 +16,13 @@ Open **http://127.0.0.1:3100/examples/reviewed-v6**. This displays a saved execu
 
 | Section | What to inspect |
 |---|---|
-| Overview | At the first returned-call boundary, provider capture is PENDING while the original merchant records completed payment and one capture row. At the matching boundary, the separately authored repair retains local authorized state and zero rows. Authorized is a merchant status, not proof of money movement. |
-| Evidence | Expand the checkpoints to compare provider and merchant records. Later, the provider reports completed while the original merchant still stores pending. Repeated requests alone do not establish duplicate charges. |
-| AI review | Read the saved explanation and open its source citations: `retrievePayment` accepts an order ID without checking capture completion, and the host sets `captured_at` from local `isFullyCaptured`. Structural acceptance and same-development-session semantic review are separate outcomes. |
-| Repair | Inspect the independently developer-authored repair, its source and matching checkpoint results. The repair predates the model response. The AI's proposed corrections and five regression controls remain unexecuted; checkpoint PASS does not establish general correctness. |
-| Files | Inspect the saved original and repair replay identities, evidence and frozen-source downloads. Download the self-contained HTML to inspect it offline. These records use real Medusa, PostgreSQL and PayPal SDK execution with simulated PayPal responses. Separate genuine Sandbox observations do not make this example a live-provider test. |
+| Overview | Compare the first returned-call boundary: provider capture PENDING; original collection completed with 1 capture row; developer repair locally authorized with 0 rows. |
+| Evidence | Expand the checkpoints. At the later completed observation, provider capture is COMPLETED, the original stored capture remains PENDING, and the repair stores COMPLETED. Inspect the bound provider and merchant records. |
+| AI review | Read the saved explanation and open its source citations: `retrievePayment` accepts `result.id` without checking capture completion, and the host sets `captured_at` from local `isFullyCaptured`. Inspect the separate structural and semantic review outcomes. |
+| Repair | Open the separately developer-authored repair, its source and matching checkpoint results. Compare the tested implementation with the model's unexecuted proposals. |
+| Files | Inspect the original and repair replay identities. Download evidence, frozen source or the self-contained HTML for offline inspection. |
 
-The report preserves the complete selected model response, source citations, 23 embedded artifacts and 16 frozen source files. Its recorded execution and saved replays happened earlier; opening the report does not reproduce them.
+The report preserves the complete selected model response, 23 embedded artifacts and 16 frozen source files. These are earlier recorded executions and replays, using real Medusa, PostgreSQL and PayPal SDK with simulated PayPal responses. Separate Sandbox observations do not turn this example into a live-provider test. The repair predates the model response; the AI's proposed corrections and five regression controls remain unexecuted. Local authorized state is not proof of money movement, repeated requests alone do not establish duplicate charges, and checkpoint PASS is not general correctness.
 
 ## Optional executable application
 

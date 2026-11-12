@@ -1,27 +1,42 @@
 # CaptureProof — submission notes
 
-## Product and engineering
+A successful checkout API call does not establish completed payment. CaptureProof helps developers find where a PayPal integration's records diverge from provider observations, explain the responsible code path, and compare a repair against the same checkpoints.
 
-CaptureProof helps developers debug supported PayPal checkout integrations by comparing provider payment evidence with merchant persistence, linking inconsistencies to source code, and packaging the findings in portable reports. Deterministic rules establish payment-state findings. The OpenAI API supplies source-linked explanations and proposed checks; it does not change payment state or apply patches.
+The working application combines PayPal integration, Medusa execution, PostgreSQL persistence, deterministic payment-state checks and source-linked OpenAI explanations. Its portable report connects those findings to frozen source, recorded observations and replay artifacts, so a reviewer can follow the result from payment state to code.
 
-The featured example uses actual Medusa 2.7.0, PostgreSQL and PayPal Server SDK 1.0.0 execution with simulated PayPal responses. At the first returned-call boundary, the provider capture is PENDING while the original merchant records completed payment and one capture row. A separately developer-authored repair retains local authorized state and zero rows at that same boundary, then completes after later completed evidence. Authorized is a local merchant status, not proof of PayPal authorization or money movement. Original and repair replay records bind the exact source, artifact and scenario.
+## What the recorded comparison shows
 
-The saved explanation identifies the causal path: `retrievePayment` accepts an order ID without checking capture completion, while the host derives `captured_at` from local `isFullyCaptured`. Source citations and the complete unchanged response make this explanation inspectable. The application also supports separately authorized diagnosis generation for a bound execution, with input review, validation, persistence and one-request cost controls; see [operations](OPERATIONS.md).
+The featured example runs Medusa 2.7.0, PostgreSQL and PayPal Server SDK 1.0.0 with **simulated PayPal responses**. It compares the original integration with a separately developer-authored and tested repair:
 
-## AI evidence and development attribution
+| Checkpoint | Provider capture | Original merchant | Developer repair |
+|---|---|---|---|
+| First returned call | PENDING | Collection completed; 1 active capture row | Local authorized state; 0 capture rows |
+| Later completed observation | COMPLETED | Stored capture still PENDING | Stored capture COMPLETED |
 
-The selected `external-diagnosis-6` response is a genuine saved `gpt-6.1-sol` generation with medium reasoning and default processing. It passed structural validation. A separate same-development-session semantic review returned PASS over 46 prose fields; five proposed regression-control kinds are structurally complete. This is one reviewed case, not blind review or general model accuracy. **AI-proposed corrections and tests were not executed.** The displayed repair was independently developer-authored before that response; the model did not create or verify it.
+The first mismatch is premature completion. The later mismatch shows that local completion can also hide stale provider state. Deterministic rules establish these findings from bound order, capture, amount, currency and persisted records. The report keeps original and repair checkpoints, source identities and saved replay outcomes separately inspectable.
 
-Codex assisted implementation, documentation and local verification. This development assistance is separate from the product's OpenAI API integration and the selected saved diagnosis. No independent-human usability study is claimed.
+## How AI contributes
 
-Separate genuine PayPal Sandbox normal-capture and application-response-discard recovery were observed during development. Those observations do not turn the featured simulated-provider example into a live Sandbox test or demonstrate an actual network outage. Checkpoint-specific PASS does not establish production safety.
+CaptureProof uses the OpenAI API to explain a recorded failure against the supplied evidence and source. In this example, the saved response connects `retrievePayment` accepting `result.id` without confirming capture completion to the host deriving `captured_at` from local `isFullyCaptured`. Citations open the relevant frozen code beside the explanation.
 
-## Published materials and submission status
+The application supports diagnosis generation for a bound execution through explicit input and cost review, one-request authorization, structural validation and persisted results. The model proposes corrections and regression checks; it neither owns the financial verdict nor applies patches. The tested repair shown here predates the model response.
 
-- **Source:** [justice6898/captureproof](https://github.com/justice6898/captureproof). `source-bundle.json` lists the exact packaged files and hashes. The [README](../README.md) provides report viewing and application entry points; the [operating guide](OPERATIONS.md) covers supported setup and execution.
-- **Report:** [the included reviewed v6 example](../data/portable-reports/reviewed-v6-journey-2026-11-12/report.html) opens locally without credentials, dependencies or a database. It retains the selected response, review, source citations, separately tested repair and saved replay evidence. Historical reports remain available.
-- **Video:** the owner reports uploading the **2:59 narrated demonstration** to YouTube and confirming playback in the Devpost submission preview. Its report walkthrough is documented in [DEMO.md](DEMO.md). This status is owner-reported; the earlier automated walkthrough measurement is a separate record.
-- **Final submission:** Devpost submission has **not been confirmed**. The owner must complete it by the stated November 12, 2026, 3:00 PM America/New_York deadline. Public source and preview playback do not establish final submission, eligibility or acceptance.
-- **License:** MIT, Copyright (c) 2026 Jeongui Hong. [Third-party notices](../LICENSES.md) are preserved.
+## Inspect the demonstration
 
-The application has been checked on the same supported Mac. Fresh-machine installation, independent-user validation and a hosted application deployment are not claimed. Private databases, credentials and unrelated execution records are excluded from the public package.
+[Watch the 2:59 demonstration](https://youtu.be/lVA9luL7J9Y), then use the [viewing guide](DEMO.md) to follow **Overview → Evidence → AI review → Repair → Files**.
+
+Open [the included report](../data/portable-reports/reviewed-v6-journey-2026-11-12/report.html) locally without credentials, dependencies or a database. Files provides the evidence and frozen-source downloads; the complete report works offline. Historical reports remain available. The [public source](https://github.com/justice6898/captureproof) and `source-bundle.json` identify the packaged files and hashes. Start with the [README](../README.md), then use [OPERATIONS.md](OPERATIONS.md) for supported application setup, candidate registration, execution, export and separately authorized services.
+
+## Verification and provenance
+
+The selected response is a genuine saved `gpt-6.1-sol` generation using medium reasoning, default processing and the `external-diagnosis-6` contract. It passed structural validation; a separate same-development-session semantic review returned PASS over 46 prose fields. Five proposed regression-control kinds are structurally complete. **The AI-proposed corrections and tests were not executed.** The model did not create or verify the earlier developer repair.
+
+The featured execution uses simulated provider responses. Separate genuine PayPal Sandbox normal-capture and application-response-discard recovery were observed during development; they do not establish live-provider verification for this example or demonstrate an actual network outage. Authorized is a local merchant state, not proof of PayPal authorization or money movement. Checkpoint PASS and this one reviewed diagnosis do not establish general payment correctness, model accuracy or production safety. Checks used the same supported Mac, not a fresh-machine installation, independent-user study or blind evaluation. No hosted application deployment is claimed.
+
+Codex assisted implementation, documentation and local verification. This development assistance is separate from the product's OpenAI API capability and its saved diagnosis. Private databases, credentials and unrelated execution records are excluded from the public package.
+
+## Submission and license
+
+The owner reported successful video playback in the Devpost preview. Final Devpost submission remains **unconfirmed**; the owner must complete it by the stated November 12, 2026, 3:00 PM America/New_York deadline. Preview playback does not establish submission, eligibility or acceptance.
+
+MIT, Copyright (c) 2026 Jeongui Hong. [Third-party notices](../LICENSES.md) are preserved.
