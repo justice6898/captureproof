@@ -25,7 +25,7 @@ test('release allowlist is explicit, contains no private state, and closes relat
    const target=relative(root,resolve(root,dirname(path),imported));assert.ok(RELEASE_FILES.includes(target),`${path} requires omitted ${target}`);
   }
  }
- assert.deepEqual(RELEASE_FILES.filter(p=>p.startsWith('data/')),['data/portable-reports/developer-reviewed-2026-11-06/report.html','data/portable-reports/developer-reviewed-2026-11-06/manifest.json','data/portable-reports/upstream-pending-replayed-2026-10-29/report.html','data/portable-reports/upstream-pending-replayed-2026-10-29/manifest.json']);
+ assert.deepEqual(RELEASE_FILES.filter(p=>p.startsWith('data/')),['data/portable-reports/reviewed-v6-journey-2026-11-12/report.html','data/portable-reports/reviewed-v6-journey-2026-11-12/manifest.json','data/portable-reports/developer-reviewed-2026-11-06/report.html','data/portable-reports/developer-reviewed-2026-11-06/manifest.json','data/portable-reports/upstream-pending-replayed-2026-10-29/report.html','data/portable-reports/upstream-pending-replayed-2026-10-29/manifest.json']);
  for(const p of RELEASE_TESTS)assert.ok(RELEASE_FILES.includes(p));
 });
 test('selected example remains exact, includes verified downloads and no machine paths',()=>{
@@ -92,6 +92,21 @@ test('public evidence remains addable while private data, secrets and nested rel
  const ignore=readFileSync(join(root,'.gitignore'));
  writeFileSync(join(dir,'.gitignore'),ignore);
  const publicPaths=['LICENSE','.env.example',...RELEASE_FILES.filter(p=>p.startsWith('data/'))];
- const privatePaths=['.env','.env.local','data/checkout.sqlite','data/private-diagnosis-reviews/response.json','data/portable-reports/other/report.html','data/portable-reports/developer-reviewed-2026-11-06/evidence.json','node_modules/example/index.js','staging/old/source-bundle.json','releases/old/source-bundle.json'];
+ const privatePaths=['data/portable-reports/reviewed-v6-journey-2026-11-12/evidence.json','.env','.env.local','data/checkout.sqlite','data/private-diagnosis-reviews/response.json','data/portable-reports/other/report.html','data/portable-reports/developer-reviewed-2026-11-06/evidence.json','node_modules/example/index.js','staging/old/source-bundle.json','releases/old/source-bundle.json'];
  const result=spawnSync('git',['-C',dir,'-c','core.excludesfile=/dev/null','check-ignore','--no-index','--stdin'],{env,input:[...publicPaths,...privatePaths].join('\n')+'\n',encoding:'utf8'});assert.equal(result.status,0,result.stderr);assert.deepEqual(result.stdout.trim().split('\n').sort(),privatePaths.sort());
+});
+
+
+test('public documentation links remain available in the package and concise README survives regeneration', t => {
+ const dir=mkdtempSync(join(tmpdir(),'cp-documentation-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+ const readme=readFileSync(join(root,'README.md'));
+ const target=join(dir,'manifest.json');prepareFirstUse(target,{release:true,manifestOnly:true});
+ const manifest=JSON.parse(readFileSync(target));assert.equal(manifest.files.find(f=>f.path==='README.md').sha256,sha(readme));
+ for(const path of ['README.md','docs/OPERATIONS.md','docs/DEMO.md','docs/SUBMISSION.md']){
+  assert.ok(RELEASE_FILES.includes(path));
+  for(const match of readFileSync(join(root,path),'utf8').matchAll(/\[[^\]]+\]\(([^)]+)\)/g)){
+   const link=match[1];if(/^(?:https?:|#)/.test(link))continue;
+   const target=relative(root,resolve(root,dirname(path),link.split('#')[0]));assert.ok(RELEASE_FILES.includes(target),path+' links omitted '+target);
+  }
+ }
 });

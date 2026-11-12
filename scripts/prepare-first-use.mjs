@@ -1,4 +1,5 @@
 // Explicit source allowlist for the same-host clean first-use verification. No private history.
+import {bundledExample} from '../src/verified-example.mjs';
 import {mkdirSync,readFileSync,writeFileSync,lstatSync,realpathSync} from 'node:fs';
 import {resolve,join,dirname} from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
@@ -6,6 +7,7 @@ export const SOURCE_FILES=Object.freeze([
   "README.md",
   "docs/DEMO.md",
   "docs/SUBMISSION.md",
+  "docs/OPERATIONS.md",
   "src/portable-report.mjs",
   "src/execution-assistance.mjs",
   "src/execution-assistance-policy.mjs",
@@ -15,6 +17,8 @@ export const SOURCE_FILES=Object.freeze([
   "src/replay-verification.mjs",
   "public/portable-report.js",
   "public/portable-report.css",
+  "public/result.css",
+  "public/result-view.js",
   "scripts/export-portable-report.mjs",
   "external/medusa-persistence/LICENSE.medusa",
   "LICENSES.md",
@@ -124,6 +128,8 @@ export const RELEASE_ADDITIONS=Object.freeze([
  'test/developer-meaning.test.mjs','test-support/developer-meaning-fixtures.mjs',
  'test/release.test.mjs','test/verification-capability.test.mjs','test/verification-readiness.test.mjs','test/checkout.test.mjs','test/checkout-http.test.mjs',
  'test/paypal-sandbox.test.mjs','test-support/checkout-fixture.mjs',
+ 'data/portable-reports/reviewed-v6-journey-2026-11-12/report.html',
+ 'data/portable-reports/reviewed-v6-journey-2026-11-12/manifest.json',
  'data/portable-reports/developer-reviewed-2026-11-06/report.html',
  'data/portable-reports/developer-reviewed-2026-11-06/manifest.json',
  'data/portable-reports/upstream-pending-replayed-2026-10-29/report.html',
@@ -135,7 +141,7 @@ const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 function releaseContents(path,bytes){
  if(path==='README.md'){
   const text=bytes.toString('utf8'),a=text.indexOf('<!-- release:start -->'),b=text.indexOf('<!-- release:end -->');
-  if(a<0&&text.startsWith('# CaptureProof — release candidate'))return bytes;
+  if(a<0&&/^# CaptureProof(?: — release candidate)?\r?\n/.test(text))return bytes;
   if(a<0||b<=a)throw Error('RELEASE_README_BOUNDARY_MISSING');
   return Buffer.from(text.slice(a+'<!-- release:start -->'.length,b).trim()+'\n');
  }
@@ -159,6 +165,7 @@ export function prepareFirstUse(destination,{release=false,manifestOnly=false}={
   return {path,contents,sha256:sha(contents),bytes:contents.length,...(release&&sha(contents)!==sha(original)?{derivedFrom:{path,sha256:sha(original),transformation:path==='README.md'?'Release entry section only; workspace history omitted.':'Offline test selection; recorded demo alias; omitted commands requiring excluded historical tests.'}}:{})};
  });
  if(release){
+  if(!bundledExample().available)throw Error('RELEASE_PRIMARY_EXAMPLE_UNAVAILABLE');
   const env=entries.find(e=>e.path==='.env.example').contents.toString('utf8');
   const values=new Map(env.split('\n').filter(l=>l.trim()&&!l.trim().startsWith('#')).map(l=>{const i=l.indexOf('=');return [l.slice(0,i),l.slice(i+1)];}));
   for(const key of ['PAYPAL_CLIENT_ID','PAYPAL_CLIENT_SECRET','OPENAI_API_KEY'])if(!/^(?:|your[-_][a-z_-]+|replace[-_][a-z_-]+)$/.test(values.get(key)??'MISSING'))throw Error('ENV_EXAMPLE_NOT_PLACEHOLDER: '+key);
@@ -167,7 +174,7 @@ export function prepareFirstUse(destination,{release=false,manifestOnly=false}={
   if(report.sha256!=='9c81ed56f2f24bfb2bf7ab7a94734835c15e37fe4ea62e7c9011000e7e5b08a3'||manifest.files.find(f=>f.path==='report.html')?.sha256!==report.sha256)throw Error('RELEASE_EXAMPLE_IDENTITY_MISMATCH');
  }
  const files=entries.map(({contents,...entry})=>entry);
- const manifest={format:'captureproof-source-bundle-1',kind:release?'RELEASE_CANDIDATE':'SOURCE_ONLY',files,scope:'macOS Apple Silicon, Node 24+, pinned Medusa 2.7.0/PayPal SDK 1.0.0; simulated provider',excluded:['credentials and actual environment files','node_modules','private databases','private responses and cost ledgers','unselected historical execution artifacts'],recordedAiIncluded:release,...(release?{example:{path:'data/portable-reports/upstream-pending-replayed-2026-10-29/report.html',representation:'Unchanged self-contained selected export; historical semantic PARTIAL retained; no database bundled.'},licenseStatus:'MIT; Copyright (c) 2026 Jeongui Hong; third-party notices retained',testCommand:'npm test'}:{})};
+ const manifest={format:'captureproof-source-bundle-1',kind:release?'RELEASE_CANDIDATE':'SOURCE_ONLY',files,scope:'macOS Apple Silicon, Node 24+, pinned Medusa 2.7.0/PayPal SDK 1.0.0; simulated provider',excluded:['credentials and actual environment files','node_modules','private databases','private responses and cost ledgers','unselected historical execution artifacts'],recordedAiIncluded:release,...(release?{example:{path:'data/portable-reports/reviewed-v6-journey-2026-11-12/report.html',representation:'Explicit exact-run v6 response with same-session semantic PASS; proposed checks unexecuted. Historical reports retained separately; no database bundled.'},licenseStatus:'MIT; Copyright (c) 2026 Jeongui Hong; third-party notices retained',testCommand:'npm test'}:{})};
  if(manifestOnly){
   manifest.assembly='MANIFEST_ONLY; files have not been staged, installed or executed as this candidate';
   writeFileSync(target,JSON.stringify(manifest,null,2)+'\n',{flag:'wx',mode:0o600});

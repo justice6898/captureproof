@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import {verifiedExample} from '../src/verified-example.mjs';
+import {bundledExample} from '../src/verified-example.mjs';
 import { createRecordedServer } from '../src/recorded-demo-server.mjs';
 if(process.argv[4]){
  let denied=false;try{readFileSync(process.argv[4]);}catch(e){denied=['EPERM','EACCES'].includes(e.code);}
@@ -7,7 +7,7 @@ if(process.argv[4]){
  console.log('File isolation probe PASS; unselected data is inaccessible.');
 }
 const portable=process.argv[2]==='--portable';
-const bundle=portable?{portableExample:verifiedExample()}:JSON.parse(readFileSync(process.argv[2],'utf8'));
+const bundle=portable?{portableExample:bundledExample(),portableExamples:Object.fromEntries(['reviewed-v6','reviewed-comparison','upstream-pending'].map(id=>[id,bundledExample(id)]))}:JSON.parse(readFileSync(process.argv[2],'utf8'));
 if(portable?!bundle.portableExample.available:bundle.version!=='recorded-demo-1')throw Error('INVALID_DEMO_SNAPSHOT');
 const port=Number(process.argv[3]);if(!Number.isInteger(port)||port<1024||port>65535)throw Error('INVALID_DEMO_PORT');
 const server=createRecordedServer(bundle);

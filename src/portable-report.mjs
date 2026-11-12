@@ -32,7 +32,7 @@ function verifyReferences(jobs,record){
  return read;
 }
 // Use the established read model without migrations, reconciliation or execution authority.
-export function readSelectedReport(store,jobId,runId){
+export function readSelectedReport(store,jobId,runId,{diagnosisId,publicExample=false}={}){
  if(!uuid.test(jobId)||!uuid.test(runId))reportError('REPORT_INVALID_SELECTION');
  const jobs=Object.assign(Object.create(VerificationJobs.prototype),{directory:store.directory,db:store.db,diagnosisRecords:store.diagnosisRecords??{list:()=>[]},reconcile(){}});
  try{
@@ -47,6 +47,21 @@ export function readSelectedReport(store,jobId,runId){
    analysis={status:'UNAVAILABLE',reason:'The saved execution exceeds the diagnosis input limit. No diagnosis association was established; evidence and source remain available.',records:[],provenance:{jobId,executionId:runId,artifactSha256:entry.sha256}};
   }
   const publicAnalysis={...pick(analysis,['status','reason','diagnosisStatus','contractVersion','jobId','executionId','input','provenance','fingerprint','repairComparison']),records:analysis.records.map(r=>({...pick(r,['id','fingerprint','status','mode','schemaVersion','promptVersion','validatorVersion','createdAt','finishedAt','responseStatus','incompleteReason','requestedModel','returnedModel','config','result','renderedResult','currentValidation','validationChecks','validationVersion','contractCurrent','regressionGuidance','offlineRevalidations','semanticReviewStatus','semanticReview','reusable','matchesCurrentInputs','usage','usageStatus','error','providerOutcome','dispatchPhase','transportAttempts','clientRequestId','providerRequestId','responseId','returnedServiceTier','requestIdentity','requestHash','preflightCost','cost','costUnresolved','unresolvedMaximumEstimateUsd','billingConfirmed']),retainedResponse:r.retainedResponse?pick(r.retainedResponse,['preservationComparison','omittedMessages','omittedFields','redactedFields']):null}))};
+  if(diagnosisId!==undefined){
+   const matches=publicAnalysis.records.filter(r=>r.id===diagnosisId);
+   if(matches.length!==1||analysis.executionId!==runId||analysis.input?.execution?.runId!==runId)reportError('REPORT_DIAGNOSIS_SELECTION_MISMATCH');
+   publicAnalysis.records=matches;
+   publicAnalysis.selectedAttemptId=diagnosisId;
+  }
+  if(publicExample){
+   if(!diagnosisId)reportError('REPORT_EXPLICIT_DIAGNOSIS_REQUIRED');
+   const r=publicAnalysis.records[0];
+   if(r.mode!=='openai-live'||r.responseStatus!=='completed'||r.currentValidation!=='ACCEPTED'||r.semanticReview?.outcome!=='PASS'||r.semanticReview?.metadataValidation!=='PASS'||r.semanticReview?.unreviewedFields?.length!==0)reportError('REPORT_REVIEWED_DIAGNOSIS_REQUIRED');
+   // Deliberate public projection: reviewed prose/input/source remain untouched.
+   // Provider routing identifiers and other attempts are not needed by a recorded example.
+   for(const key of ['clientRequestId','providerRequestId','responseId','offlineRevalidations'])delete r[key];
+   publicAnalysis.publicProjection={kind:'Selected reviewed response',selectedAttemptId:diagnosisId,reviewedContent:'Unchanged result, input, executed sources and exact-bound review; only provider routing identifiers and other attempts omitted.'};
+  }
   const repair=pair?buildRepairReview(record,[selected,pair],read,{caseId:entry.caseId}):{availability:'UNAVAILABLE',reason:'No matching repair comparison for this selected execution.'};
   const paths=new Set([...(analysis.input?.sources??[]).map(s=>s.path),...Object.keys(selected.sourceHashes).filter(p=>/\.(cjs|mjs)$/.test(p))]);
   for(const c of repair.components??[])for(const e of [c.before,c.after].filter(Boolean))paths.add(e.path);
@@ -74,8 +89,9 @@ function reducedExample(){
   return {label:'Separate injected regression · reduced and replayed',explanation:'Intentional completed-response rejection; not the upstream PENDING defect. No matching AI explanation is included.',execution:reduction.executions.find(e=>e.runId===run),replay:replay.executions[0],reproduction:replay.reproduction,artifact:saved};
  }finally{db.close();}
 }
-export function buildPortableData(selection=PRIMARY,{includeReduced=selection===PRIMARY,store}={}){
- const primary=store?readSelectedReport(store,selection.jobId,selection.runId):readReportCase(selection);
+export function buildPortableData(selection=PRIMARY,{includeReduced=selection===PRIMARY,store,diagnosisId,publicExample=false}={}){
+ if((diagnosisId!==undefined||publicExample)&&!store)reportError('REPORT_EXPLICIT_STORE_REQUIRED');
+ const primary=store?readSelectedReport(store,selection.jobId,selection.runId,{diagnosisId,publicExample}):readReportCase(selection);
  const verification=primary.replayVerification??(primary.reproducer?readReplayVerification(Buffer.from(json(primary.reproducer)),primary.analysis.repairComparison?.candidateDigest):null);
  const artifactName=selection===PRIMARY?'upstream-failure.json':'reproducer.json';
  return {format:'captureproof-portable-report-1',mode:'READ_ONLY_SAVED_EVIDENCE',primary,secondary:includeReduced?reducedExample():null,
@@ -86,8 +102,8 @@ export function buildPortableData(selection=PRIMARY,{includeReduced=selection===
 }
 export const embedJSON=value=>JSON.stringify(value).replaceAll('<','\\u003c').replaceAll('>','\\u003e').replaceAll('&','\\u0026').replaceAll('\u2028','\\u2028').replaceAll('\u2029','\\u2029');
 export function reportHTML(data){
- const style=readFileSync(join(root,'public/portable-report.css'),'utf8');
- const scripts=[readFileSync(join(root,'public/verification-state.mjs'),'utf8').replaceAll('export function ','function '),...['external-diagnosis.js','portable-report.js'].map(p=>readFileSync(join(root,'public',p),'utf8'))];
+ const style=readFileSync(join(root,'public/result.css'),'utf8')+'\n'+readFileSync(join(root,'public/portable-report.css'),'utf8');
+ const scripts=[readFileSync(join(root,'public/verification-state.mjs'),'utf8').replaceAll('export function ','function '),...['result-view.js','external-diagnosis.js','portable-report.js'].map(p=>readFileSync(join(root,'public',p),'utf8'))];
  const digestScript=s=>createHash('sha256').update(s).digest('base64');
  const csp=`default-src 'none'; script-src ${scripts.map(s=>"'sha256-"+digestScript(s)+"'").join(' ')}; style-src 'sha256-${digestScript(style)}'; connect-src 'none'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`;
  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="${csp}"><title>CaptureProof — portable verification report</title><style>${style}</style></head><body><a class="skip" href="#main">Skip to finding</a><main id="main" tabindex="-1"></main><noscript>Enable JavaScript to inspect this embedded read-only report. No network connection is needed.</noscript><script type="application/json" id="report-data">${embedJSON(data)}</script>${scripts.map(s=>`<script>${s}</script>`).join('')}</body></html>`;

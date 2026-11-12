@@ -17,6 +17,9 @@ const preparation = JSON.parse(html.match(/id="report-data">(.*?)<\/script>/s)[1
 preparation.request = disabledExternalProvider().requestBody(preparation.input);
 preparation.requestHash = hash(JSON.stringify(preparation.request));
 const output = authoredUsefulDiagnosis;
+// Offline authorization fixtures have a fixed time inside the recorded pricing window.
+// Real production expiry and approval records are not extended.
+const fixtureClock = () => Date.parse('2026-11-11T12:00:00.000Z');
 async function fixture(t, { rejected = false, fail = false, outcome = null, incompleteReason = undefined, gated = false } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'cp-assistance-'));
   let db = new DatabaseSync(join(dir, 'requests.sqlite')); await DiagnosisStore.open(db);
@@ -43,7 +46,7 @@ async function fixture(t, { rejected = false, fail = false, outcome = null, inco
     } });
   let approval = null;
   const approvalReader = () => approval;
-  const service = new ExecutionAssistance({ jobs, records, provider, requireAuthorization: gated, approval: approvalReader });
+  const service = new ExecutionAssistance({ jobs, records, provider, requireAuthorization: gated, approval: approvalReader, now: fixtureClock });
   t.after(() => { db.close(); rmSync(dir, { recursive: true, force: true }); });
   return { service, jobs, records, provider, db, approvalReader, setApproval: value => { approval = value; }, calls: () => calls, reopen: () => { db.close(); db = new DatabaseSync(join(dir, 'requests.sqlite')); return new DiagnosisStore(db, { reviewDirectory: join(dir, 'reviews'), sensitiveValues: [] }); } };
 }
@@ -182,6 +185,8 @@ test('wrong cost, request, expired pricing, or unapproved server state cannot re
     f.setApproval({...valid,...change});await assert.rejects(send(f,p),{code:'EXECUTION_AI_NOT_AUTHORIZED'});
   }
   assert.throws(()=>executionApproval(p,valid,Date.parse(EXECUTION_PRICING_REVIEW.expiresAt)),{code:'AI_PRICING_REVIEW_EXPIRED'});
+  f.setApproval(valid);
+  for(const offset of [0,1]) { f.service.now=()=>Date.parse(EXECUTION_PRICING_REVIEW.expiresAt)+offset;await assert.rejects(send(f,p),{code:'AI_PRICING_REVIEW_EXPIRED'}); }
   assert.equal(f.records.list('execution:'+p.executionId).length,0);assert.equal(f.calls(),0);
 });
 
@@ -195,12 +200,12 @@ test('authorization revoked after reservation blocks transmission and preserves 
 
 test('two controllers and a reopened store share the same approved attempt without redispatch',async t=>{
   const f=await fixture(t,{gated:true}),p=preview(f);authorize(f,p);
-  const second=new ExecutionAssistance({jobs:f.jobs,records:f.records,provider:f.provider,requireAuthorization:true,approval:f.approvalReader});
+  const second=new ExecutionAssistance({jobs:f.jobs,records:f.records,provider:f.provider,requireAuthorization:true,approval:f.approvalReader,now:fixtureClock});
   const results=await Promise.allSettled([send(f,p),second.analyze(p.jobId,p.executionId,{confirm:true,requestIdentity:p.requestIdentity})]);
   assert.equal(f.calls(),1);assert.ok(results.some(r=>r.status==='fulfilled'));
   for(const r of results.filter(r=>r.status==='rejected'))assert.equal(r.reason.code,'AI_BUSY');
   const id=f.records.list('execution:'+p.executionId)[0].id;
-  const reopened=new ExecutionAssistance({jobs:f.jobs,records:f.reopen(),provider:f.provider,requireAuthorization:true,approval:f.approvalReader});
+  const reopened=new ExecutionAssistance({jobs:f.jobs,records:f.reopen(),provider:f.provider,requireAuthorization:true,approval:f.approvalReader,now:fixtureClock});
   assert.equal(reopened.preview(p.jobId,p.executionId).records[0].id,id);
   assert.equal((await reopened.analyze(p.jobId,p.executionId,{confirm:true,requestIdentity:p.requestIdentity})).id,id);assert.equal(f.calls(),1);
 });

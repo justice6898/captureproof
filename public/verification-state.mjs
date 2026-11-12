@@ -22,7 +22,7 @@ export function jobPresentation(job){
  return {title:stopped&&!count?'Verification could not start':stopped?'Verification stopped with partial evidence':job.state==='COMPLETED'?'Verification complete':'Verification in progress',comparison:!pairs.length?'UNAVAILABLE':pairs.length===(job.summary?.cases.length??0)?'COMPLETE':'PARTIAL',observedPairs:pairs.length,plannedPairs:job.summary?.cases.length??0,counts:pairs.length?{resolved:pairs.filter(c=>c.resolved?.length||c.outcome==='RESOLVED').length,regressions:pairs.filter(c=>c.introduced?.length||c.outcome==='REGRESSION').length,remaining:pairs.filter(c=>c.remaining?.length||c.outcome==='REMAINS').length,inconclusive:pairs.filter(c=>c.outcome==='INCONCLUSIVE'||c.unresolved?.length).length}:null,hasEvidence:count>0};
 }
 export function executionRecovery(error){
- if(/ISOLATION|sandbox_apply/.test(error??''))return 'Child isolation could not start. In a normal Terminal outside a parent sandbox, run: npm run start:verification -- 3502 data/verification-repair-workspace. Open http://127.0.0.1:3502/external and recheck capability. No unsandboxed candidate fallback is available.';
+ if(/ISOLATION|sandbox_apply/.test(error??''))return 'Child isolation could not start. In a normal Terminal outside a parent sandbox, run: npm run start:verification -- 3200. Open http://127.0.0.1:3200/external and recheck capability. No unsandboxed candidate fallback is available.';
  return 'Inspect the retained error and run npm run verify -- check in the same environment as this server. Correct the prerequisite, then explicitly start a new run. Refresh never retries.';
 }
 
@@ -65,6 +65,7 @@ export function savedJobLabel(job){
 }
 export function checkpointPhase(checkpoints,index){
  const cp=checkpoints[index],before=checkpoints[index-1];
+ if(!cp)return 'Observation unavailable';
  if(!index)return 'First returned call';
  if(cp.action==='capture'&&before?.action==='capture'&&cp.providerCapture?.status==='COMPLETED'&&before.providerCapture?.status==='COMPLETED'&&cp.providerCapture?.id&&cp.providerCapture.id===before.providerCapture.id)return 'Repeated call · same completed capture';
  if(cp.providerCapture?.status==='COMPLETED'&&before?.providerCapture?.status!=='COMPLETED')return 'After completed provider evidence';
@@ -85,4 +86,40 @@ export function assessmentDescription(assessment) {
  const current = assessment.current;
  const binding = current.rules?.some(rule => rule.id === 'EXACT_BINDING' && rule.status === 'FAIL');
  return `Current assessment: ${current.status}. ${binding ? 'Observed identity, money or persisted relationships violate the contract. ' : ''}${current.uncertainty ? 'Still unresolved: ' + current.uncertainty.reason + ' ' : ''}Recorded outcome remains ${assessment.recorded?.status ?? 'unavailable'}. No new execution.`;
+}
+
+// A read-only presentation of recorded fields/rules, not a new assessment.
+export function checkpointPresentation(cp) {
+ const provider = cp?.providerCapture;
+ const stored = cp?.afterShutdown?.payment?.storedCaptures;
+ const matching = provider?.id && Array.isArray(stored)
+  ? stored.filter(capture => capture.id === provider.id) : [];
+ const storedStatus = matching.length === 1 ? matching[0].status ?? 'Unknown'
+  : !Array.isArray(stored) ? 'Unknown' : stored.length === 0 ? 'Not stored' : 'No unique matching capture';
+ const failed = cp?.verdict?.rules?.filter(rule => rule.status === 'FAIL') ?? [];
+ const reasons = failed.map(rule => {
+  if (rule.id === 'EXACT_BINDING' && matching.length === 1 && provider.status && matching[0].status && provider.status !== matching[0].status) {
+   return `EXACT_BINDING: provider capture is ${provider.status}, but the merchant’s stored capture is ${matching[0].status}. This recorded status disagreement remains even when the collection is completed.`;
+  }
+  return `${rule.id}: ${rule.reason ?? 'Inspect the recorded rule evidence.'}`;
+ });
+ return {
+  status: cp?.verdict?.status ?? 'UNAVAILABLE',
+  facts: [
+   ['Provider capture', provider?.status ?? 'Unknown'],
+   ['Merchant collection', cp?.afterShutdown?.collection?.status ?? 'Unknown'],
+   ['Merchant’s stored capture', storedStatus],
+   ['Active capture rows', cp?.afterShutdown?.captures?.length ?? 'Unknown']
+  ],
+  reasons: reasons.length ? reasons : [cp?.verdict?.status === 'PASS'
+   ? 'Recorded rules passed at this checkpoint only.' : 'Required observations or a completed observation window are unavailable.'],
+  uncertainty: cp?.verdict?.uncertainty?.reason ?? null,
+  counters: `POST attempts ${cp?.counters?.posts ?? 'Unknown'} · accepted operations ${cp?.counters?.accepted ?? 'Unknown'} · provider captures ${cp?.counters?.providerCaptures ?? 'Unknown'}`
+ };
+}
+
+export function resultHeadline(checkpoint, fallback = 'Inspect the recorded payment evidence') {
+ const pendingFailure = checkpoint?.verdict?.rules?.some(rule => rule.id === 'PENDING_NOT_COMPLETED' && rule.status === 'FAIL');
+ return pendingFailure && checkpoint?.providerCapture?.status === 'PENDING' && checkpoint?.afterShutdown?.collection?.status === 'completed'
+  ? 'Payment marked paid before capture completed.' : fallback;
 }

@@ -1,44 +1,32 @@
-# Recorded developer demonstration
+# Developer demonstration — reviewed v6 example
 
-Current workspace route, reviewed November 7, 2026. Target **2:45**, including clicks and pauses; narration below is approximately 220 words. This is a planned recording, not a completed video or independent human usability test. All views use saved records. Do not click launch, import, replay, reduction or model-generation controls.
+Target: **2:38**, including navigation and reading pauses. The route below uses the executable application's plan preview, then explicitly switches to a separately saved result. It does not execute a candidate. This is a recording script, not a narrated/uploaded video or independent-human usability study. Public source: https://github.com/justice6898/captureproof.
 
-## Public-source candidate: reviewer route
 
-Run from the staged directory (or repository root after publication), not the original workspace. No private saved-job database is included.
+Measured current route: **158.011 seconds**, using agent-operated Chrome with scripted reading pauses on the same Mac. This is not a narrated video, independent-human timing or fresh installation. One read-only plan preview; no campaign, model or PayPal request. Server-stopped offline verification is recorded separately.
 
-1. Open `data/portable-reports/developer-reviewed-2026-11-06/report.html` directly: **Finding → Evidence → Comparison → Source → Reproduction**. This is the current saved comparison with no matching AI response. In Reproduction, **Download evidence.json** and **Download upstream-failure.json** export the selected evidence and reproducer; downloading is not executing.
-2. For the separate analyzed execution, run `npm run start:example -- 3100` and open **http://127.0.0.1:3100/external#ai**. Use **Stored AI**, its evidence/source citations and review; download the complete report at **http://127.0.0.1:3100/examples/upstream-pending/download**. Or open `data/portable-reports/upstream-pending-replayed-2026-10-29/report.html` directly without a server.
-3. The narration below can accompany these same recorded findings; use the report controls above instead of private-workspace job navigation. The immutable reports have their earlier layout and licensing statements; the candidate root LICENSE/ LICENSES.md records the subsequent MIT adoption without altering evidence bytes.
-4. To inspect the executable application, follow README's capability/setup/candidate instructions. The uninstalled staged application has no jobs or runtime dependencies. Its missing reviewed comparison is explicit; this viewer exercise does not validate a fresh integration or replace the functional application.
+## Preparation
 
-The timing table below remains the verified **original-workspace** recording route. Do not present its private job links as available in a clean distribution.
+Use the repository checkout on the supported Mac with Node 24+. Start `npm run start:verification -- 3200` and open **http://127.0.0.1:3200/external?view=develop**. Start no campaign, install nothing and configure no credentials for this recording. Choose the built-in revision 3 candidate and use **Review execution plan · no execution**. If execution prerequisites are missing, retain the honest readiness message; plan inspection and bundled viewing remain available.
 
-## Start the working application
+Keep **http://127.0.0.1:3200/examples/reviewed-v6** ready as the separate recorded-result tab. Download its self-contained HTML at **http://127.0.0.1:3200/examples/reviewed-v6/download** for the offline ending. Use a 1440×900 browser window. `npm run start:example -- 3100` remains the simpler read-only report server, but does not replace the executable candidate workflow.
 
-From the existing repository:
+## Route and English narration
 
-```sh
-npm run start:verification -- 3502 data/verification-repair-workspace
-```
-
-Open **http://127.0.0.1:3502/external**. This exact selected-result route requires the retained application state. A distribution excludes private databases: its two self-contained reports are the portable alternative described below, not a claim that the private job list is bundled.
-
-## Screen actions and narration
-
-| Time | Screen action | Spoken narration |
+| Time | Screen/action | Narration |
 |---|---|---|
-| 0:00–0:20 | Show entry title, supported integration and scope. Click **Inspect a verified example**. | “CaptureProof helps developers debug a specific PayPal integration: RSC Labs Medusa PayPal 0.0.2. We are inspecting saved executions, not starting another test. The database, Medusa and SDK are real; PayPal responses in this comparison are simulated.” |
-| 0:20–0:50 | Show **Original integration** and **Repair / candidate**, then **Subsequent observations**. | “At the same PENDING checkpoint, the original records completed payment and one capture row. The repair records authorized and zero rows. Authorized is a merchant state here, not proof of PayPal authorization. After completed provider evidence, the repair records one row and retains it on repetition.” |
-| 0:50–1:15 | Click **Observations & exports**, open **Checkpoint 1**. Click **Frozen source**. Return to **Developer-authored repair**. | “Each finding connects independent database observations to executed source. The developer-authored repair gates completion on bound completed evidence. These are database rows, not delivery counts. Later recovery does not erase an earlier violation.” |
-| 1:15–1:55 | Show **AI contribution** and no matching response. Click **Separate earlier example: stored AI explanation, citations & PARTIAL review**. In **Stored AI**, show the explanation, click a source citation, then show **Exact observations supplied to the model** and the review summary. | “This newer execution has no stored AI diagnosis. This separate earlier execution does. OpenAI interprets its supplied evidence and code: the original method returns without checking completed capture. The response passed validation and was preserved, but semantic review is PARTIAL: proposed regression tests omit important controls. AI did not author or apply this repair.” |
-| 1:55–2:20 | Browser Back to the selected current result; open **Observations & exports** and show **Open saved replay** / **Open saved repair replay**. These are navigation links, not execution buttons. Return with Back. | “The exact saved original replay reproduced the violation. Its separately bound repair replay did not. That result belongs to these recorded inputs, not every PayPal integration.” |
-| 2:20–2:45 | Click **Download portable HTML** beside the finding. Open the downloaded file and show Evidence / Source navigation. | “Export this selected result with its evidence and sources. The HTML works offline, and inspection starts no payment, model request or replay. Fresh verification is a separate developer action.” |
+| 0:00–0:18 | Verify my change: select revision 3; Review execution plan | “When checkout records disagree, developers need to know where completion was inferred. CaptureProof lets us select a supported integration change and inspect its bounded test plan. This is only a preview; I am not running it.” |
+| 0:18–0:42 | Switch explicitly to `/examples/reviewed-v6`; Overview | “Now I am opening an earlier frozen comparison, not a result from that preview. The original records completed payment and one capture row while the provider is pending. The separately authored repair retains a local authorized state and zero rows at that same boundary. Authorized does not prove money movement.” |
+| 0:42–1:02 | Evidence; expand checkpoint 2 | “Deterministic rules establish the failure. Later the provider reports completed, but the original merchant still stores pending. That binding failure is different from the initial premature completion. Repeated requests do not by themselves prove duplicate charges.” |
+| 1:02–1:34 | AI review; read causal excerpt, open source citation, return to review statuses | “The real stored AI response explains the code path: retrievePayment accepts an order ID without checking capture completion, and the host sets captured_at from its local isFullyCaptured value. These citations open the supplied source. Structural acceptance and same-development-session semantic review are separate; this is one reviewed case, not general AI accuracy.” |
+| 1:34–1:56 | Repair; expand first component and source | “This tested repair was authored independently before the response. AI did not apply it. Its checkpoint passes are scoped to these observations; the AI's proposed correction and five controls remain unexecuted.” |
+| 1:56–2:18 | Files; expand saved replays; download evidence, reproducer and report | “The evidence and frozen source travel with the report. Original and repair replays have their own saved identities. Medusa, PostgreSQL and the SDK were real here; PayPal was simulated. Separate Sandbox checkout observations do not turn this example into live PayPal proof.” |
+| 2:18–2:38 | Open downloaded HTML with browser offline; inspect AI excerpt | “This file stays readable without a server. A developer can inspect the causal explanation, source and reproducible evidence, then use the supported application to test their own change explicitly. Viewing or downloading starts nothing.” |
 
-## Evidence identity and attribution — not spoken
+Pause on the comparison and source citation. Do not narrate IDs or JSON; keep them inspectable. Files → **Use the executable application** gives local setup instructions without assuming a running localhost service. No new candidate inherits this stored diagnosis, finding or replay result.
 
-- Current campaign: `e37df4ee-fcda-4f1b-9e78-2b3416579f05`; selected original `f111b657-0de7-4b05-91d0-9cafcaf3449b`; paired repair `c9ef1c64-ea0d-4377-9e5c-6c501025826a`. Original replay `384faf14-c67f-4a1f-9491-08397b7c696d`; repair replay `0565dcf6-1b77-409d-a129-dc102ed620a0`. No matching AI response is attached to these runs.
-- Separate analyzed example: `/examples/upstream-pending#ai`; input execution `1de4885d-2c89-45bd-aebc-f2d4904aa67b`; response `ea091933-26f2-4e62-8d8f-53f170a40b38`, OpenAI `gpt-6.1-sol`, medium reasoning, default processing. Structural/factual ACCEPTED, response preservation PASS, semantic PARTIAL; approved reuse remains blocked. The causal path is supported; omitted immediate-completion and error/unavailable-evidence controls prevent treating the proposed regression suite as complete. Its own repair and replay identities remain separate from the newer campaign.
-- In **Stored AI**, source/evidence citations open the exact supplied excerpts/observations. **Complete stored structured response and metadata** and **Download exact analysis, evidence and review** retain the input identity and assessment. Preservation means sanitized parsed content equals the received parsed content, not original wire-byte retention.
-- For portable distribution viewing, open `data/portable-reports/developer-reviewed-2026-11-06/report.html` and the separate analyzed `data/portable-reports/upstream-pending-replayed-2026-10-29/report.html`. The latter also works via `npm run start:example -- 3100`. These are immutable earlier report presentations; do not claim the new workspace layout is already in the frozen November 6 build.
-- Earlier actual owned-checkout Sandbox capture/recovery observations are separate from this Medusa demonstration. No live external-plugin PayPal, actual network outage, concurrency, fulfillment, general model accuracy or production safety claim.
-- Historical budget 42/42 and separate 10/16 remain unchanged. No new execution or model generation is required for recording. Video must be recorded and published by the owner through a separately authorized publication step; use no unlicensed music/media.
+## Recording and submission
+
+Use the published source and its source-bundle.json to identify the recording workspace. Record the route and measure the actual narrated video (under three minutes). Check the recording for private tabs/credentials, upload it, verify public playback, and supply final repository/video URLs in the submission. The measured walkthrough is not a recorded or uploaded video. Recheck the official submission requirements before submitting; passing local tests is not a competition outcome or production guarantee.
+
+Missing/corrupt primary assets must be restored from the matching candidate, not replaced with another diagnosis. Fresh-machine installation, independent-user testing and current AI-proposed experiments remain unverified.

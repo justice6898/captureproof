@@ -1,42 +1,136 @@
 (() => {
- const data=JSON.parse(document.getElementById('report-data').textContent),p=data.primary,main=document.getElementById('main');
- const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
- const add=(e,...children)=>{e.append(...children);return e;},unknown=x=>x??'Unknown';
- const details=(label,value)=>add(el('details'),el('summary',label),el('pre',typeof value==='string'?value:JSON.stringify(value,null,2)));
- const anchor=(label,id)=>{const a=el('a',label);a.href='#'+id;a.onclick=()=>{if(id.startsWith('checkpoint-')&&!document.getElementById(id)){filter.value='all';render();}const target=document.getElementById(id);if(target){for(let e=target;e;e=e.parentElement)if(e.tagName==='DETAILS')e.open=true;target.tabIndex=-1;target.focus({preventScroll:true});}};return a;};
- const section=(id,title)=>{const s=el('section');s.id=id;add(s,el('h2',title));main.append(s);return s;};
- const download=(label,content,name)=>{const b=el('button',label);b.type='button';b.onclick=()=>{const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'})),a=el('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};return b;};
- const sourceLink=(path,line=1)=>{const index=p.sources.findIndex(s=>s.path===path);return index<0?el('span','Source unavailable'):anchor(`${path}:${line}`,`source-${index}-${line}`);};
- const first=p.execution.checkpoints[0],fixed=p.repairExecution?.checkpoints[0],last=p.repairExecution?.checkpoints.at(-1);
- add(main,el('p','CAPTUREPROOF · SAVED VERIFICATION REPORT','eyebrow'),el('h1',p.repair.finding?.title??`${p.candidateName??p.execution.implementation} · ${p.caseId} · ${p.execution.verdict}`),el('p',p.repair.finding?.explanation??'Read the independent provider and merchant observations below.','intro'),el('p',data.scope,'notice'));
- if(p.missingObservations?.length)add(main,el('p','PARTIAL OBSERVATIONS — '+p.missingObservations.join(' '),'notice'));
- const nav=el('nav');nav.setAttribute('aria-label','Report sections');for(const [id,label]of [['finding','Finding'],['timeline','Evidence'],['ai','Stored AI'],['repair','Comparison'],['sources','Source'],['reproduce','Reproduction'],['scope','Limits & provenance']])nav.append(anchor(label,id));main.append(nav);
- const finding=section('finding','Provider evidence versus merchant state'),grid=el('div',undefined,'comparison');
- finding.append(el('p',p.executionScope??'Selected execution')); const summary=p.findingSummary; if(summary){add(finding,el('p',summary.finding,'intro'),el('p',summary.comparison.summary),el('p',`Resolved rules: ${summary.comparison.resolved.join(', ')||'None established'} · Introduced rules: ${summary.comparison.introduced.join(', ')||'None established'} · Unattributed: ${summary.comparison.unresolved.join(', ')||'None'}`),el('p',summary.candidate));}
- const stateCard=(title,c)=>{const card=el('article');add(card,el('h3',title));if(!c){card.append(el('p','Required observation unavailable.'));return card;}add(card,el('strong',`${unknown(c.providerCapture?.status)} provider / ${unknown(c.afterShutdown?.collection?.status)} merchant`),el('p',`Rule outcome: ${unknown(c.verdict?.status)}. Active capture rows: ${unknown(c.afterShutdown?.captures?.length)}.`),el('p',`POST attempts: ${unknown(c.counters?.posts)} · accepted operations: ${unknown(c.counters?.accepted)} · provider captures: ${unknown(c.counters?.providerCaptures)}`));if(c.verdict?.uncertainty)card.append(el('p','Unresolved: '+c.verdict.uncertainty.reason,'notice'));if(c.assessment?.changed)add(card,el('p',assessmentDescription(c.assessment),'notice'),details(`Separate current assessment · ${c.assessment.version} · ${c.assessment.current.status}`,c.assessment));return card;};
- grid.append(stateCard('Selected execution at the first returned-call boundary',first));if(p.repairExecution)add(grid,stateCard('Same-campaign comparison at that boundary',fixed),stateCard('Comparison at its final boundary',last));finding.append(grid);if(p.repairExecution)for(const cp of p.repairExecution.checkpoints.slice(1))finding.append(el('p',`Comparison checkpoint ${cp.index}: ${checkpointDescription(cp)}`));
- add(finding,el('p',`Saved aggregate verdict: ${p.execution.verdict}. Failing rules: ${p.execution.failureRules?.join(', ')||p.repair.finding?.rule||'None observed'}. Completion of the execution is separate from a conclusive financial result.`),el('p',`Observed amount: ${unknown(p.execution.money?.display)}. No losses, duplicate charges or production reliability rate are inferred.`),details('Scenario, execution and implementation identity',{jobId:p.jobId,case:p.caseId,target:p.analysis.input?.target,selectedRun:p.execution.runId,repairRun:p.repairExecution?.runId,candidate:p.candidateName}));
- const timeline=section('timeline','Returned-call checkpoints and ordered observations');
- const label=el('label','Show checkpoints '),filter=el('select');filter.setAttribute('aria-label','Checkpoint implementation');for(const [value,text]of [['all','All included executions'],['upstream','Selected execution'],...(p.repairExecution?[['repair','Same-campaign comparison']]:[])]){const o=el('option',text);o.value=value;filter.append(o);}label.append(filter);timeline.append(label);const entries=el('div');timeline.append(entries);
- const render=()=>{entries.replaceChildren();for(const [kind,title,r]of [['upstream','Selected execution',p.execution],['repair','Same-campaign comparison',p.repairExecution]])if(r&&(filter.value==='all'||filter.value===kind)){for(const c of r.checkpoints){const card=stateCard(`${title} checkpoint ${c.index}`,c);card.id=`checkpoint-${r.runId}-${c.index}`;add(card,el('p',`Returned call: ${unknown(c.returned?.kind)}. Independent auditor non-mutation: ${unknown(c.auditorNonMutation)}.`),details('Independent snapshots and rule evidence',c));entries.append(card);}entries.append(details(`${title}: ordered events (saved timestamps)`,r.events));}};filter.onchange=render;render();
- const ai=section('ai','Matching stored explanation — model claims are separately reviewed');
- add(ai,el('p','Structural acceptance, preserved response and semantic review are separate outcomes. The supported causal explanation does not make the proposed regression suite complete.'),el('p','Model excerpts retain original line numbers. The original input adapter blanked some comments; full frozen source below remains unchanged.'));
- if(p.analysis.input)window.mountExactExecutionDiagnosis(ai,p.analysis,{repairHref:'#repair'});else ai.append(el('p',p.analysis.reason??'No matching stored AI response. This report generates none.'));
- const repair=section('repair','What changed, and what was observed');add(repair,el('p',data.attribution));
- if(p.repair.availability==='AVAILABLE'){add(repair,el('p',p.repair.attribution),el('p',`Repair history: ${p.repairExecution.verdict}; final boundary: ${last?.verdict.status??'Unknown'}. This comparison covers this scenario, not general correctness.`));
- for(const c of p.repair.components){const d=el('details');add(d,el('summary',c.title),el('p',c.change),el('p',c.relationship),el('p',c.verified));for(const [title,s]of [['Executed upstream',c.before],['Executed repair component',c.after]])if(s)add(d,el('h3',title),sourceLink(s.path,s.startLine),el('pre',s.lines.map(l=>`${l.number}: ${l.text}`).join('\n')));for(const ref of c.evidenceRefs??[])d.append(anchor(`Checkpoint ${ref.checkpoint} · ${ref.runId}`,`checkpoint-${ref.runId}-${ref.checkpoint}`));repair.append(d);}
- repair.append(details('Integration requirements and review limits',[...p.repair.integrationRequirements,...p.repair.limits]));}else repair.append(el('p',p.repair.reason));
- const sources=section('sources','Exact frozen source');add(sources,el('p','Source SHA-256 identifies the immutable full file, not a formatted snippet. Code is inert review text; nothing here applies a patch.'));
- for(const [index,s]of p.sources.entries()){const d=el('details');d.id='source-file-'+index;add(d,el('summary',s.path),el('p','SHA-256 '+s.sha256,'mono'));const code=el('pre');s.text.split('\n').forEach((text,i)=>{const line=el('span',`${i+1}: ${text}\n`);line.id=`source-${index}-${i+1}`;code.append(line);});d.append(code);sources.append(d);}
- const reproduce=section('reproduce','Download evidence or reproduce explicitly');add(reproduce,el('p',data.reproduction.requirements),el('p','Download the chosen artifact into the executable application directory. Reading/downloading this report does not install dependencies or start a replay.'),el('pre',data.reproduction.setup.join('\n')),el('h3','Selected execution reproducer'),el('p',data.reproduction.primaryStatus),el('pre',data.reproduction.primaryCommand));
- const fileButton=path=>{const f=data.exportFiles.find(f=>f.path===path);if(f)reproduce.append(download('Download '+path,f.content,path.split('/').at(-1)));};fileButton(data.reproduction.artifactName??'upstream-failure.json');
- if(data.replayVerification){const v=data.replayVerification;add(reproduce,el('h3','Verified artifact replay'),el('p',v.scope),details('Exact tested artifact, source, scenario and new observations',v));if(v.repair){add(reproduce,el('h3',`Established repair: ${v.repair.status} for the original violation`),el('p','NOT_REPRODUCED here means the original failure rule was absent, not a claim of general safety. Inspect all checkpoint verdicts and the later completed read-back.'),el('pre','npm run verify -- replay upstream-repair-comparison.json'));for(const c of v.repair.execution.checkpoints)reproduce.append(stateCard(`Repair comparison checkpoint ${c.index}`,c));fileButton('upstream-repair-comparison.json');}fileButton('replay-verification.json');}
- if(data.secondary){const s=data.secondary;add(reproduce,el('h3',s.label),el('p',s.explanation),el('p',`Previously observed replay: ${s.reproduction.status} · ${s.reproduction.rule}. This example has its own execution and source identities.`),el('p',data.reproduction.reducedStatus),el('pre',data.reproduction.reducedCommand),details('Separate reduction and replay evidence',{execution:s.execution,replay:s.replay}));fileButton('reduced-failure.json');}
- fileButton('evidence.json');for(const f of data.exportFiles.filter(f=>f.path.startsWith('sources/')))fileButton(f.path);
- const scope=section('scope','Scope, unknowns and export integrity');for(const text of p.limits)scope.append(el('p',text));add(scope,el('p','No live PayPal, actual network outage, concurrency, fulfillment or production guarantee. This is an agent-verified export, not an independent usability study.'),details('Selected artifact and display checksums',data.manifest));
- for(const f of data.exportFiles.filter(f=>f.path.startsWith('licenses/')))scope.append(details(f.path,f.content));
- scope.append(el('p','The adjacent manifest.json additionally hashes report.html. Embedded file downloads match the selected data/source/license checksums; the HTML self-hash is deliberately not embedded. No private databases or API credentials are included.'));
- // Make deep links reveal and focus their destinations, including after a reload.
- const reveal=()=>{const id=decodeURIComponent(location.hash.slice(1)),target=document.getElementById(id);if(!target)return;for(let e=target;e;e=e.parentElement)if(e.tagName==='DETAILS')e.open=true;target.tabIndex=-1;target.scrollIntoView();};window.addEventListener('hashchange',reveal);reveal();
- main.dataset.ready='true';
+ const data = JSON.parse(document.getElementById('report-data').textContent);
+ const p = data.primary, main = document.getElementById('main');
+ const el = (tag, text, className) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (className) n.className = className; return n; };
+ const add = (n, ...children) => { n.append(...children); return n; };
+ const disclosure = label => add(el('details'), el('summary', label));
+ const raw = (label, value) => add(disclosure(label), el('pre', typeof value === 'string' ? value : JSON.stringify(value, null, 2)));
+ const anchor = (label, id) => {
+  const a = el('a', label); a.href = '#' + id;
+  a.onclick = e => { if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) window.revealCaptureTarget(id); };
+  return a;
+ };
+ const section = (id, title) => { const s = el('section'); s.id = id; if (title) s.append(el('h2', title)); main.append(s); return s; };
+ const download = (label, content, name) => {
+  const button = el('button', label); button.type = 'button'; button.setAttribute('aria-label', `Download ${name}`);
+  button.onclick = () => { const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' })), a = el('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
+  return button;
+ };
+ const fileButton = (path, label = 'Download') => {
+  const f = data.exportFiles.find(file => file.path === path);
+  if (!f) return el('span', 'Artifact unavailable');
+  const button = download(label, f.content, path.split('/').at(-1));
+  const source = path.startsWith('sources/') ? p.sources[Number(path.split('/')[1].split('.')[0])] : null;
+  button.setAttribute('aria-label', 'Download ' + (source?.path ?? path));
+  return button;
+ };
+ const card = (title, cp) => {
+  const article = window.renderCaptureCheckpoint(title, checkpointPresentation(cp));
+  if (cp?.assessment?.changed) article.append(el('p', assessmentDescription(cp.assessment)), raw('Separate current assessment; recorded verdict unchanged', cp.assessment));
+  return article;
+ };
+ const first = p.execution.checkpoints[0], fixed = p.repairExecution?.checkpoints[0];
+ document.body.classList.add('portable-report');
+ main.append(el('p', 'CAPTUREPROOF / SAVED REPORT', 'eyebrow'));
+ const nav = el('nav', undefined, 'report-nav result-nav'); nav.setAttribute('aria-label', 'Report sections');
+ for (const [id, label] of [['finding','Overview'],['timeline','Evidence'],['ai','AI review'],['repair','Repair'],['files','Files']]) nav.append(anchor(label, id));
+ main.append(nav);
+ const overview = section('finding');
+ overview.append(el('h1', resultHeadline(first, p.findingSummary?.finding ?? 'Recorded payment evidence')),
+  el('p', 'For developers debugging supported checkout integrations: connect provider observations, merchant records and source-bound explanations to a reproducible failure.', 'intro'),
+  el('p', data.scope + ' The repair is developer-authored.', 'scope-line'));
+ const comparison = el('div', undefined, 'comparison');
+ comparison.append(card('Original · first returned call', first));
+ if (p.repairExecution) comparison.append(card('Developer repair · same boundary', fixed));
+ overview.append(window.renderCaptureComparison(checkpointPresentation(first), checkpointPresentation(fixed)), comparison, el('p', 'Authorized is a local merchant state, not proof of PayPal authorization or money movement. Capture rows count database records, not deliveries.', 'scope-line'));
+ const actions = el('div', undefined, 'result-actions');
+ const inspect = anchor('Inspect evidence', 'timeline'); inspect.className = 'primary-action';
+ actions.append(inspect, anchor('Read AI review', 'ai'), anchor('Use the application', 'application-setup'), anchor('Export files', 'files')); overview.append(actions);
+ const certainty = raw('Recorded history, comparison and identities', { originalFinding: p.repair.finding, summary: p.findingSummary, aggregate: p.execution.verdict, finalRepair: p.repairExecution?.checkpoints.at(-1)?.verdict, jobId: p.jobId, executionId: p.execution.runId, repairRun: p.repairExecution?.runId }); overview.append(certainty);
+ if (p.findingSummary) overview.append(el('p', p.findingSummary.comparison.summary + ' This observed pair only.', 'scope-line'));
+ if (p.missingObservations?.length) overview.append(el('p', p.missingObservations.join(' '), 'scope-line'));
+
+ const evidence = section('timeline', 'Recorded phases, distinct observations');
+ evidence.append(el('p', 'Later completion does not erase the initial violation. Repeated POST attempts are not evidence of duplicate charges.', 'scope-line'));
+ const filter = el('select'); filter.setAttribute('aria-label', 'Checkpoint implementation');
+ for (const [value, label] of [['all','Original and candidate'],['upstream','Original only'],['repair','Candidate only']]) { const option = el('option', label); option.value = value; filter.append(option); }
+ evidence.append(add(el('label', 'Show '), filter));
+ const runs = [['upstream','Original',p.execution],['repair','Repair / candidate',p.repairExecution]].filter(([, , run]) => run);
+ const count = Math.max(...runs.map(([, , run]) => run.checkpoints.length));
+ for (let i = 0; i < count; i++) {
+  const entries = runs.map(([kind, label, run]) => {
+   const cp = run.checkpoints[i], detail = card(label, cp); detail.id = `checkpoint-${run.runId}-${i + 1}`; detail.dataset.implementation = kind;
+   detail.append(raw('Independent snapshots and recorded rules', cp ?? { observation: 'Unavailable' }));
+   return { label, view: checkpointPresentation(cp), card: detail };
+  });
+  const title = `Checkpoint ${i + 1} · ${checkpointPhase(p.execution.checkpoints, i)}`;
+  evidence.append(window.renderCapturePhase(title, entries));
+ }
+ const filterCards = () => { for (const c of evidence.querySelectorAll('[data-implementation]')) c.hidden = filter.value !== 'all' && c.dataset.implementation !== filter.value; };
+ filter.onchange = filterCards;
+ window.addEventListener('captureproof:reveal', e => { if (e.detail.id.startsWith('checkpoint-')) { filter.value = 'all'; filterCards(); } });
+ for (const [, label, run] of runs) evidence.append(raw(`${label}: ordered events`, run.events));
+
+ const ai = section('ai', 'AI review');
+ if (p.analysis.input) window.mountExactExecutionDiagnosis(ai, p.analysis, { repairHref: '#repair' });
+ else ai.append(el('p', p.analysis.reason ?? 'Matching input unavailable. No explanation was generated.'));
+ const repair = section('repair', 'The separately tested repair');
+ repair.append(el('p', 'This implementation predates the selected AI response. Its saved campaign observations are separate from the saved replay results below.'));
+ if (p.repair.availability === 'AVAILABLE') {
+  repair.append(el('p', p.findingSummary?.comparison.summary ?? 'Inspect the recorded pair; no general safety conclusion.'));
+  for (const component of p.repair.components) {
+   const d = disclosure(component.title); d.append(el('p', component.change), el('p', component.relationship), el('p', component.verified));
+   for (const [label, source] of [['Executed original',component.before],['Executed developer repair',component.after]]) if (source) {
+    const index = p.sources.findIndex(s => s.path === source.path);
+    d.append(el('h3', label), anchor(`${source.path.split('/').at(-1)}:${source.startLine}`, `source-${index}-${source.startLine}`), el('pre', source.lines.map(l => `${l.number}: ${l.text}`).join('\n')));
+   }
+   for (const ref of component.evidenceRefs ?? []) d.append(anchor(`${ref.runId === p.execution.runId ? 'Original' : 'Repair'} checkpoint ${ref.checkpoint}`, `checkpoint-${ref.runId}-${ref.checkpoint}`));
+   repair.append(d);
+  }
+  repair.append(raw('Integration requirements and limits', [...p.repair.integrationRequirements, ...p.repair.limits]));
+ } else repair.append(el('p', p.repair.reason));
+
+ const files = section('files', 'Files and reproducibility');
+ const application = disclosure('Use the executable application · preview your change'); application.id='application-setup';
+ application.append(el('p', 'This HTML is saved evidence, not an execution environment. In the supported CaptureProof workspace on macOS Apple Silicon with Node 24+, run:'), el('pre', 'npm run start:verification -- 3200'), el('p', 'Open http://127.0.0.1:3200/external in your browser. Choose Verify my change, select a supported candidate, then Review execution plan · no execution. See README for candidate import and dependency setup.'), el('p', 'A plan preview creates no result. Returning to the bundled example shows its earlier frozen execution, not evidence from your selected candidate. Running a campaign is a separate explicit action.'));
+ files.append(application);
+ files.append(el('p', 'Downloads preserve the selected artifact bytes. Reading or downloading starts no execution.'));
+ const fileRow = (title, path) => add(el('div', undefined, 'file-row'), el('span', title), fileButton(path, 'Download'));
+ files.append(el('h3','Evidence'), fileRow('Selected observations and provenance', 'evidence.json'));
+ files.append(el('h3','AI review'), add(el('div', undefined, 'result-actions'), anchor('Inspect the response and review', 'ai'), download('Download AI review', JSON.stringify(p.analysis, null, 2), `captureproof-analysis-${p.execution.runId}.json`)));
+ files.append(el('h3','Replay inputs and results'));
+ for (const path of [data.reproduction.artifactName, 'upstream-repair-comparison.json', 'replay-verification.json', 'reduced-failure.json']) if (path && data.exportFiles.some(f => f.path === path)) files.append(fileRow(path, path));
+ const reproduction = disclosure('Reproduction setup and separately saved replay observations'); reproduction.id = 'reproduce';
+ reproduction.append(el('p', data.reproduction.requirements), el('pre', data.reproduction.setup.join('\n')), el('p', data.reproduction.primaryStatus), el('pre', data.reproduction.primaryCommand));
+ if (data.replayVerification) {
+  const replay = data.replayVerification;
+  reproduction.append(el('p', 'These are separate replay executions, not additional checkpoints of the original campaign.'), raw('Exact artifact, source and replay bindings', replay));
+  const replayPanels = el('div', undefined, 'replay-panels');
+  for (const [label, receipt] of [['Original replay', replay.upstream], ['Developer repair replay', replay.repair]]) if (receipt) {
+   const d = disclosure(`${label}: ${receipt.status}`); const cards = el('div', undefined, 'replay-checkpoints');
+   for (const cp of receipt.execution.checkpoints) cards.append(card(`Replay checkpoint ${cp.index}`, cp));
+   d.append(cards); replayPanels.append(d);
+  }
+  reproduction.append(replayPanels, el('p', 'NOT_REPRODUCED means the original rule violation was absent in that replay, not general repair safety.'));
+  if (replay.repair) reproduction.append(el('pre', 'npm run verify -- replay upstream-repair-comparison.json'));
+ }
+ if (data.secondary) reproduction.append(raw('Separate injected regression and reduction', data.secondary), el('p', data.reproduction.reducedStatus), el('pre', data.reproduction.reducedCommand));
+ files.append(reproduction);
+ const sources = disclosure(`Source files (${p.sources.length}) · inspect or download`); sources.id = 'sources';
+ sources.append(el('p', 'Exact frozen source; code is inert. SHA-256 identifies the full file, not a reformatted excerpt.'));
+ for (const [index, source] of p.sources.entries()) {
+  const d = disclosure(`${source.path.split('/').at(-1)} · ${source.path.startsWith('supplied/') ? 'developer candidate' : source.path.includes('node_modules/') ? 'dependency' : 'executed source'}`); d.id = 'source-file-' + index;
+  d.append(el('p', source.path, 'mono'), el('p', 'SHA-256 ' + source.sha256, 'mono'), fileButton(`sources/${index}.txt`, 'Download source'));
+  const code = el('pre'); source.text.split('\n').forEach((text, i) => { const line = el('span', `${i + 1}: ${text}\n`); line.id = `source-${index}-${i + 1}`; code.append(line); }); d.append(code); sources.append(d);
+ }
+ files.append(sources);
+ const notices = disclosure('Licenses and notices');
+ for (const file of data.exportFiles.filter(f => f.path.startsWith('licenses/'))) notices.append(raw(file.path.split('/').at(-1), file.content));
+ files.append(notices);
+ const scope = disclosure('Limitations, provenance and checksums'); scope.id = 'scope';
+ for (const text of p.limits) scope.append(el('p', text));
+ scope.append(el('p', 'No live PayPal, concurrency, fulfillment or production guarantee. Agent review is not independent-human validation.'), raw('Selected export checksums', data.manifest)); files.append(scope);
+ window.trackCaptureSections(nav);
+ window.revealCaptureFragment();
+ main.dataset.ready = 'true';
 })();

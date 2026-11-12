@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { scenarioFinding } from '../public/verification-state.mjs';
 
+export const PRIMARY_EXAMPLE = 'reviewed-v6';
 const examples = Object.freeze({
+  'reviewed-v6': {directory: 'reviewed-v6-journey-2026-11-12', sha256: 'f06942a8688537dd4e89a9370ba4c9141ef3280ed0dbaf88a6818ba2fede347a', attemptId: '3dcbf49c-439b-441a-9b69-3e8acd643054', runId: 'f111b657-0de7-4b05-91d0-9cafcaf3449b'},
   'upstream-pending': {
     directory: 'upstream-pending-replayed-2026-10-29',
     sha256: '9c81ed56f2f24bfb2bf7ab7a94734835c15e37fe4ea62e7c9011000e7e5b08a3'
@@ -16,7 +18,7 @@ const examples = Object.freeze({
 
 // Only catalog entries become file paths. Hash-pinned HTML is the distributed artifact;
 // its embedded data is parsed as JSON, never executed or loaded from a private job DB.
-export function bundledExample(id = 'reviewed-comparison', { read = readFileSync } = {}) {
+export function bundledExample(id = PRIMARY_EXAMPLE, { read = readFileSync } = {}) {
   const entry = examples[id];
   if (!entry) return { available: false, reason: 'Unknown bundled example.' };
   try {
@@ -30,6 +32,8 @@ export function bundledExample(id = 'reviewed-comparison', { read = readFileSync
     const data = JSON.parse(match?.[1]);
     if (data.format !== 'captureproof-portable-report-1') throw Error('EXAMPLE_FORMAT');
     const primary = data.primary;
+    const selected = primary.analysis.records?.find(r=>r.id===primary.analysis.selectedAttemptId);
+    if(entry.attemptId && (primary.execution.runId!==entry.runId || primary.analysis.executionId!==entry.runId || primary.analysis.input?.execution?.runId!==entry.runId || selected?.id!==entry.attemptId || primary.analysis.records.length!==1 || selected.schemaVersion!=='external-diagnosis-6' || selected.currentValidation!=='ACCEPTED' || selected.semanticReview?.outcome!=='PASS'))throw Error('EXAMPLE_DIAGNOSIS_IDENTITY');
     return {
       available: true, origin: 'BUNDLED_RECORDED_EVIDENCE',
       title: 'Provider pending. Merchant already paid.',
@@ -40,7 +44,8 @@ export function bundledExample(id = 'reviewed-comparison', { read = readFileSync
       baseline: primary.execution.checkpoints[0], candidate: primary.repairExecution?.checkpoints[0],
       final: primary.repairExecution?.checkpoints.at(-1),
       scope: 'Bundled recorded comparison; separate from your workspace. No execution or AI generation.',
-      analysisStatus: primary.analysis.records?.length ? 'SEPARATE_STORED_ANALYSIS' : 'NO_MATCHING_ANALYSIS'
+      analysisStatus: selected ? 'MATCHED_REVIEWED_DIAGNOSIS' : primary.analysis.records?.length ? 'SEPARATE_STORED_ANALYSIS' : 'NO_MATCHING_ANALYSIS',
+      selectedAttemptId: selected?.id ?? null
     };
   } catch (error) {
     return { available: false, origin: 'BUNDLED_RECORDED_EVIDENCE', reason: error.code === 'ENOENT'

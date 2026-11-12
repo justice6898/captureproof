@@ -1,0 +1,188 @@
+{
+  "format": "captureproof-report-manifest-1",
+  "files": [
+    {
+      "path": "replay-verification.json",
+      "bytes": 150693,
+      "sha256": "7f234a9f4acc0535d82c9fcb9cd1afa443ef25336af6110c06dba4809aae5591",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "upstream-repair-comparison.json",
+      "bytes": 14939,
+      "sha256": "fd4ce30085b8f2094678189503f5e05543344b43a54be889d657afa990029b10",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "evidence.json",
+      "bytes": 843776,
+      "sha256": "6a0095d0edd87591c0b1961ab4f81f92d6614049e5a065b47adb4297da332e17",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "reproducer.json",
+      "bytes": 1828,
+      "sha256": "2b32b61bec17b30642bd4f746c96e48490b62bfd491aef1f40491df7399d570f",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "sources/0.txt",
+      "bytes": 22957,
+      "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a",
+      "sourcePath": "external/medusa-persistence/target-service.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/1.txt",
+      "bytes": 35041,
+      "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9",
+      "sourcePath": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/2.txt",
+      "bytes": 6116,
+      "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692",
+      "sourcePath": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/3.txt",
+      "bytes": 5809,
+      "sha256": "a2033f303b2f5f4bf8789802999a0c36247c0979aff90c2d01a52d5c88b3a1a0",
+      "sourcePath": "external/medusa-persistence/candidate.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/4.txt",
+      "bytes": 1823,
+      "sha256": "b7212c899eaea652f730343cb21043027d0ccff1e8901d4295a30ce1ca1fec96",
+      "sourcePath": "external/medusa-persistence/operations.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/5.txt",
+      "bytes": 5837,
+      "sha256": "f0f2bde5e84799b58caf963706b96b28860f5a46bcb905573d76df615b4ca024",
+      "sourcePath": "scripts/external-provider-model.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/6.txt",
+      "bytes": 11967,
+      "sha256": "1ee60a12bac9fc61de0fcec38afdcf1440d5fdda227d2bcbc8fbaf4c26ba1909",
+      "sourcePath": "scripts/external-persistence-worker.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/7.txt",
+      "bytes": 19524,
+      "sha256": "2f8e13a240763a0bb7518dd9b8189f0f742742779e6c8b096143b9d3befb78e4",
+      "sourcePath": "src/external-persistence.mjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/8.txt",
+      "bytes": 4812,
+      "sha256": "be881bfc3f0acda652146113196260f63e847d40a10c8b8231784776975e6807",
+      "sourcePath": "src/local-candidate.mjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/9.txt",
+      "bytes": 6243,
+      "sha256": "9f1960ce62b59b4f62b232fab0961f98628253cf622aae02a9251a98b4dd36ef",
+      "sourcePath": "external/medusa-persistence/candidate-v3.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/10.txt",
+      "bytes": 2046,
+      "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+      "sourcePath": "external/medusa-persistence/capture-recovery.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/11.txt",
+      "bytes": 1366,
+      "sha256": "14a8b2772c99299f39eacfebd4e0d990340a40b1cdd2529683e031ba7e7cfb90",
+      "sourcePath": "external/medusa-persistence/capture-recovery-v3.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/12.txt",
+      "bytes": 2575,
+      "sha256": "09522a31fcdf99094b8002367a75afafa72d0df5a8394c6bb577e0237bdc6c16",
+      "sourcePath": "supplied/capture-contract.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/13.txt",
+      "bytes": 1366,
+      "sha256": "14a8b2772c99299f39eacfebd4e0d990340a40b1cdd2529683e031ba7e7cfb90",
+      "sourcePath": "supplied/capture-recovery-v3.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/14.txt",
+      "bytes": 2046,
+      "sha256": "00996f77e4f93ee8bea04537abebba3de9636d696b3c759f470ea9a0f182061d",
+      "sourcePath": "supplied/capture-recovery.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "sources/15.txt",
+      "bytes": 6243,
+      "sha256": "9f1960ce62b59b4f62b232fab0961f98628253cf622aae02a9251a98b4dd36ef",
+      "sourcePath": "supplied/provider.cjs",
+      "representation": "Exact immutable frozen source bytes"
+    },
+    {
+      "path": "licenses/RSC-MIT.txt",
+      "bytes": 1065,
+      "sha256": "37127337497d9265594cf894b0bac3c561b271b9b39f59c7a35ff6b24e99e536",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "licenses/Medusa-MIT.txt",
+      "bytes": 1075,
+      "sha256": "f792b19e548b936c2a9a8e489e2f21e3b5a91e482910c57d9c9508f8933789af",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "licenses/CaptureProof.txt",
+      "bytes": 1859,
+      "sha256": "4d904cb1b3d9205825e7882698a593e0039688f5e6b13aff6e71b97b72ef9a08",
+      "representation": "Selected export / display; not the original raw execution artifact"
+    },
+    {
+      "path": "report.html",
+      "bytes": 1887073,
+      "sha256": "f06942a8688537dd4e89a9370ba4c9141ef3280ed0dbaf88a6818ba2fede347a"
+    }
+  ],
+  "sourceArtifact": {
+    "jobId": "e37df4ee-fcda-4f1b-9e78-2b3416579f05",
+    "executionId": "f111b657-0de7-4b05-91d0-9cafcaf3449b",
+    "artifactSha256": "4d0100e55b292fcbe1acce932ff528976f5d59fcd0a3d746bb84fb9e1928eb87",
+    "sources": [
+      {
+        "path": "external/medusa-persistence/target-service.cjs",
+        "sha256": "a59c2e7ba870bcf29794d2aab547a14f373fa42179dbaef793e4b8b356b1ea0a"
+      },
+      {
+        "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-module.js",
+        "sha256": "0103e3aa530adc6ac6659ef30616449d8a8a45d54c4dcbfc11e095188b844ce9"
+      },
+      {
+        "path": "external/medusa-persistence/node_modules/@medusajs/payment/dist/services/payment-provider.js",
+        "sha256": "a595cc3c742c6ecf68f8c4d9cb982466daa0a99aa1302be5f1b42ec50c65b692"
+      }
+    ]
+  },
+  "notes": [
+    "Raw artifact hashes identify retained originals; evidence.json is a separately hashed projection.",
+    "Model input excerpts retain original line numbers; blanked comment lines are derived input, not full original source.",
+    "Checksums detect changes, not publisher authenticity. report.html is hashed in the adjacent manifest to avoid self-reference."
+  ]
+}

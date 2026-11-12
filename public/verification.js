@@ -1,5 +1,5 @@
 import { mountExecutionAssistance } from './execution-assistance.js';
-import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,resultRoute,savedJobLabel,checkpointPhase,storedAnalysisSummary} from './verification-state.mjs';
+import {resultHeadline,checkpointPresentation,assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,checkpointDescription,resultRoute,savedJobLabel,checkpointPhase,storedAnalysisSummary} from './verification-state.mjs';
 (() => {
  const $=id=>document.getElementById(id),node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
  const add=(n,...children)=>{n.append(...children);return n;};
@@ -8,9 +8,15 @@ import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,
  const syncControls=()=>{for(const id of ['campaign-launch','verification-launch'])$(id).disabled=recordedOnly||!setupReady||submitting||executionActive||(id==='campaign-launch'&&(!reviewedPlan||reviewedPlan.candidateId!==$('campaign-candidate').value));};
  let historicalExample=null,reviewedPlan=null;
  let choices,activeId=null,selectedCase=null,currentView='explore',timer=null,launchKey=sessionStorage.getItem('verificationLaunchKey');
- const link=(label,id)=>{const a=node('a',label);a.href='#'+id;a.onclick=()=>{const t=$(id);if(t){for(let p=t;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;t.tabIndex=-1;t.focus({preventScroll:true});}};return a;};
+ const link=(label,id)=>{const a=node('a',label);a.href='#'+id;a.onclick=event=>{if(!event||(!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey&&event.button===0))window.revealCaptureTarget(id);};return a;};
+ // Restore only saved-analysis fragments. This GET path cannot generate an explanation.
+ window.addEventListener('hashchange', () => {
+  const target=window.captureFragment();
+  const run=target.match(/(?:^|-)analysis-([0-9a-f-]{36})-/)?.[1];
+  if(run&&!document.getElementById(target))document.getElementById('read-analysis-'+run)?.click();
+ });
  function setView(view){
-  currentView=view;$('developer-workflow').hidden=view!=='develop';document.querySelector('.hero').hidden=view==='result'||view==='history'||view==='unavailable';$('result-preview').hidden=view!=='explore';$('verified-example').hidden=view!=='explore';$('verification-workspace').hidden=view==='history';document.querySelector('.history-archive').hidden=view!=='history';
+  currentView=view;document.body.dataset.view=view;$('developer-workflow').hidden=view!=='develop';document.querySelector('.hero').hidden=view==='result'||view==='history'||view==='unavailable';$('result-preview').hidden=view!=='explore';$('verified-example').hidden=view!=='explore';$('verification-workspace').hidden=view==='history';document.querySelector('.history-archive').hidden=view!=='history';
   document.querySelector('.history-archive').open=view==='history';$('saved-results').open=view==='explore';$('result-context').open=view==='explore'||view==='develop';
   for(const a of document.querySelectorAll('.journey-nav a'))a.setAttribute('aria-current',String((view==='develop')===a.href.includes('view=develop')));
  }
@@ -18,6 +24,7 @@ import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,
  function preview(example){const panel=$('preview-content');panel.replaceChildren();if(!example?.available){panel.append(node('p',example?.reason??'No reviewed comparison is registered in this workspace.'));return;}
   panel.append(node('p',example.finding.finding,'finding-lead'));
   if(example.origin==='BUNDLED_RECORDED_EVIDENCE')panel.append(node('p',example.scope,'notice'));
+  if(example.analysisStatus==='MATCHED_REVIEWED_DIAGNOSIS')panel.append(node('p','AI explains this exact execution with code citations and five proposed checks. One real stored response: structurally accepted; same-development-session semantic PASS. The repair was authored and tested separately.','notice'));
   if(example.download){const a=node('a','Download this bundled report');a.href=example.download;panel.append(a);}
   const cards=node('div',undefined,'comparison');for(const[label,c]of [['Original · first returned checkpoint',example.baseline],['Repair · same checkpoint',example.candidate]])cards.append(add(node('article',undefined,'observation-card'),node('h3',label),node('p',checkpointDescription(c))));panel.append(cards);
   panel.append(node('p','Repair final observation: '+checkpointDescription(example.final)));const a=node('a','Inspect this finding →','primary-action');a.href=example.url;panel.append(a);
@@ -54,7 +61,7 @@ import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,
   }panel.append(comparison);
   const limits=details('Scope and execution identity',{limits:job.limits,jobId:job.id,createdAt:job.createdAt});panel.append(limits);
   if(currentView==='result'){const a=node('a','Open execution controls in developer view');a.href='/external?view=develop&job='+job.id+(selectedCase?'&case='+encodeURIComponent(selectedCase):'');panel.append(a);}
-  if(selectedCase){const target=job.executions.find(e=>e.caseId===selectedCase&&e.role==='baseline')??job.executions.find(e=>e.caseId===selectedCase),nav=node('nav',undefined,'finding-actions');if(target){nav.append(link('Observations & exports',`execution-${target.runId}`));portableDownload(nav,job,target);}nav.append(link('Frozen source','frozen-sources'));if(job.repairReview?.availability==='AVAILABLE')nav.append(link('Developer-authored repair','repair-review'));panel.querySelector('.scenario-result')?.after(nav);}
+  if(selectedCase){const target=job.executions.find(e=>e.caseId===selectedCase&&e.role==='baseline')??job.executions.find(e=>e.caseId===selectedCase),nav=node('nav',undefined,'finding-actions');if(target){const inspect=link('Inspect evidence →',`execution-${target.runId}`);inspect.className='primary-action';nav.append(inspect);portableDownload(nav,job,target);}nav.append(link('Frozen source','frozen-sources'));if(job.repairReview?.availability==='AVAILABLE')nav.append(link('Developer-authored repair','repair-review'));panel.querySelector('.scenario-result .finding-lead')?.after(nav);}
   if(/^#execution-[0-9a-f-]{36}$/.test(location.hash))document.getElementById(location.hash.slice(1))?.scrollIntoView();
   const selected=new URL(location.href).searchParams.get('analysis');if(job.executions.some(e=>e.runId===selected))document.getElementById('read-analysis-'+selected)?.click();
   const sources=node('details');sources.append(node('summary','Frozen executed source · upstream and authored candidates'));
@@ -71,31 +78,59 @@ import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,
   $('saved-result-title').textContent=selectedCase?selectedCase.replaceAll('-',' '):savedJobLabel(job).title;
   $('verification-status').textContent=`${job.plan.kind==='campaign'?'Campaign execution':'Execution'} ${job.state} · ${job.executions.length}/${job.plan.maxExecutions} execution artifacts · ${job.error??'No infrastructure error recorded'}`;
   if(!selectedCase)add(panel,node('h2',selectedCase?'Observed failure and repair':job.plan.kind==='campaign'?'Findings & repair comparison':'Failure reproduction'),node('p',`Candidate: ${job.plan.candidateName??job.plan.target} · actual Medusa/PostgreSQL · simulated PayPal.`));
+  if (selectedCase && job.summary) {
+   const scenarios = node('nav', undefined, 'scenario-navigation');
+   scenarios.setAttribute('aria-label', 'Scenarios in this campaign');
+   for (const entry of job.summary.cases) {
+    const anchor = node('a', entry.id.replaceAll('-', ' '));
+    anchor.href = `/external?job=${job.id}&case=${entry.id}`;
+    if (entry.id === selectedCase) anchor.setAttribute('aria-current', 'page');
+    scenarios.append(anchor);
+   }
+   panel.append(scenarios, node('p', 'Recorded comparison · real Medusa/PostgreSQL and installed SDK · simulated PayPal. Developer-authored repair; no new execution.', 'scope-line'));
+  }
   if(job.summary){
    if(!selectedCase)add(panel,node('p',`${presentation.observedPairs} completed comparison pairs of ${presentation.plannedPairs} planned. ${presentation.comparison==='COMPLETE'?'Coverage complete.':'Remaining scenarios have no comparison yet.'}`));
    if(!selectedCase&&presentation.counts)add(panel,node('p',`${presentation.counts.resolved} scenario pairs with resolved rules · ${presentation.counts.regressions} with introduced rules · ${presentation.counts.remaining} with retained rules · ${presentation.counts.inconclusive} with uncertainty. Categories may overlap; completed pairs only.`,'result-summary'));
    for(const c of job.summary.cases.filter(c=>!selectedCase||c.id===selectedCase)){
-    const group=node('section',undefined,'scenario-result');if(!selectedCase)group.append(node('h3',c.id.replaceAll('-',' ')));add(group,node('span',c.outcome==='NOT_COMPLETED'?'Comparison unavailable':c.outcome,'badge'));
-    const finding=scenarioFinding(job.executions.find(e=>e.caseId===c.id&&e.role==='baseline'),job.executions.find(e=>e.caseId===c.id&&e.role==='candidate'));add(group,node('p',finding.finding,'finding-lead'),node('p',finding.candidate,'small'));
+    const group=node('section',undefined,'scenario-result');if(selectedCase)group.id='result-overview';if(!selectedCase)group.append(node('h3',c.id.replaceAll('-',' ')));add(group,node('span',c.outcome==='NOT_COMPLETED'?'Comparison unavailable':`${c.outcome} · observed pair`,'badge'));
+    const finding=scenarioFinding(job.executions.find(e=>e.caseId===c.id&&e.role==='baseline'),job.executions.find(e=>e.caseId===c.id&&e.role==='candidate'));add(group,node('p',resultHeadline(job.executions.find(e=>e.caseId===c.id&&e.role==='baseline')?.checkpoints[0],finding.finding),'finding-lead'),node('p',finding.candidate,'small'));
     const rules=details('Comparison certainty and observed rule changes',c);
     const pair=node('div',undefined,'comparison');
-    for(const role of ['baseline','candidate']){const e=job.executions.find(e=>e.caseId===c.id&&e.role===role),card=node('article',undefined,'observation-card');card.append(node('h4',role==='baseline'?'Original integration':'Repair / candidate'));
-     if(!e)card.append(node('p','Not observed — comparison unavailable'));else {
-      for(const [i,cp]of e.checkpoints.slice(0,1).entries()){const phase=node('div',undefined,'phase-observation');add(phase,node('h5',`Checkpoint ${cp.index} · ${checkpointPhase(e.checkpoints,i)}`),node('p',`Provider capture: ${cp.providerCapture?.status??'Unknown'}`,'provider-state'),node('p',`Merchant payment: ${cp.afterShutdown.collection.status}`),node('p',`Database capture rows: ${cp.afterShutdown.captures.length}`),node('p',`Rule observation: ${cp.verdict.status}`,'small'));card.append(phase);}
-      card.append(link('Inspect observations',`execution-${e.runId}`));}pair.append(card);
-    }group.append(pair);
-    group.append(node('p','Merchant states are local records: authorized does not prove a PayPal authorization or completed capture; completed means the merchant recorded completion. Capture rows count database records, not deliveries.','small'));
-    const sides=['baseline','candidate'].map(role=>job.executions.find(e=>e.caseId===c.id&&e.role===role));
-    if(Math.max(...sides.map(e=>e?.checkpoints.length??0))>1){const timeline=node('section',undefined,'checkpoint-timeline');timeline.append(node('h4','Subsequent observations'));for(let i=1;i<Math.max(...sides.map(e=>e?.checkpoints.length??0));i++){const row=node('div',undefined,'comparison');for(const [n,e]of sides.entries()){const cp=e?.checkpoints[i],card=node('article',undefined,'later-observation');add(card,node('h5',`${n?'Repair / candidate':'Original'} · checkpoint ${i+1}`),node('p',cp?checkpointPhase(e.checkpoints,i):'Not observed','small'),node('p',checkpointDescription(cp)));row.append(card);}timeline.append(row);}group.append(timeline);}
+    const sides = ['baseline', 'candidate'].map(role => job.executions.find(e => e.caseId === c.id && e.role === role));
+    for (const [index, execution] of sides.entries()) {
+     const card = window.renderCaptureCheckpoint(index ? 'Repair / candidate' : 'Original integration', checkpointPresentation(execution?.checkpoints[0]));
+     if (execution) card.append(link('Inspect observations', `execution-${execution.runId}`));
+     pair.append(card);
+    }
+    group.append(window.renderCaptureComparison(...sides.map(execution => checkpointPresentation(execution?.checkpoints[0]))), pair, node('p', 'Same first returned-call boundary. Authorized is a local merchant state, not proof of PayPal authorization or money movement. Rows are database records, not deliveries.', 'small'));
+    const count = Math.max(...sides.map(execution => execution?.checkpoints.length ?? 0));
+    if (count > 0) {
+     const timeline = node('section', undefined, 'checkpoint-timeline');
+     if (selectedCase) timeline.id = 'result-evidence';
+     timeline.append(node('h3', 'Evidence progression'), node('p', 'Later completion preserves earlier failures. POST attempts are not duplicate charges.', 'small'));
+     for (let index = 0; index < count; index++) {
+      const entries = sides.map((execution, side) => {
+       const checkpoint = execution?.checkpoints[index];
+       const label = side ? 'Repair / candidate' : 'Original';
+       const card = window.renderCaptureCheckpoint(label, checkpointPresentation(checkpoint));
+       card.append(details('Recorded rules, assessments and snapshots', checkpoint ?? { observation: 'Unavailable' }));
+       return { label, view: checkpointPresentation(checkpoint), card };
+      });
+      timeline.append(window.renderCapturePhase(`Checkpoint ${index + 1}`, entries));
+     }
+     group.append(timeline);
+    }
     group.append(rules);panel.append(group);
    }
   }
-  if(job.repairReview?.availability==='AVAILABLE'){const review=node('details');review.append(node('summary','Developer-authored repair code review'));window.mountRepairReview(review,job,request,{exactAnalysis:true});panel.append(review);}
+  if(job.repairReview?.availability==='AVAILABLE'){const review=node('details');review.id='result-repair';review.append(node('summary','Developer-authored repair code review'));window.mountRepairReview(review,job,request,{exactAnalysis:true});panel.append(review);}
   if(job.state==='FAILED'||job.state==='INTERRUPTED')add(panel,node('p',`Execution stopped: ${job.error??job.state}. ${job.errorDetail??''} Partial observations remain below; this is not a new payment-rule finding. Refresh will not retry. Run npm run verify -- check and inspect the saved error before an explicit retry.`,'warning'));
   else if(job.state==='COMPLETED')add(panel,node('p','Inspect the independent checkpoints and frozen source, then export this execution. Saved replay links read existing evidence; a new replay requires an explicit action in the developer view. INCONCLUSIVE means evidence or the observation window is incomplete.'));
   if(job.reduction)add(panel,node('h3',job.reduction.status),node('p',job.reduction.scope),details('Tested reductions and retained sequence',job.reduction));
   if(job.reproduction)add(panel,node('h3',job.reproduction.status),details('Replay outcome',job.reproduction));
-  panel.append(details('Job, candidate and scenario identity',{id:job.id,plan:job.plan,candidateDigest:job.candidateDigest}));
+  const resultFiles=node('section');resultFiles.id='result-files';resultFiles.append(node('h2','Files and saved execution details'));panel.append(resultFiles);
+  resultFiles.append(details('Job, candidate and scenario identity',{id:job.id,plan:job.plan,candidateDigest:job.candidateDigest}));
   for(const e of job.executions){
    const card=node('details',undefined,'execution');card.id=`execution-${e.runId}`;card.append(node('summary',`${e.caseId??e.role} · ${e.role} · ${e.verdict} — evidence, AI & exports`));portableDownload(card,job,e);add(card,node('h3',`${e.caseId??e.role} · ${e.role} · ${e.verdict}`),node('p',`Execution ${e.runId}`,'small'));
    for(const c of e.checkpoints){for(const rule of c.verdict.rules??[])if(rule.status==='FAIL'){const finding=node('p',`${rule.id}: ${rule.reason} `,'warning');finding.append(link(`Inspect checkpoint ${c.index}`,`evidence-${e.runId}-${c.index}`));card.append(finding);}if(c.verdict.uncertainty)card.append(node('p',`Checkpoint ${c.index}: ${c.verdict.uncertainty.reason}`,'warning'));if(c.assessment?.changed)add(card,node('p',assessmentDescription(c.assessment),'notice'),details(`Separate current assessment · ${c.assessment.version} · ${c.assessment.current.status}`,c.assessment));if(c.verdict.status==='INCONCLUSIVE')card.append(node('p',`Checkpoint ${c.index}: INCONCLUSIVE — ${c.verdict.reason??'Evidence or observation window is incomplete.'}`));}
@@ -112,34 +147,43 @@ import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,
     card.append(node('p',`Save the export into the supported workspace, then run: npm run verify -- replay captureproof-reproducer-${e.runId}.json. This is one new execution; viewing and downloading do not replay.`,'small'));
     for(const [action,label]of (currentView==='develop'?[['replay','Replay failure · 1 execution'],...(e.role==='baseline'&&job.executions.some(p=>p.role==='candidate'&&p.caseId===e.caseId)?[['repair','Replay matching repair · 1 execution']]:[]),['reduce','Reduce failure · at most 4 executions']]:[])){const b=node('button',label);b.disabled=recordedOnly||running||!setupReady;b.onclick=async()=>{if(submitting||executionActive||recordedOnly||!setupReady)return;submitting=true;syncControls();b.disabled=true;try{const reproducer=await (action==='repair'?loadRepair():load()),key=`reproductionLaunchKey:${job.id}:${e.runId}:${action}`,launchKey=sessionStorage.getItem(key)??crypto.randomUUID();sessionStorage.setItem(key,launchKey);const j=await request('/api/reproductions',{action:action==='repair'?'replay':action,reproducer,artifactText:JSON.stringify(reproducer,null,2)+'\n',launchKey});sessionStorage.removeItem(key);await refreshList();await select(j.id);}catch(err){$('verification-status').textContent=err.message;}finally{submitting=false;syncControls();b.disabled=recordedOnly||executionActive||!setupReady;}};card.append(b);}
    }
-   const analysis=node('button','Read stored AI analysis · no generation');analysis.id='read-analysis-'+e.runId;analysis.onclick=async()=>{analysis.disabled=true;try{const data=await request(`/api/verifications/${job.id}/analysis/${e.runId}`);card.querySelector('#exact-diagnosis-'+e.runId)?.remove();window.mountExactExecutionDiagnosis(card,data);}catch(err){card.append(node('p',`Stored analysis unavailable: ${err.message}`));}finally{analysis.disabled=false;}};card.append(analysis);
+   const analysis=node('button','Read stored AI analysis · no generation');analysis.id='read-analysis-'+e.runId;analysis.onclick=async()=>{analysis.disabled=true;try{const data=await request(`/api/verifications/${job.id}/analysis/${e.runId}`);card.querySelector('#exact-diagnosis-'+e.runId)?.remove();const attempt=window.captureFragment().match(/^request-([0-9a-f-]{36})-analysis-/)?.[1];const saved=attempt&&data.records.find(r=>r.id===attempt);if(attempt&&!saved)card.append(node('p','The linked stored attempt is unavailable. No other response was substituted.'));else window.mountExactExecutionDiagnosis(card,saved?{...data,records:[saved]}:data,saved?{instance:'request-'+attempt}:{});}catch(err){card.append(node('p',`Stored analysis unavailable: ${err.message}`));}finally{analysis.disabled=false;}};card.append(analysis);
    if(!recordedOnly)mountExecutionAssistance(card,{jobId:job.id,executionId:e.runId,request});
-   const prepare=node('button','Inspect exact-run AI input · no generation');prepare.onclick=async()=>{prepare.disabled=true;try{const p=await request(`/api/verifications/${job.id}/diagnosis/${e.runId}`);add(card,node('p','Request inspection only. Use Read stored AI analysis for this execution’s generation and review status.'),download('Download UNSENT request',p,`captureproof-unsent-${e.runId}.json`),details('Bound input and source',p));}catch(err){card.append(node('p',`Preparation unavailable: ${err.message}`));}finally{prepare.disabled=false;}};const advanced=node('details');advanced.append(node('summary','Advanced request inspection'));advanced.append(prepare);card.append(advanced);panel.append(card);
+   const prepare=node('button','Inspect exact-run AI input · no generation');prepare.onclick=async()=>{prepare.disabled=true;try{const p=await request(`/api/verifications/${job.id}/diagnosis/${e.runId}`);add(card,node('p','Request inspection only. Use Read stored AI analysis for this execution’s generation and review status.'),download('Download UNSENT request',p,`captureproof-unsent-${e.runId}.json`),details('Bound input and source',p));}catch(err){card.append(node('p',`Preparation unavailable: ${err.message}`));}finally{prepare.disabled=false;}};const advanced=node('details');advanced.append(node('summary','Advanced request inspection'));advanced.append(prepare);card.append(advanced);resultFiles.append(card);
   }
-  const sourceGroup=node('details');sourceGroup.id='frozen-sources';sourceGroup.append(node('summary','Frozen source snapshots'));panel.append(sourceGroup);
+  const sourceGroup=node('details');sourceGroup.id='frozen-sources';sourceGroup.append(node('summary','Frozen source snapshots'));resultFiles.append(sourceGroup);
   for(const [index,source]of job.sources.entries()){const d=details(`Frozen execution source ${source.path} · ${source.sha256}`,source.text.split('\n').map((line,i)=>`${i+1}: ${line}`).join('\n'));d.id=`verification-source-${index}`;sourceGroup.append(d);}
-  panel.append(download('Download campaign / replay evidence JSON',job,`captureproof-${job.id}.json`));
-  const limits=details('Scope and execution identity',{limits:job.limits,jobId:job.id,createdAt:job.createdAt});panel.append(limits);
+  resultFiles.append(download('Download campaign / replay evidence JSON',job,`captureproof-${job.id}.json`));
+  const limits=details('Scope and execution identity',{limits:job.limits,jobId:job.id,createdAt:job.createdAt});resultFiles.append(limits);
   if(currentView==='result'){const a=node('a','Open execution controls in developer view');a.href='/external?view=develop&job='+job.id+(selectedCase?'&case='+encodeURIComponent(selectedCase):'');panel.append(a);}
-  if(selectedCase){const target=job.executions.find(e=>e.caseId===selectedCase&&e.role==='baseline')??job.executions.find(e=>e.caseId===selectedCase),nav=node('nav',undefined,'finding-actions');if(target){nav.append(link('Observations & exports',`execution-${target.runId}`));portableDownload(nav,job,target);}nav.append(link('Frozen source','frozen-sources'));if(job.repairReview?.availability==='AVAILABLE')nav.append(link('Developer-authored repair','repair-review'));panel.querySelector('.scenario-result')?.after(nav);if(target)mountAnalysisOverview(nav,job,target);}
+  if(selectedCase){const target=job.executions.find(e=>e.caseId===selectedCase&&e.role==='baseline')??job.executions.find(e=>e.caseId===selectedCase),nav=node('nav',undefined,'finding-actions');if(target){const inspect=link('Inspect evidence →',`execution-${target.runId}`);inspect.className='primary-action';nav.append(inspect);portableDownload(nav,job,target);}nav.append(link('Frozen source','frozen-sources'));if(job.repairReview?.availability==='AVAILABLE')nav.append(link('Developer-authored repair','repair-review'));panel.querySelector('.scenario-result .finding-lead')?.after(nav);if(target)mountAnalysisOverview(nav,job,target);}
   if(/^#execution-[0-9a-f-]{36}$/.test(location.hash))document.getElementById(location.hash.slice(1))?.scrollIntoView();
-  const selected=new URL(location.href).searchParams.get('analysis');if(job.executions.some(e=>e.runId===selected))document.getElementById('read-analysis-'+selected)?.click();
+  if (selectedCase) {
+   if (!document.getElementById('result-repair')) { const absent=node('section');absent.id='result-repair';absent.append(node('h2','Repair'),node('p','No matching developer repair is available.'));resultFiles.before(absent); }
+   const nav=node('nav',undefined,'result-nav');nav.setAttribute('aria-label','Result sections');
+   for(const [id,label] of [['result-overview','Overview'],['result-evidence','Evidence'],['selected-ai-review','AI review'],['result-repair','Repair'],['result-files','Files']]) nav.append(link(label,id));
+   panel.prepend(nav);window.trackCaptureSections(nav);
+  }
+  const linked = job.executions.find(e => window.captureFragment().includes('analysis-'+e.runId+'-'));
+  if (linked) document.getElementById('read-analysis-'+linked.runId)?.click();
+  const selected=new URL(location.href).searchParams.get('analysis');if(selected!==linked?.runId&&job.executions.some(e=>e.runId===selected))document.getElementById('read-analysis-'+selected)?.click();
  }
  function mountAnalysisOverview(nav,job,target){
   const section=node('section',undefined,'analysis-overview');section.id='selected-ai-review';
   const status=node('p','Reading stored analysis for this execution…');status.setAttribute('aria-live','polite');
-  add(section,node('h3','AI contribution'),status,node('p','Payment-rule findings are deterministic. Repairs shown here are developer-authored; AI does not apply them.','small'));
+  const history=node('details');history.append(node('summary','Stored attempt outcomes'),status);
+  add(section,node('h3','AI review'),history,node('p','Payment-rule findings are deterministic. Repairs shown here are developer-authored; AI does not apply them.','small'));
   const inspect=link('Inspect this execution’s AI evidence and review',`execution-${target.runId}`),open=inspect.onclick;
   inspect.onclick=()=>{open();$('read-analysis-'+target.runId)?.click();};section.append(inspect);
-  if(historicalExample?.available){const earlier=node('a','Separate earlier example: stored AI explanation, citations & PARTIAL review');earlier.href=historicalExample.url+'#ai';section.append(add(node('p'),earlier));}
-  nav.after(section);
+  if(historicalExample?.available){const earlier=node('a','Separate earlier example: stored AI explanation, citations & PARTIAL review');earlier.href=historicalExample.url+'#ai';history.append(add(node('p'),earlier));}
+  nav.closest('.scenario-result')?.after(section);
   request(`/api/verifications/${job.id}/analysis/${target.runId}`).then(data=>{if(section.isConnected)status.textContent=storedAnalysisSummary(data,target.runId);}).catch(()=>{if(section.isConnected)status.textContent='Stored analysis unavailable. This does not establish that no response exists; no generation was attempted.';});
  }
  function renderStartFailure(panel,job){
   $('verification-status').textContent=jobPresentation(job).title;
   add(panel,node('h2','Verification could not start'),node('p','Comparison unavailable. No payment experiment produced usable evidence.','warning'),node('p',executionRecovery(`${job.error} ${job.errorDetail??''}`)),details('Retained initialization error',{jobId:job.id,error:job.error,detail:job.errorDetail,attempts:job.attempts??'Not recorded by this historical worker'}),download('Download job record',job,`captureproof-${job.id}.json`));
  }
- async function select(id,{caseId=null,view='result'}={}){activeId=id;selectedCase=caseId;clearTimeout(timer);const url=new URL(location.href);url.searchParams.set('job',id);url.searchParams.delete('report');url.searchParams.delete('example');if(view==='develop')url.searchParams.set('view','develop');else url.searchParams.delete('view');if(caseId)url.searchParams.set('case',caseId);else url.searchParams.delete('case');history.replaceState(null,'',url);setView(view);await poll();if(currentView==='result'||currentView==='develop'){$('saved-result-title').focus({preventScroll:true});$('saved-result-title').scrollIntoView({block:'start'});}}
+ async function select(id,{caseId=null,view='result'}={}){activeId=id;selectedCase=caseId;clearTimeout(timer);const url=new URL(location.href);url.searchParams.set('job',id);url.searchParams.delete('report');url.searchParams.delete('example');if(view==='develop')url.searchParams.set('view','develop');else url.searchParams.delete('view');if(caseId)url.searchParams.set('case',caseId);else url.searchParams.delete('case');history.replaceState(null,'',url);setView(view);await poll();if(currentView==='result'||currentView==='develop'){if(location.hash)window.revealCaptureTarget(window.captureFragment());else{$('saved-result-title').focus({preventScroll:true});$('saved-result-title').scrollIntoView({block:'start'});}}}
  async function poll(){try{const id=activeId,job=await request(`/api/verifications/${id}`);if(id!==activeId)return;render(job);if(['QUEUED','RUNNING'].includes(job.state))timer=setTimeout(poll,1500);else await refreshList();}catch(e){unavailable(e.message);}}
  async function refreshList() {
   const data = await request('/api/verifications');
@@ -155,7 +199,7 @@ import {assessmentDescription,jobPresentation,executionRecovery,scenarioFinding,
    : data.example?.reason ?? 'The earlier recorded example is unavailable.';
   const links = $('example-links'); links.replaceChildren();
   if (data.example?.available) {
-   for (const [label, path] of [['Open earlier analyzed example', data.example.url], ['Download earlier example HTML', data.example.download]]) {
+   for (const [label, path] of [['Historical AI example · PARTIAL review', data.example.url], ['Download historical AI example', data.example.download], ['Historical comparison before v6', '/examples/reviewed-comparison']]) {
     const anchor = node('a', label); anchor.href = path; links.append(add(node('p'), anchor));
    }
   }

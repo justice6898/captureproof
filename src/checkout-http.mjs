@@ -19,6 +19,8 @@ export const assets = new Map([
   ['/repair-review.js', ['text/javascript; charset=utf-8', readFileSync(new URL('../public/repair-review.js', import.meta.url))]],
   ['/verification.js', ['text/javascript; charset=utf-8', readFileSync(new URL('../public/verification.js', import.meta.url))]],
   ['/external.js', ['text/javascript; charset=utf-8', readFileSync(new URL('../public/external.js', import.meta.url))]],
+  ['/result.css', ['text/css; charset=utf-8', readFileSync(new URL('../public/result.css', import.meta.url))]],
+  ['/result-view.js', ['text/javascript; charset=utf-8', readFileSync(new URL('../public/result-view.js', import.meta.url))]],
   ['/external.css', ['text/css; charset=utf-8', readFileSync(new URL('../public/external.css', import.meta.url))]],
   ['/', ['text/html; charset=utf-8', readFileSync(new URL('../public/index.html', import.meta.url))]],
   ['/checkout.js', ['text/javascript; charset=utf-8', readFileSync(new URL('../public/checkout.js', import.meta.url))]],
@@ -55,7 +57,7 @@ export function checkoutServer(service, diagnoses = null, externalDiagnoses = nu
       if (req.headers.host !== origin.host) throw new CheckoutError('INVALID_HOST', 403);
       const url = new URL(req.url, service.origin);
       if (url.origin !== service.origin) throw new CheckoutError('INVALID_ORIGIN', 403);
-      if(req.method==='GET'&&/^\/examples\/(upstream-pending|reviewed-comparison)(\/download)?$/.test(url.pathname)){
+      if(req.method==='GET'&&/^\/examples\/(upstream-pending|reviewed-comparison|reviewed-v6)(\/download)?$/.test(url.pathname)){
         const example=bundledExample(url.pathname.split('/')[2]);
         if(!example.available)return send(503, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recorded comparison unavailable</title><link rel="stylesheet" href="/external.css"></head><body><main><h1>Recorded comparison unavailable</h1><p>${example.reason}</p><p>Your workspace is separate. No execution was started and no other report was substituted.</p><a href="/external">Return to saved evidence</a></main></body></html>`, 'text/html; charset=utf-8');
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"frame-ancestors 'none'",...(url.pathname.endsWith('/download')?{'Content-Disposition':'attachment; filename="captureproof-recorded-comparison.html"'}:{})});

@@ -35,46 +35,107 @@
   };
   const selections=[['prior','Initial diagnosis · pre-recovery revision'],['repaired','Observation review · recorded revision 2 reservation crash'],['accepted','Observation review · recorded revision 2 accepted interruption'],['completed','Observation review · recorded revision 2 completed'],['pending','Observation review · recorded revision 2 pending'],['invalid','Observation review · recorded revision 2 conflicting amount'],['v3-reservation','Separate revision 3 evidence · reservation interruption'],['v3-acceptance','Separate revision 3 evidence · accepted interruption']];
   // Same stored diagnosis representation, scoped to one verification execution.
-  window.mountExactExecutionDiagnosis=(parent,data,{repairHref,instance}={})=>{
-    const section=node('section');section.className='summary-callout';section.id=(instance?instance+'-':'exact-diagnosis-')+data.executionId;
-    const authored=data.records.some(r=>r.mode==='authored-offline');
-    section.append(node('h3',authored?'Authored diagnosis review exercise':'AI explanation for this exact execution'),node('p',`Run ${data.executionId} · ${data.contractVersion} · ${authored?'Authored offline response over supplied evidence; no new model or integration execution.':'actual Medusa/PostgreSQL and installed SDK; simulated PayPal.'}`));
-    const prefix=(instance?instance+'-':'')+'analysis-'+data.executionId+'-';
-    const anchor=(label,id)=>{const a=node('a',label);a.href='#'+id;a.onclick=e=>{e.preventDefault();const target=document.getElementById(id);if(!target)return;for(let p=target;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;target.tabIndex=-1;target.scrollIntoView({block:'center'});target.focus?.();};return a;};
-    const citations=item=>{const p=node('p','Citations: ');for(const id of item.evidenceRefs??[]){p.append(anchor(id,prefix+'evidence-'+id),document.createTextNode(' '));}for(const c of item.codeRefs??[]){p.append(anchor(`${c.sourceRef}:${c.startLine}–${c.endLine}`,prefix+'source-'+c.sourceRef+'-'+c.startLine),document.createTextNode(' '));}return p;};
-    if(!data.records.length)section.append(node('p','No matching stored AI response. This read does not generate one.'));
-    for(const r of data.records){section.append(node('h4',r.mode==='authored-offline'?'Authored review fixture — not model output':'Stored model response'),node('p',`Response ${r.id} · provider completion: ${r.responseStatus??'unknown'} · structural/factual validation: ${r.currentValidation} · semantic review: ${r.semanticReviewStatus}`));
-      if(r.responseStatus==='incomplete')section.append(node('p',`No completed diagnosis. Provider incomplete reason: ${['max_output_tokens','content_filter'].includes(r.incompleteReason)?r.incompleteReason:'not retained or unavailable'}. Payment findings remain independent of this AI outcome.`));
-      semanticReview(section,r,citations);
-      for(const review of r.offlineRevalidations??[])if(review.type==='retained-output-review-1'){
-        section.append(node('h4','Limited review of retained output — not an accepted diagnosis'),node('p',review.summary),node('p',review.scope),node('p',review.method));
-        for(const c of review.claims){const d=node('details');d.append(node('summary',`${c.disposition} · ${c.label}`),node('blockquote',c.excerpt),node('p',c.reason),citations(c));section.append(d);}
-        section.append(detail('Retained-output review bindings and limitations',review));
+  window.mountExactExecutionDiagnosis = (parent, data, { repairHref, instance } = {}) => {
+    const section = node('section');
+    section.className = 'summary-callout exact-analysis';
+    section.id = (instance ? instance + '-' : 'exact-diagnosis-') + data.executionId;
+    const prefix = (instance ? instance + '-' : '') + 'analysis-' + data.executionId + '-';
+    const input = data.input;
+    const matched = input?.execution?.runId === data.executionId;
+    const link = (label, id, identity) => {
+      const a = node('a', label); a.href = '#' + id;
+      if (identity) a.title = identity;
+      a.onclick = event => {
+        if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) window.revealCaptureTarget?.(id);
+      };
+      return a;
+    };
+    const sourceLabel = source => {
+      if (!source) return 'Unavailable source';
+      const name = source.path.split('/').at(-1);
+      const peers = input.sources.filter(s => s.path.split('/').at(-1) === name);
+      if (peers.length === 1) return name;
+      const parts = source.path.split('/');
+      for (let count = 2; count <= parts.length; count++) {
+        const suffix = parts.slice(-count).join('/');
+        if (peers.filter(s => s.path.split('/').slice(-count).join('/') === suffix).length === 1) return suffix;
       }
-      if (r.cost !== undefined || r.preflightCost !== undefined) {
-        const money = value => Number.isFinite(value) ? '$' + value.toFixed(6) : 'Unknown';
-        const count = value => Number.isSafeInteger(value) && value >= 0 ? String(value) : 'Unknown';
-        section.append(node('h4', 'Usage and cost estimates'),
-          node('p', `Preflight maximum estimate: ${money(r.preflightCost?.maximumUsd)}. Usage-based estimate: ${money(r.cost?.usageBasedEstimateUsd)}. Confirmed billing: unknown.`),
-          node('p', `Input: ${count(r.usage?.input_tokens)} tokens; output: ${count(r.usage?.output_tokens)} tokens, including reasoning: ${count(r.usage?.output_tokens_details?.reasoning_tokens)}. Cached input: ${count(r.usage?.input_tokens_details?.cached_tokens)}; cache-write input: ${count(r.usage?.input_tokens_details?.cache_write_tokens)}.`),
-          node('p', r.providerOutcome === 'NOT_SENT' ? 'Blocked before transmission; no provider request sent.' : r.costUnresolved ? 'Usage or outcome remains unresolved. Do not assume zero cost or retry.' : 'Estimates use reported usage and the recorded pricing policy; they are not settled billing. Reasoning is included in output, not charged twice.'));
+      return source.path + ' (' + source.id + ')';
+    };
+    const evidenceLabel = id => id.startsWith('checkpoint-') ? 'Checkpoint ' + id.slice(11)
+      : id.startsWith('event-') ? 'Event ' + id.slice(6) : id === 'restart' ? 'Before recovery' : id;
+    const citations = item => {
+      const links = node('div'); links.className = 'citation-links';
+      for (const id of item.evidenceRefs ?? []) links.append(link(evidenceLabel(id), prefix + 'evidence-' + id, id));
+      for (const c of item.codeRefs ?? []) {
+        const source = input?.sources?.find(s => s.id === c.sourceRef);
+        links.append(link(`${sourceLabel(source)}:${c.startLine}–${c.endLine}`, prefix + 'source-' + c.sourceRef + '-' + c.startLine, `${c.sourceRef} · ${source?.path ?? 'Unknown'} · ${c.sourceSha256 ?? ''}`));
       }
-      guidance(section,r,citations);
-      const retention=r.retainedResponse;section.append(node('p',`Preservation: ${retention?.preservationComparison?.length>0&&retention.preservationComparison.every(x=>x.contentEqual)&&retention.omittedMessages===0&&retention.omittedFields===0&&retention.redactedFields===0?'PASS — sanitized fields equal the received parsed content':'inspect retention receipt; completeness not established'}. Generation and retries are disabled in this page.`));
-      if(r.renderedResult){const d=r.renderedResult;section.append(node('h4',d.assessment.replaceAll('_',' ')));
-        for(const f of d.findings)section.append(node('p',`${f.kind}: ${f.explanation}`),citations(f));
-        for(const [label,v]of [['Proposed correction — not applied',d.fixDirection],['Proposed regression test — not executed',d.regressionTest]])if(v)section.append(node('h4',label),node('p',v.text),citations(v));
-        for(const text of d.monetaryMetadata??[])section.append(node('p',text));
-        for(const text of d.uncertainties)section.append(node('p',text));
-      }else {section.append(node('p',`Saved attempt was not accepted: ${r.error??r.validationError??r.currentValidation}. No retry.`));if(retention?.messages)section.append(detail('Unvalidated sanitized response — not an accepted diagnosis',retention.messages));else if(retention)section.append(node('p','Rejected text is retained privately and is not embedded in this export. The preservation receipt and any limited review do not establish an accepted diagnosis.'));}
-      section.append(detail('Complete stored structured response and metadata',r));
+      return links;
+    };
+    // Prefer two contiguous sentences explicitly introduced as a causal path.
+    // Otherwise retain the first sentence; never invent or splice an explanation.
+    const excerpt = (text, causal = false) => {
+      const sentences = text?.match(/[\s\S]+?(?:[.!?](?=\s|$)|$)/g) ?? [];
+      const index = causal ? sentences.findIndex(sentence => /\bcausal path\b/i.test(sentence)) : -1;
+      return (index < 0 ? sentences[0] : sentences.slice(index, index + 2).join(''))?.trim() ?? text ?? '';
+    };
+    if (!matched) section.append(node('p', 'Analysis unavailable: input does not match this execution. No other response was substituted.'));
+    if (matched && !data.records.length) section.append(node('p', data.status === 'UNAVAILABLE' ? 'Stored analysis unavailable. No generation or substitution was attempted.' : 'No matching stored AI response. This read generates none.'));
+    for (const r of matched ? data.records : []) {
+      const record = node('article'); record.className = 'analysis-record';
+      const accepted = r.currentValidation === 'ACCEPTED' && r.matchesCurrentInputs !== false && r.renderedResult;
+      if (accepted) {
+        record.append(node('p', 'Deterministic rules establish the mismatch; the stored explanation connects observations to source.'), node('p', r.mode === 'authored-offline' ? 'Authored fixture excerpt — not model output' : 'Exact excerpts from the selected stored response', ''));
+        const finding = r.result?.findings?.[0];
+        if (finding) record.append(node('blockquote', excerpt(finding.explanation, Boolean(finding.codeRefs?.length))), citations(finding));
+        if (r.renderedResult.fixDirection) {
+          record.append(node('h4', 'Proposed direction · not applied'), node('blockquote', excerpt(r.result.fixDirection.text)), citations(r.renderedResult.fixDirection));
+        }
+      } else {
+        record.append(node('p', `No accepted explanation: ${r.matchesCurrentInputs === false ? 'Stored input binding conflicts with this execution' : r.error ?? r.currentValidation ?? 'Unavailable'}. No retry or substitute response.`));
+        if (r.responseStatus === 'incomplete') record.append(node('p', `Incomplete output; reason: ${r.incompleteReason ?? 'not retained or unavailable'}.`));
+      }
+      const statuses = node('dl'); statuses.className = 'analysis-status';
+      for (const [label, value] of [['Response completion', r.responseStatus ?? 'Unknown'], ['Structure / references', r.currentValidation ?? 'Unknown'], ['Development-session semantic review', r.semanticReviewStatus ?? 'NOT_REVIEWED']]) statuses.append(node('dt', label), node('dd', value));
+      record.append(statuses, node('p', 'Acceptance is not proof of production safety. The developer repair was tested separately; AI proposals were not executed.'));
+      const full = node('details'); full.className = 'complete-response'; full.append(node('summary', accepted ? 'Read the complete response' : 'Inspect stored response and retention'));
+      if (!accepted && r.retainedResponse) full.append(node('p', 'Unvalidated content is not an accepted diagnosis. Private text may be omitted from this export; inspect the preservation receipt.')); 
+      if (accepted) {
+        const d = r.renderedResult;
+        for (const f of d.findings) full.append(node('p', `${f.kind}: ${f.explanation}`), citations(f));
+        for (const [label, value] of [['Proposed correction · not applied', d.fixDirection], ['Proposed regression test · not executed', d.regressionTest]]) if (value) full.append(node('h4', label), node('p', value.text), citations(value));
+        for (const text of [...(d.monetaryMetadata ?? []), ...d.uncertainties]) full.append(node('p', text));
+      }
+      full.append(detail('Unchanged structured response', r.result));
+      record.append(full);
+      if (r.regressionGuidance) {
+        const controls = node('details'); controls.className = 'proposed-controls';
+        controls.append(node('summary', `Proposed controls (${r.renderedResult?.regressionControls?.length ?? 0}) · not executed`));
+        guidance(controls, r, citations); record.append(controls);
+      }
+      const review = node('details'); review.append(node('summary', 'Review, preservation and usage'));
+      semanticReview(review, r, citations);
+      review.append(detail('Preservation receipt', r.retainedResponse), detail('Usage and cost estimates — confirmed billing unknown', { usage: r.usage, cost: r.cost, preflightCost: r.preflightCost, costUnresolved: r.costUnresolved }));
+      if (r.offlineRevalidations?.length) review.append(detail('Historical annotations — original interpretations retained', r.offlineRevalidations));
+      review.append(detail('Complete stored record and contract metadata', r));
+      record.append(review); section.append(record);
     }
-    const evidence=node('details');evidence.append(node('summary',authored?'Evidence used by the authored fixture':'Exact observations supplied to the model'));
-    for(const e of data.input.evidence){const d=detail(e.id,e.fields);d.id=prefix+'evidence-'+e.id;evidence.append(d);}section.append(evidence);
-    const sources=node('details');sources.append(node('summary',authored?'Frozen reference source used by the authored fixture':'Executed source excerpts supplied to the model'));
-    for(const s of data.input.sources){const d=node('details');d.append(node('summary',s.path),node('p',s.sha256));const code=node('pre');for(const l of s.lines){const line=node('span',`${l.line}: ${l.text}\n`);line.id=prefix+'source-'+s.id+'-'+l.line;code.append(line);}d.append(code);sources.append(d);}section.append(sources);
-    if(data.repairComparison){const c=data.repairComparison;section.append(node('h4','Independent repair comparison'),node('p',c.attribution),node('p',`Candidate execution ${c.runId} · historical aggregate ${c.verdict} · final boundary ${c.finalVerdict}.`));const link=node('a','Inspect the separately tested candidate, checkpoints and frozen source');link.href=repairHref??`/external?job=${c.jobId}#execution-${c.runId}`;section.append(link);}
-    section.append(downloadJSON('Download exact analysis, evidence and review',data,`captureproof-analysis-${data.executionId}.json`));parent.append(section);
+    const evidence = node('details'); evidence.append(node('summary', 'Observations and source supplied to the model'));
+    for (const e of input?.evidence ?? []) { const d = detail(evidenceLabel(e.id), e.fields); d.id = prefix + 'evidence-' + e.id; evidence.append(d); }
+    for (const source of input?.sources ?? []) {
+      const d = node('details'); d.append(node('summary', sourceLabel(source)), node('p', `${source.id} · ${source.path} · SHA-256 ${source.sha256}`));
+      const code = node('pre');
+      for (const line of source.lines) { const span = node('span', `${line.line}: ${line.text}\n`); span.id = prefix + 'source-' + source.id + '-' + line.line; code.append(span); }
+      d.append(code); evidence.append(d);
+    }
+    evidence.append(detail('Execution and contract identity', { executionId: data.executionId, contractVersion: data.contractVersion }));
+    section.append(evidence);
+    const actions = node('div'); actions.className = 'result-actions';
+    if (data.repairComparison) { const a = node('a', 'View tested repair'); a.href = repairHref ?? `/external?job=${data.repairComparison.jobId}#execution-${data.repairComparison.runId}`; actions.append(a); }
+    actions.append(downloadJSON('Download AI review', data, `captureproof-analysis-${data.executionId}.json`));
+    section.append(actions); parent.append(section);
+    if(window.captureFragment().startsWith(prefix))window.revealCaptureFragment();
   };
   window.mountExternalDiagnosis=(parent,key)=>{
     const exampleKey=new URL(location.href).searchParams.get('example');
