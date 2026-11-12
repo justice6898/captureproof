@@ -1,32 +1,41 @@
-# Developer demonstration — reviewed v6 example
+# Demonstration — reviewed v6 example
 
-Target: **2:38**, including navigation and reading pauses. The route below uses the executable application's plan preview, then explicitly switches to a separately saved result. It does not execute a candidate. This is a recording script, not a narrated/uploaded video or independent-human usability study. Public source: https://github.com/justice6898/captureproof.
+The **2:59 narrated video** follows the saved report through **Overview → Evidence → AI review → Repair → Files**. The owner reports that it is uploaded to YouTube and plays in the Devpost submission preview. Final Devpost submission has not been confirmed.
 
+## Open the same report
 
-Measured current route: **158.011 seconds**, using agent-operated Chrome with scripted reading pauses on the same Mac. This is not a narrated video, independent-human timing or fresh installation. One read-only plan preview; no campaign, model or PayPal request. Server-stopped offline verification is recorded separately.
+Open [the included HTML report](../data/portable-reports/reviewed-v6-journey-2026-11-12/report.html) locally, or use the read-only server on the supported Mac with Node 24+:
 
-## Preparation
+```sh
+npm run start:example -- 3100
+```
 
-Use the repository checkout on the supported Mac with Node 24+. Start `npm run start:verification -- 3200` and open **http://127.0.0.1:3200/external?view=develop**. Start no campaign, install nothing and configure no credentials for this recording. Choose the built-in revision 3 candidate and use **Review execution plan · no execution**. If execution prerequisites are missing, retain the honest readiness message; plan inspection and bundled viewing remain available.
+Open **http://127.0.0.1:3100/examples/reviewed-v6**. This displays a saved execution; viewing, navigating and downloading do not start a campaign, replay or model request. GitHub displays the HTML source rather than running the report.
 
-Keep **http://127.0.0.1:3200/examples/reviewed-v6** ready as the separate recorded-result tab. Download its self-contained HTML at **http://127.0.0.1:3200/examples/reviewed-v6/download** for the offline ending. Use a 1440×900 browser window. `npm run start:example -- 3100` remains the simpler read-only report server, but does not replace the executable candidate workflow.
+## Report walkthrough
 
-## Route and English narration
+| Section | What to inspect |
+|---|---|
+| Overview | At the first returned-call boundary, provider capture is PENDING while the original merchant records completed payment and one capture row. At the matching boundary, the separately authored repair retains local authorized state and zero rows. Authorized is a merchant status, not proof of money movement. |
+| Evidence | Expand the checkpoints to compare provider and merchant records. Later, the provider reports completed while the original merchant still stores pending. Repeated requests alone do not establish duplicate charges. |
+| AI review | Read the saved explanation and open its source citations: `retrievePayment` accepts an order ID without checking capture completion, and the host sets `captured_at` from local `isFullyCaptured`. Structural acceptance and same-development-session semantic review are separate outcomes. |
+| Repair | Inspect the independently developer-authored repair, its source and matching checkpoint results. The repair predates the model response. The AI's proposed corrections and five regression controls remain unexecuted; checkpoint PASS does not establish general correctness. |
+| Files | Inspect the saved original and repair replay identities, evidence and frozen-source downloads. Download the self-contained HTML to inspect it offline. These records use real Medusa, PostgreSQL and PayPal SDK execution with simulated PayPal responses. Separate genuine Sandbox observations do not make this example a live-provider test. |
 
-| Time | Screen/action | Narration |
-|---|---|---|
-| 0:00–0:18 | Verify my change: select revision 3; Review execution plan | “When checkout records disagree, developers need to know where completion was inferred. CaptureProof lets us select a supported integration change and inspect its bounded test plan. This is only a preview; I am not running it.” |
-| 0:18–0:42 | Switch explicitly to `/examples/reviewed-v6`; Overview | “Now I am opening an earlier frozen comparison, not a result from that preview. The original records completed payment and one capture row while the provider is pending. The separately authored repair retains a local authorized state and zero rows at that same boundary. Authorized does not prove money movement.” |
-| 0:42–1:02 | Evidence; expand checkpoint 2 | “Deterministic rules establish the failure. Later the provider reports completed, but the original merchant still stores pending. That binding failure is different from the initial premature completion. Repeated requests do not by themselves prove duplicate charges.” |
-| 1:02–1:34 | AI review; read causal excerpt, open source citation, return to review statuses | “The real stored AI response explains the code path: retrievePayment accepts an order ID without checking capture completion, and the host sets captured_at from its local isFullyCaptured value. These citations open the supplied source. Structural acceptance and same-development-session semantic review are separate; this is one reviewed case, not general AI accuracy.” |
-| 1:34–1:56 | Repair; expand first component and source | “This tested repair was authored independently before the response. AI did not apply it. Its checkpoint passes are scoped to these observations; the AI's proposed correction and five controls remain unexecuted.” |
-| 1:56–2:18 | Files; expand saved replays; download evidence, reproducer and report | “The evidence and frozen source travel with the report. Original and repair replays have their own saved identities. Medusa, PostgreSQL and the SDK were real here; PayPal was simulated. Separate Sandbox checkout observations do not turn this example into live PayPal proof.” |
-| 2:18–2:38 | Open downloaded HTML with browser offline; inspect AI excerpt | “This file stays readable without a server. A developer can inspect the causal explanation, source and reproducible evidence, then use the supported application to test their own change explicitly. Viewing or downloading starts nothing.” |
+The report preserves the complete selected model response, source citations, 23 embedded artifacts and 16 frozen source files. Its recorded execution and saved replays happened earlier; opening the report does not reproduce them.
 
-Pause on the comparison and source citation. Do not narrate IDs or JSON; keep them inspectable. Files → **Use the executable application** gives local setup instructions without assuming a running localhost service. No new candidate inherits this stored diagnosis, finding or replay result.
+## Optional executable application
 
-## Recording and submission
+The application is separate from the read-only report server:
 
-Use the published source and its source-bundle.json to identify the recording workspace. Record the route and measure the actual narrated video (under three minutes). Check the recording for private tabs/credentials, upload it, verify public playback, and supply final repository/video URLs in the submission. The measured walkthrough is not a recorded or uploaded video. Recheck the official submission requirements before submitting; passing local tests is not a competition outcome or production guarantee.
+```sh
+npm run start:verification -- 3200
+```
 
-Missing/corrupt primary assets must be restored from the matching candidate, not replaced with another diagnosis. Fresh-machine installation, independent-user testing and current AI-proposed experiments remain unverified.
+Open **http://127.0.0.1:3200/external?view=develop**, choose a supported candidate and select **Review execution plan · no execution**. This previews a proposed run. Switching to **http://127.0.0.1:3200/examples/reviewed-v6** opens the earlier frozen result, not a result for that candidate. Retain any prerequisite warning; do not bypass it.
+
+See the [operating guide](OPERATIONS.md) before explicitly setting up dependencies or running a campaign. Files → **Use the executable application** also provides setup instructions. Missing or corrupt primary assets must not be replaced with a different diagnosis.
+
+## Earlier walkthrough measurement
+
+An earlier agent-operated Chrome walkthrough on the same Mac took **158.011 seconds**, including scripted reading pauses. It began with a plan preview and then switched to the saved report. That measurement is neither the duration of the 2:59 narrated video nor an independent-user usability study. Fresh-machine installation and independent-user testing remain unverified.

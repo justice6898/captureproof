@@ -1,31 +1,27 @@
-# CaptureProof — submission draft and readiness
+# CaptureProof — submission notes
 
-## Product description
+## Product and engineering
 
-For developers debugging supported checkout integrations, CaptureProof is a narrow integration debugger that compares provider payment evidence with merchant persistence and explains inconsistencies using bound code and observations. A deterministic rule engine owns the financial finding. A real stored OpenAI explanation supplies a cited causal path and proposed checks; it never changes payment state or applies arbitrary patches.
+CaptureProof helps developers debug supported PayPal checkout integrations by comparing provider payment evidence with merchant persistence, linking inconsistencies to source code, and packaging the findings in portable reports. Deterministic rules establish payment-state findings. The OpenAI API supplies source-linked explanations and proposed checks; it does not change payment state or apply patches.
 
-The primary recorded example shows a PENDING capture while an upstream merchant integration records completion and one capture row. The separately developer-authored repair retains local authorized state and zero rows at that same boundary, then completes after later completed evidence. Its original and repair replay records bind exact source, artifact and scenario. “Authorized” is a local merchant status, not proof of actual PayPal authorization.
+The featured example uses actual Medusa 2.7.0, PostgreSQL and PayPal Server SDK 1.0.0 execution with simulated PayPal responses. At the first returned-call boundary, the provider capture is PENDING while the original merchant records completed payment and one capture row. A separately developer-authored repair retains local authorized state and zero rows at that same boundary, then completes after later completed evidence. Authorized is a local merchant status, not proof of PayPal authorization or money movement. Original and repair replay records bind the exact source, artifact and scenario.
 
-This example uses actual Medusa 2.7.0, PostgreSQL and PayPal Server SDK 1.0.0 with simulated PayPal. Separate genuine PayPal Sandbox normal-capture and application-response-discard recovery evidence exists in development; that does not turn this upstream example into a live Sandbox test or actual network-outage experiment.
+The saved explanation identifies the causal path: `retrievePayment` accepts an order ID without checking capture completion, while the host derives `captured_at` from local `isFullyCaptured`. Source citations and the complete unchanged response make this explanation inspectable. The application also supports separately authorized diagnosis generation for a bound execution, with input review, validation, persistence and one-request cost controls; see [operations](OPERATIONS.md).
 
-The stored causal excerpt explains why the mismatch occurs: retrievePayment accepts an order ID without checking capture completion, while the host derives captured_at from local isFullyCaptured. Source citations and the complete unchanged response make that explanation inspectable. Rule checks, not AI, establish the financial finding.
+## AI evidence and development attribution
 
-The matching external-diagnosis-6 response was generated once by gpt-6.1-sol with medium reasoning/default processing. It completed and passed structural validation. Same-development-session semantic review covered 46 prose fields with PASS; five proposed control kinds are structurally complete. This is not blind review, general model accuracy, production safety or proof that AI authored/verified the earlier developer repair. Proposed corrections and tests remain unexecuted. Codex assisted implementation and local verification; no independent-human usability study is claimed.
+The selected `external-diagnosis-6` response is a genuine saved `gpt-6.1-sol` generation with medium reasoning and default processing. It passed structural validation. A separate same-development-session semantic review returned PASS over 46 prose fields; five proposed regression-control kinds are structurally complete. This is one reviewed case, not blind review or general model accuracy. **AI-proposed corrections and tests were not executed.** The displayed repair was independently developer-authored before that response; the model did not create or verify it.
 
+Codex assisted implementation, documentation and local verification. This development assistance is separate from the product's OpenAI API integration and the selected saved diagnosis. No independent-human usability study is claimed.
 
-Measured current route: **158.011 seconds**, using agent-operated Chrome with scripted reading pauses on the same Mac. This is not a narrated video, independent-human timing or fresh installation. One read-only plan preview; no campaign, model or PayPal request. Server-stopped offline verification is recorded separately.
+Separate genuine PayPal Sandbox normal-capture and application-response-discard recovery were observed during development. Those observations do not turn the featured simulated-provider example into a live Sandbox test or demonstrate an actual network outage. Checkpoint-specific PASS does not establish production safety.
 
-## Current readiness
+## Published materials and submission status
 
-| Deliverable | Actual state | Remaining action |
-|---|---|---|
-| Public source | https://github.com/justice6898/captureproof; exact packaged files are listed in source-bundle.json. | Use the published commit and manifest for recording. |
-| License | MIT, Copyright (c) 2026 Jeongui Hong; third-party notices retained. | Preserve notices in the exact publication. |
-| Runnable application | README includes supported macOS Apple Silicon/Node 24+ setup, explicit candidate import/plan/campaign and export/replay commands. Static viewing is only part of the product. | Fresh-machine installation and independent judge access remain unverified. Current preparation installs nothing and executes no integrations. |
-| Primary recorded report | Exact v6 response, source citations, same-session review, separate developer repair and saved replay evidence. Browser/offline viewing requires no private DB. | Use the matching report and manifest; preserve its evidence bindings. |
-| Video | DEMO.md includes candidate selection and a read-only execution-plan preview, followed by explicitly separate recorded evidence. | Actual recording, measured duration, upload and public URL remain outstanding. |
-| Deployment / submission | Neither performed. No hosted demo or submission URL is claimed. | Owner supplies final URLs and completes entry after checking current event requirements and eligibility. |
+- **Source:** [justice6898/captureproof](https://github.com/justice6898/captureproof). `source-bundle.json` lists the exact packaged files and hashes. The [README](../README.md) provides report viewing and application entry points; the [operating guide](OPERATIONS.md) covers supported setup and execution.
+- **Report:** [the included reviewed v6 example](../data/portable-reports/reviewed-v6-journey-2026-11-12/report.html) opens locally without credentials, dependencies or a database. It retains the selected response, review, source citations, separately tested repair and saved replay evidence. Historical reports remain available.
+- **Video:** the owner reports uploading the **2:59 narrated demonstration** to YouTube and confirming playback in the Devpost submission preview. Its report walkthrough is documented in [DEMO.md](DEMO.md). This status is owner-reported; the earlier automated walkthrough measurement is a separate record.
+- **Final submission:** Devpost submission has **not been confirmed**. The owner must complete it by the stated November 12, 2026, 3:00 PM America/New_York deadline. Public source and preview playback do not establish final submission, eligibility or acceptance.
+- **License:** MIT, Copyright (c) 2026 Jeongui Hong. [Third-party notices](../LICENSES.md) are preserved.
 
-This local preparation does not assert current contest eligibility or final acceptance. Before submitting, recheck the official event page and rules; historical deadline/readiness notes are not a current legal or eligibility determination. No new payment, model generation, replay, paid reservation, deployment or submission is scheduled here.
-
-The primary path is `data/portable-reports/reviewed-v6-journey-2026-11-12/report.html`, also served by `npm run start:example -- 3100` at `/external` and `/examples/reviewed-v6`. The two historical report/manifest pairs are immutable and explicitly accessible. Public contents exclude private databases, credentials, raw provider routing IDs, unrelated attempts and execution ledgers. The complete packaged inventory and hashes are in `source-bundle.json`.
+The application has been checked on the same supported Mac. Fresh-machine installation, independent-user validation and a hosted application deployment are not claimed. Private databases, credentials and unrelated execution records are excluded from the public package.
